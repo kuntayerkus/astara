@@ -54,7 +54,7 @@ extension CacheService: DependencyKey {
             return cacheDir
         }()
 
-        func fileURL(for key: String) -> URL {
+        @Sendable func fileURL(for key: String) -> URL {
             let safeKey = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? key
             return cacheDirectory.appendingPathComponent(safeKey)
         }

@@ -36,7 +36,7 @@ struct AppFeature {
         Reduce { state, action in
             switch action {
             case .checkOnboardingStatus:
-                let completed = userDefaults.bool(forKey: "onboarding_completed")
+                let completed = userDefaults.bool("onboarding_completed")
                 state.destination = completed ? .home : .onboarding
                 return .none
 
