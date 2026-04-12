@@ -10,7 +10,9 @@ struct ChartRevealView: View {
         VStack(spacing: AstaraSpacing.xl) {
             Spacer()
 
-            if store.isLoading || store.currentStep == .loading {
+            if let error = store.chartError {
+                errorState(message: error)
+            } else if store.isLoading || store.currentStep == .loading {
                 loadingState
             } else if let chart = store.chart {
                 revealState(chart: chart)
@@ -18,7 +20,7 @@ struct ChartRevealView: View {
 
             Spacer()
 
-            if !store.isLoading && store.chart != nil {
+            if !store.isLoading && store.chart != nil && store.chartError == nil {
                 AstaraButton(title: String(localized: "continue"), style: .primary) {
                     store.send(.nextStep)
                 }
@@ -43,6 +45,37 @@ struct ChartRevealView: View {
             Text(String(localized: "calculating_chart_subtitle"))
                 .font(AstaraTypography.bodySmall)
                 .foregroundStyle(AstaraColors.textTertiary)
+        }
+    }
+
+    // MARK: - Error State
+
+    private func errorState(message: String) -> some View {
+        VStack(spacing: AstaraSpacing.lg) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(AstaraColors.ember400)
+
+            Text(String(localized: "chart_error_title"))
+                .font(AstaraTypography.titleMedium)
+                .foregroundStyle(AstaraColors.textPrimary)
+
+            Text(message)
+                .font(AstaraTypography.bodySmall)
+                .foregroundStyle(AstaraColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, AstaraSpacing.xl)
+
+            VStack(spacing: AstaraSpacing.sm) {
+                AstaraButton(title: String(localized: "retry"), style: .primary) {
+                    store.send(.calculateChart)
+                }
+
+                AstaraButton(title: String(localized: "use_sample_chart"), style: .ghost) {
+                    store.send(.chartCalculated(.preview))
+                }
+            }
+            .padding(.horizontal, AstaraSpacing.lg)
         }
     }
 
@@ -144,6 +177,24 @@ struct ChartRevealView: View {
                     currentStep: .chartReveal,
                     chart: .preview,
                     isLoading: false
+                )
+            ) {
+                OnboardingFeature()
+            }
+        )
+    }
+}
+
+#Preview("Error") {
+    ZStack {
+        GradientBackground()
+        StarfieldView()
+        ChartRevealView(
+            store: Store(
+                initialState: OnboardingFeature.State(
+                    currentStep: .loading,
+                    isLoading: false,
+                    chartError: "Network connection failed. Please check your internet."
                 )
             ) {
                 OnboardingFeature()

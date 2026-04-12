@@ -102,4 +102,8 @@ enum Element: String, Codable, CaseIterable {
 
 enum Modality: String, Codable, CaseIterable {
     case cardinal, fixed, mutable
+
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
 }

@@ -1,33 +1,6 @@
 import Foundation
 import ComposableArchitecture
 
-// MARK: - Geo City (for city search)
-
-struct GeoCity: Codable, Equatable, Identifiable {
-    let id: UUID
-    let name: String
-    let country: String
-    let latitude: Double
-    let longitude: Double
-    let timezone: String // IANA format
-
-    init(
-        id: UUID = UUID(),
-        name: String,
-        country: String,
-        latitude: Double,
-        longitude: Double,
-        timezone: String
-    ) {
-        self.id = id
-        self.name = name
-        self.country = country
-        self.latitude = latitude
-        self.longitude = longitude
-        self.timezone = timezone
-    }
-}
-
 // MARK: - Onboarding Step
 
 enum OnboardingStep: Int, CaseIterable, Equatable {
@@ -69,6 +42,7 @@ struct OnboardingFeature {
         // Chart
         var chart: BirthChart?
         var isLoading: Bool = false
+        var chartError: String?
     }
 
     enum Action: Equatable {
@@ -91,6 +65,7 @@ struct OnboardingFeature {
         // Chart
         case calculateChart
         case chartCalculated(BirthChart)
+        case chartCalculationFailed(String)
 
         // Push
         case requestPushPermission
@@ -101,6 +76,8 @@ struct OnboardingFeature {
     }
 
     @Dependency(\.continuousClock) var clock
+    @Dependency(\.geoService) var geoService
+    @Dependency(\.chartService) var chartService
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -163,14 +140,14 @@ struct OnboardingFeature {
 
             case .searchCities:
                 state.isSearching = true
-                // MVP: Return mock results. Real API integration in next sprint.
-                let query = state.searchQuery.lowercased()
-                let mockCities = Self.mockCities.filter {
-                    $0.name.lowercased().contains(query)
-                }
+                let query = state.searchQuery
                 return .run { send in
-                    try await clock.sleep(for: .milliseconds(500))
-                    await send(.searchCitiesResponse(mockCities))
+                    do {
+                        let cities = try await geoService.searchCities(query)
+                        await send(.searchCitiesResponse(cities))
+                    } catch {
+                        await send(.searchCitiesResponse([]))
+                    }
                 }
 
             case .searchCitiesResponse(let cities):
@@ -186,16 +163,35 @@ struct OnboardingFeature {
 
             case .calculateChart:
                 state.isLoading = true
-                // MVP: Use mock chart. Real VPS integration in next sprint.
+                state.chartError = nil
+                guard let city = state.selectedCity else { return .none }
+                let dateStr = AstaraDateFormatters.birthDate.string(from: state.birthDate)
+                let timeStr = AstaraDateFormatters.birthTime.string(from: state.birthTime)
+                let timezone = city.timezone
+                let lat = city.latitude
+                let lng = city.longitude
                 return .run { send in
-                    try await clock.sleep(for: .seconds(2))
-                    await send(.chartCalculated(.preview))
+                    do {
+                        let chart = try await chartService.calculateChart(
+                            dateStr, timeStr, lat, lng, timezone
+                        )
+                        await send(.chartCalculated(chart))
+                    } catch {
+                        await send(.chartCalculationFailed(
+                            error.localizedDescription
+                        ))
+                    }
                 }
 
             case .chartCalculated(let chart):
                 state.isLoading = false
                 state.chart = chart
                 state.currentStep = .chartReveal
+                return .none
+
+            case .chartCalculationFailed(let message):
+                state.isLoading = false
+                state.chartError = message
                 return .none
 
             case .requestPushPermission:
@@ -212,19 +208,4 @@ struct OnboardingFeature {
             }
         }
     }
-
-    // MARK: - Mock Cities
-
-    private static let mockCities: [GeoCity] = [
-        GeoCity(name: "Istanbul", country: "Turkey", latitude: 41.0082, longitude: 28.9784, timezone: "Europe/Istanbul"),
-        GeoCity(name: "Ankara", country: "Turkey", latitude: 39.9334, longitude: 32.8597, timezone: "Europe/Istanbul"),
-        GeoCity(name: "Izmir", country: "Turkey", latitude: 38.4192, longitude: 27.1287, timezone: "Europe/Istanbul"),
-        GeoCity(name: "Antalya", country: "Turkey", latitude: 36.8969, longitude: 30.7133, timezone: "Europe/Istanbul"),
-        GeoCity(name: "Bursa", country: "Turkey", latitude: 40.1885, longitude: 29.0610, timezone: "Europe/Istanbul"),
-        GeoCity(name: "London", country: "United Kingdom", latitude: 51.5074, longitude: -0.1278, timezone: "Europe/London"),
-        GeoCity(name: "New York", country: "United States", latitude: 40.7128, longitude: -74.0060, timezone: "America/New_York"),
-        GeoCity(name: "Los Angeles", country: "United States", latitude: 34.0522, longitude: -118.2437, timezone: "America/Los_Angeles"),
-        GeoCity(name: "Berlin", country: "Germany", latitude: 52.5200, longitude: 13.4050, timezone: "Europe/Berlin"),
-        GeoCity(name: "Paris", country: "France", latitude: 48.8566, longitude: 2.3522, timezone: "Europe/Paris"),
-    ]
 }

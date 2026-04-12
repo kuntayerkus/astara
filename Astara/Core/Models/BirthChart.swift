@@ -39,6 +39,34 @@ struct BirthChart: Codable, Equatable {
         aspects.filter { $0.planet1 == planet || $0.planet2 == planet }
     }
 
+    // MARK: - House for Planet
+
+    func houseForPlanet(_ key: PlanetKey) -> Int? {
+        guard let planet = planet(for: key),
+              !houses.isEmpty else { return nil }
+
+        let sorted = houses.sorted { $0.degree < $1.degree }
+        for i in 0..<sorted.count {
+            let current = sorted[i]
+            let next = sorted[(i + 1) % sorted.count]
+
+            let start = current.degree
+            let end = next.degree
+
+            if end > start {
+                if planet.degree >= start && planet.degree < end {
+                    return current.number
+                }
+            } else {
+                // Wraps around 360°
+                if planet.degree >= start || planet.degree < end {
+                    return current.number
+                }
+            }
+        }
+        return sorted.last?.number
+    }
+
     // MARK: - Element Distribution
 
     var elementDistribution: [Element: Int] {

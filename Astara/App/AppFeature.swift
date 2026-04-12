@@ -41,6 +41,14 @@ struct AppFeature {
                 return .none
 
             case .onboarding(.completeOnboarding):
+                // Transfer chart data from onboarding to home
+                if let chart = state.onboarding.chart {
+                    state.home.userChart = chart
+                    state.home.chart = ChartFeature.State(chart: chart)
+                    if let sunSign = chart.sunSign {
+                        state.home.userSunSign = sunSign
+                    }
+                }
                 state.destination = .home
                 return .run { _ in
                     await userDefaults.setBool(true, forKey: "onboarding_completed")

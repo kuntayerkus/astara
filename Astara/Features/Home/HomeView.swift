@@ -12,7 +12,7 @@ struct HomeView: View {
                     Label(HomeFeature.Tab.home.title, systemImage: HomeFeature.Tab.home.icon)
                 }
 
-            placeholderTab(title: String(localized: "tab_chart"), icon: "circle.grid.cross.fill")
+            ChartView(store: store.scope(state: \.chart, action: \.chart))
                 .tag(HomeFeature.Tab.chart)
                 .tabItem {
                     Label(HomeFeature.Tab.chart.title, systemImage: HomeFeature.Tab.chart.icon)
@@ -57,7 +57,7 @@ struct HomeView: View {
 
                     // Retro alert
                     if !store.activeRetrogrades.isEmpty {
-                        retroAlert
+                        RetroAlertBanner(retrogrades: store.activeRetrogrades)
                             .padding(.horizontal, AstaraSpacing.lg)
                     }
 
@@ -74,6 +74,12 @@ struct HomeView: View {
                     // Element energy
                     if !store.elementEnergy.isEmpty {
                         elementEnergySection
+                            .padding(.horizontal, AstaraSpacing.lg)
+                    }
+
+                    // Planet positions
+                    if !store.planetPositions.isEmpty {
+                        PlanetPositionsView(planets: store.planetPositions)
                             .padding(.horizontal, AstaraSpacing.lg)
                     }
 
@@ -117,35 +123,6 @@ struct HomeView: View {
                     .foregroundStyle(AstaraColors.gold)
             }
         }
-    }
-
-    // MARK: - Retro Alert
-
-    private var retroAlert: some View {
-        HStack(spacing: AstaraSpacing.sm) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(AstaraColors.ember400)
-
-            VStack(alignment: .leading, spacing: 2) {
-                if let retro = store.activeRetrogrades.first {
-                    Text("\(retro.planet.turkishName) Retrosu Aktif")
-                        .font(AstaraTypography.labelMedium)
-                        .foregroundStyle(AstaraColors.textPrimary)
-
-                    Text("\(retro.startDate) - \(retro.endDate)")
-                        .font(AstaraTypography.caption)
-                        .foregroundStyle(AstaraColors.textTertiary)
-                }
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12))
-                .foregroundStyle(AstaraColors.textTertiary)
-        }
-        .padding(AstaraSpacing.md)
-        .astaraCard(cornerRadius: AstaraSpacing.cornerRadiusMd)
     }
 
     // MARK: - Element Energy

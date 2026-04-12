@@ -8,9 +8,17 @@ struct HomeFeature {
         var dailyHoroscope: DailyHoroscope?
         var elementEnergy: [Element: Int] = [:]
         var activeRetrogrades: [Retrograde] = []
+        var planetPositions: [Planet] = []
         var selectedTab: Tab = .home
         var isLoading: Bool = false
         var lastUpdated: Date?
+
+        // User data (set from onboarding)
+        var userSunSign: ZodiacSign = .aries
+        var userChart: BirthChart?
+
+        // Child features
+        var chart: ChartFeature.State = .init()
     }
 
     enum Tab: String, CaseIterable, Equatable {
@@ -42,13 +50,28 @@ struct HomeFeature {
         case selectTab(Tab)
         case loadDailyData
         case dailyDataLoaded(DailyHoroscope, [Element: Int], [Retrograde])
+        case dailyDataLoadFailed
+        case loadPlanetPositions
+        case planetPositionsLoaded([Planet])
+
+        // Child features
+        case chart(ChartFeature.Action)
     }
 
+    @Dependency(\.horoscopeService) var horoscopeService
+
     var body: some ReducerOf<Self> {
+        Scope(state: \.chart, action: \.chart) {
+            ChartFeature()
+        }
+
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .send(.loadDailyData)
+                return .merge(
+                    .send(.loadDailyData),
+                    .send(.loadPlanetPositions)
+                )
 
             case .selectTab(let tab):
                 state.selectedTab = tab
@@ -56,14 +79,22 @@ struct HomeFeature {
 
             case .loadDailyData:
                 state.isLoading = true
-                // MVP: Load mock data
+                let sign = state.userSunSign
                 return .run { send in
-                    try await Task.sleep(for: .milliseconds(800))
-                    await send(.dailyDataLoaded(
-                        .preview,
-                        [.fire: 25, .earth: 35, .air: 15, .water: 25],
-                        [.preview]
-                    ))
+                    async let horoscopes = horoscopeService.fetchDailyHoroscopes()
+                    async let energy = horoscopeService.fetchDailyEnergy()
+                    async let retros = horoscopeService.fetchRetroCalendar()
+                    do {
+                        let (h, e, r) = try await (horoscopes, energy, retros)
+                        let daily = h.first(where: { $0.sign == sign }) ?? h.first
+                        if let daily {
+                            await send(.dailyDataLoaded(daily, e, r))
+                        } else {
+                            await send(.dailyDataLoadFailed)
+                        }
+                    } catch {
+                        await send(.dailyDataLoadFailed)
+                    }
                 }
 
             case .dailyDataLoaded(let horoscope, let energy, let retrogrades):
@@ -72,6 +103,27 @@ struct HomeFeature {
                 state.elementEnergy = energy
                 state.activeRetrogrades = retrogrades
                 state.lastUpdated = Date()
+                return .none
+
+            case .dailyDataLoadFailed:
+                state.isLoading = false
+                return .none
+
+            case .loadPlanetPositions:
+                return .run { send in
+                    do {
+                        let positions = try await horoscopeService.fetchPlanetPositions()
+                        await send(.planetPositionsLoaded(positions))
+                    } catch {
+                        // Silently fail — planet positions are supplementary
+                    }
+                }
+
+            case .planetPositionsLoaded(let planets):
+                state.planetPositions = planets
+                return .none
+
+            case .chart:
                 return .none
             }
         }
