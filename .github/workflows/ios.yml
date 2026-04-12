@@ -151,7 +151,7 @@ jobs:
           </dict>
           </plist>
           EXPORT_EOF
-          sed -i "s/TEAM_ID_PLACEHOLDER/${{ secrets.APPLE_TEAM_ID }}/g" ExportOptions.plist
+          sed -i '' "s/TEAM_ID_PLACEHOLDER/${{ secrets.APPLE_TEAM_ID }}/g" ExportOptions.plist
           xcodebuild -exportArchive \
             -archivePath Astara.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
