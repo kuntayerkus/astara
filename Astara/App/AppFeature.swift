@@ -51,7 +51,7 @@ struct AppFeature {
                 }
                 state.destination = .home
                 return .run { _ in
-                    await userDefaults.setBool(true, forKey: "onboarding_completed")
+                    await userDefaults.setBool(true, "onboarding_completed")
                 }
 
             case .setDestination(let destination):
@@ -78,7 +78,9 @@ extension UserDefaultsClient: DependencyKey {
             UserDefaults.standard.bool(forKey: key)
         },
         setBool: { value, key in
-            UserDefaults.standard.set(value, forKey: key)
+            await MainActor.run {
+                UserDefaults.standard.set(value, forKey: key)
+            }
         }
     )
 
