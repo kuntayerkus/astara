@@ -61,8 +61,12 @@ targets:
       configs:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          CODE_SIGN_STYLE: Automatic
         Release:
           SWIFT_OPTIMIZATION_LEVEL: -O
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          PROVISIONING_PROFILE_SPECIFIER: Astara_AppStore
     info:
       path: Astara/Info.plist
       properties:
