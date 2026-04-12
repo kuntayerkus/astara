@@ -1,7 +1,7 @@
 name: Astara
 
 options:
-  bundleIdPrefix: com.astara
+  bundleIdPrefix: com.getastara
   deploymentTarget:
     iOS: "17.0"
   xcodeVersion: "16.0"
@@ -53,7 +53,7 @@ targets:
       - package: Lottie
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.astara.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.getastara.app
         INFOPLIST_KEY_CFBundleDisplayName: Astara
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
         INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleLightContent

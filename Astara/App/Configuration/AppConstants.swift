@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppConstants {
-    static let bundleID = "com.astara.app"
+    static let bundleID = "com.getastara.app"
     static let userAgent = "Astara-iOS/1.0"
     static let appName = "Astara"
     static let tagline = "Ad astra per aspera"
