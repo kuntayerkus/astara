@@ -36,12 +36,17 @@ targets:
         excludes:
           - Resources/Fonts/README.md
           - Resources/Lottie/README.md
-    resources:
+          - Resources/Assets.xcassets
+          - Resources/Fonts
+          - Resources/Lottie
       - path: Astara/Resources/Assets.xcassets
+        buildPhase: resources
       - path: Astara/Resources/Fonts
         buildPhase: resources
+        type: folder
       - path: Astara/Resources/Lottie
         buildPhase: resources
+        type: folder
     dependencies:
       - package: ComposableArchitecture
       - package: KeychainAccess
@@ -59,6 +64,7 @@ targets:
         Release:
           SWIFT_OPTIMIZATION_LEVEL: -O
     info:
+      path: Astara/Info.plist
       properties:
         UIAppFonts:
           - CormorantGaramond-Bold.ttf
