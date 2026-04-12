@@ -1,0 +1,85 @@
+name: Astara
+
+options:
+  bundleIdPrefix: com.astara
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    INFOPLIST_KEY_UILaunchScreen_Generation: true
+    INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+
+packages:
+  ComposableArchitecture:
+    url: https://github.com/pointfreeco/swift-composable-architecture
+    from: "1.17.0"
+  KeychainAccess:
+    url: https://github.com/kishikawakatsumi/KeychainAccess
+    from: "4.2.2"
+  Lottie:
+    url: https://github.com/airbnb/lottie-ios
+    from: "4.4.0"
+
+targets:
+  Astara:
+    type: application
+    platform: iOS
+    sources:
+      - path: Astara
+        excludes:
+          - Resources/Fonts/README.md
+          - Resources/Lottie/README.md
+    resources:
+      - path: Astara/Resources/Assets.xcassets
+      - path: Astara/Resources/Fonts
+        buildPhase: resources
+      - path: Astara/Resources/Lottie
+        buildPhase: resources
+    dependencies:
+      - package: ComposableArchitecture
+      - package: KeychainAccess
+      - package: Lottie
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.astara.app
+        INFOPLIST_KEY_CFBundleDisplayName: Astara
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
+        INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleLightContent
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Astara needs your location to find your birth city."
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: -O
+    info:
+      properties:
+        UIAppFonts:
+          - CormorantGaramond-Bold.ttf
+          - CormorantGaramond-SemiBold.ttf
+          - CormorantGaramond-Medium.ttf
+          - CormorantGaramond-Regular.ttf
+          - PlusJakartaSans-Bold.ttf
+          - PlusJakartaSans-SemiBold.ttf
+          - PlusJakartaSans-Medium.ttf
+          - PlusJakartaSans-Regular.ttf
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - astara
+        UIBackgroundModes:
+          - remote-notification
+          - fetch
+
+  AstaraTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: Astara
