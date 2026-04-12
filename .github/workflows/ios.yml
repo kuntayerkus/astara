@@ -120,6 +120,10 @@ jobs:
             -project Astara.xcodeproj \
             -scheme Astara
 
+      - name: Allow Swift Macros
+        run: |
+          defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+
       - name: Archive
         run: |
           xcodebuild archive \
@@ -128,8 +132,6 @@ jobs:
             -destination "generic/platform=iOS" \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Astara.xcarchive" \
-            -skipMacroValidation \
-            -skipPackagePluginValidation \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
