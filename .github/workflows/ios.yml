@@ -134,7 +134,7 @@ jobs:
 
       - name: Export IPA
         run: |
-          cat > ExportOptions.plist << EOF
+          cat > ExportOptions.plist << 'EXPORT_EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -142,7 +142,7 @@ jobs:
             <key>method</key>
             <string>app-store-connect</string>
             <key>teamID</key>
-            <string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <string>TEAM_ID_PLACEHOLDER</string>
             <key>provisioningProfiles</key>
             <dict>
               <key>com.getastara.app</key>
@@ -150,12 +150,14 @@ jobs:
             </dict>
           </dict>
           </plist>
-          EOF
+          EXPORT_EOF
+          sed -i "s/TEAM_ID_PLACEHOLDER/${{ secrets.APPLE_TEAM_ID }}/g" ExportOptions.plist
           xcodebuild -exportArchive \
             -archivePath Astara.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath AstaraIPA \
-            | xcpretty --color
+            -exportPath AstaraIPA
+          echo "=== AstaraIPA contents ==="
+          ls -la AstaraIPA/
 
       - name: Upload to TestFlight
         env:
@@ -167,9 +169,11 @@ jobs:
           mkdir -p "$KEY_DIR"
           KEY_PATH="$KEY_DIR/AuthKey_$APP_STORE_CONNECT_API_KEY_ID.p8"
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$KEY_PATH"
+          IPA_PATH=$(find AstaraIPA -name "*.ipa" | head -1)
+          echo "Uploading: $IPA_PATH"
           xcrun altool --upload-app \
             --type ios \
-            --file AstaraIPA/Astara.ipa \
+            --file "$IPA_PATH" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
 
