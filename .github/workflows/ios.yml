@@ -128,6 +128,8 @@ jobs:
             -destination "generic/platform=iOS" \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Astara.xcarchive" \
+            -skipMacroValidation \
+            -skipPackagePluginValidation \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
