@@ -71,6 +71,15 @@ targets:
     info:
       path: Astara/Info.plist
       properties:
+        CFBundleIconName: AppIcon
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         UIAppFonts:
           - CormorantGaramond-Bold.ttf
           - CormorantGaramond-SemiBold.ttf
