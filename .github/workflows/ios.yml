@@ -14,7 +14,7 @@ jobs:
   build-and-test:
     name: Build & Test
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -22,9 +22,6 @@ jobs:
 
       - name: Show Xcode version
         run: xcodebuild -version
-
-      - name: List available simulators
-        run: xcrun simctl list devices available | head -30
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -37,20 +34,20 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Cache SPM packages
+      - name: Cache DerivedData (Debug)
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/Astara-*/SourcePackages
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          path: .derivedData
+          key: ${{ runner.os }}-dd-debug-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            ${{ runner.os }}-dd-debug-
 
       - name: Resolve SPM dependencies
         run: |
           xcodebuild -resolvePackageDependencies \
             -project Astara.xcodeproj \
-            -scheme Astara
+            -scheme Astara \
+            -derivedDataPath .derivedData
 
       - name: Build
         run: |
@@ -59,6 +56,7 @@ jobs:
             -scheme Astara \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
             -configuration Debug \
+            -derivedDataPath .derivedData \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color
 
@@ -69,6 +67,7 @@ jobs:
             -scheme AstaraTests \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
             -configuration Debug \
+            -derivedDataPath .derivedData \
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults \
             | xcpretty --color
@@ -84,7 +83,7 @@ jobs:
   testflight:
     name: TestFlight Deploy
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 90
     # Sadece main branch'e push'ta çalışır, PR'larda değil
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build-and-test
@@ -123,20 +122,20 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/Astara_AppStore.mobileprovision
 
-      - name: Cache SPM packages
+      - name: Cache DerivedData (Release)
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/Astara-*/SourcePackages
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          path: .derivedData
+          key: ${{ runner.os }}-dd-release-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            ${{ runner.os }}-dd-release-
 
       - name: Resolve SPM dependencies
         run: |
           xcodebuild -resolvePackageDependencies \
             -project Astara.xcodeproj \
-            -scheme Astara
+            -scheme Astara \
+            -derivedDataPath .derivedData
 
       - name: Allow Swift Macros
         run: |
@@ -150,6 +149,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Astara.xcarchive" \
+            -derivedDataPath .derivedData \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}"
           echo "=== Archive contents ==="
           ls -la "$RUNNER_TEMP/Astara.xcarchive"
