@@ -828,8 +828,7 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değişken" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mutable" } }
       }
-    }
-  },
+    },
     "save_changes" : {
       "localizations" : {
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değişiklikleri Kaydet" } },
