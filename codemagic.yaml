@@ -83,8 +83,7 @@ workflows:
         script: |
           xcode-project build-ipa \
             --project "$CM_BUILD_DIR/Astara.xcodeproj" \
-            --scheme "$XCODE_SCHEME" \
-            --derived-data-path "$CM_BUILD_DIR/.derivedData"
+            --scheme "$XCODE_SCHEME"
 
     artifacts:
       - build/ios/ipa/*.ipa
