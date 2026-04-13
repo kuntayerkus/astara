@@ -15,8 +15,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.getastara.app
-      groups:
-        - astara_credentials          # APP_STORE_APPLE_ID, APPLE_TEAM_ID
+        certificate: AstaraCode
+        provisioning_profile: Astara_AppStore
       vars:
         BUNDLE_ID: "com.getastara.app"
         XCODE_SCHEME: "Astara"
