@@ -61,7 +61,10 @@ workflows:
             -derivedDataPath $CM_BUILD_DIR/.derivedData
 
       - name: Set up code signing
-        script: xcode-project use-profiles
+        script: |
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
 
       - name: Archive
         script: |
