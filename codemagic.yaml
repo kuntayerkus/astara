@@ -65,15 +65,27 @@ workflows:
           keychain initialize
           keychain add-certificates
 
-          # Provisioning profile'ı decode et ve kur
+          # CM_PROVISIONING_PROFILE kontrolü
+          if [ -z "$CM_PROVISIONING_PROFILE" ]; then
+            echo "HATA: CM_PROVISIONING_PROFILE set edilmemiş!"
+            exit 1
+          fi
+          echo "Profile uzunluğu: ${#CM_PROVISIONING_PROFILE}"
+
+          # Profili decode et ve kur
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode \
             > /tmp/profile.mobileprovision
-          UUID=$(security cms -D -i /tmp/profile.mobileprovision \
-            | plutil -extract UUID raw -)
+
+          # UUID'yi güvenilir şekilde çıkar
+          security cms -D -i /tmp/profile.mobileprovision \
+            > /tmp/decoded_profile.plist
+          UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
+            /tmp/decoded_profile.plist)
+          echo "Profile UUID: $UUID"
+
           cp /tmp/profile.mobileprovision \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
-          echo "Installed profile UUID: $UUID"
           echo "PROFILE_UUID=$UUID" >> $CM_ENV
 
       - name: Archive
