@@ -81,26 +81,14 @@ workflows:
 
       - name: Create export options
         script: |
-          cat > /Users/builder/export_options.plist << 'PLIST'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store-connect</string>
-            <key>teamID</key>
-            <string>${APPLE_TEAM_ID}</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>com.getastara.app</key>
-              <string>Astara_AppStore</string>
-            </dict>
-          </dict>
-          </plist>
-          PLIST
+          /usr/libexec/PlistBuddy -c "Clear dict" /Users/builder/export_options.plist
+          /usr/libexec/PlistBuddy -c "Add :method string app-store-connect" /Users/builder/export_options.plist
+          /usr/libexec/PlistBuddy -c "Add :teamID string $APPLE_TEAM_ID" /Users/builder/export_options.plist
+          /usr/libexec/PlistBuddy -c "Add :signingStyle string manual" /Users/builder/export_options.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" /Users/builder/export_options.plist
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.getastara.app string Astara_AppStore" /Users/builder/export_options.plist
+          echo "=== Export Options ==="
+          cat /Users/builder/export_options.plist
 
       - name: Build IPA
         script: |
