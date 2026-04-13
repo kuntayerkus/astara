@@ -64,7 +64,17 @@ workflows:
         script: |
           keychain initialize
           keychain add-certificates
-          xcode-project use-profiles
+
+          # Provisioning profile'ı decode et ve kur
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$CM_PROVISIONING_PROFILE" | base64 --decode \
+            > /tmp/profile.mobileprovision
+          UUID=$(security cms -D -i /tmp/profile.mobileprovision \
+            | plutil -extract UUID raw -)
+          cp /tmp/profile.mobileprovision \
+            "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+          echo "Installed profile UUID: $UUID"
+          echo "PROFILE_UUID=$UUID" >> $CM_ENV
 
       - name: Archive
         script: |
@@ -73,7 +83,11 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -destination "generic/platform=iOS" \
             -configuration Release \
-            -archivePath "$CM_BUILD_DIR/Astara.xcarchive"
+            -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
+            DEVELOPMENT_TEAM="CL4KZ4JZDQ" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"
 
       - name: Export IPA
         script: |
