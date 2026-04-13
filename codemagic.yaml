@@ -94,7 +94,11 @@ workflows:
             DEVELOPMENT_TEAM="CL4KZ4JZDQ" \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID"
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
+            "CODE_SIGN_STYLE[sdk=macosx*]=Automatic" \
+            "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]=" \
+            "CODE_SIGNING_REQUIRED[sdk=macosx*]=NO" \
+            "CODE_SIGNING_ALLOWED[sdk=macosx*]=NO"
 
       - name: Export IPA
         script: |
