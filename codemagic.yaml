@@ -117,6 +117,11 @@ workflows:
             <true/>
             <key>signingStyle</key>
             <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.getastara.app</key>
+              <string>$PROFILE_UUID</string>
+            </dict>
           </dict>
           </plist>
           EOF
