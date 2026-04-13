@@ -12,9 +12,6 @@ workflows:
 
     environment:
       xcode: 16.2
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.getastara.app
       vars:
         BUNDLE_ID: "com.getastara.app"
         XCODE_SCHEME: "Astara"
@@ -57,7 +54,17 @@ workflows:
             IDESkipMacroFingerprintValidation -bool YES
 
       - name: Set up code signing
-        script: xcode-project use-profiles
+        script: |
+          # Sertifikayı import et
+          echo "$CERTIFICATE_P12_BASE64" | base64 --decode > /tmp/distribution.p12
+          keychain initialize
+          keychain add-certificates --certificate /tmp/distribution.p12 \
+            --certificate-password "$CERTIFICATE_P12_PASSWORD"
+
+          # Provisioning profile'ı yerleştir
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/Astara_AppStore.mobileprovision
 
       - name: Set build number from TestFlight
         script: |
