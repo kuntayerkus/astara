@@ -55,6 +55,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.getastara.app
         DEVELOPMENT_TEAM: CL4KZ4JZDQ
+        SWIFT_STRICT_CONCURRENCY: minimal
         INFOPLIST_KEY_CFBundleDisplayName: Astara
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
         INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleLightContent
