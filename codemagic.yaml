@@ -12,6 +12,9 @@ workflows:
 
     environment:
       xcode: 16.2
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.getastra.app
       vars:
         BUNDLE_ID: "com.getastra.app"
         XCODE_SCHEME: "Astara"
