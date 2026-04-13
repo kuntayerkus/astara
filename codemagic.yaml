@@ -99,7 +99,8 @@ workflows:
             "CODE_SIGN_STYLE[sdk=macosx*]=Automatic" \
             "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]=" \
             "CODE_SIGNING_REQUIRED[sdk=macosx*]=NO" \
-            "CODE_SIGNING_ALLOWED[sdk=macosx*]=NO"
+            "CODE_SIGNING_ALLOWED[sdk=macosx*]=NO" \
+            SWIFT_STRICT_CONCURRENCY=minimal
 
       - name: Export IPA
         script: |
