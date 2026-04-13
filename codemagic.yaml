@@ -70,8 +70,7 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -destination "generic/platform=iOS" \
             -configuration Release \
-            -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
-            CODE_SIGN_STYLE=Manual
+            -archivePath "$CM_BUILD_DIR/Astara.xcarchive"
 
       - name: Export IPA
         script: |
