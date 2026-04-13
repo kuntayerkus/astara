@@ -79,23 +79,29 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -derivedDataPath $CM_BUILD_DIR/.derivedData
 
-      - name: Create export options
+      - name: Archive
         script: |
-          /usr/libexec/PlistBuddy -c "Clear dict" /Users/builder/export_options.plist
-          /usr/libexec/PlistBuddy -c "Add :method string app-store-connect" /Users/builder/export_options.plist
-          /usr/libexec/PlistBuddy -c "Add :teamID string $APPLE_TEAM_ID" /Users/builder/export_options.plist
-          /usr/libexec/PlistBuddy -c "Add :signingStyle string manual" /Users/builder/export_options.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" /Users/builder/export_options.plist
-          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:com.getastara.app string Astara_AppStore" /Users/builder/export_options.plist
-          echo "=== Export Options ==="
-          cat /Users/builder/export_options.plist
+          xcodebuild archive \
+            -project Astara.xcodeproj \
+            -scheme "$XCODE_SCHEME" \
+            -destination "generic/platform=iOS" \
+            -configuration Release \
+            -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID"
 
-      - name: Build IPA
+      - name: Export IPA
         script: |
-          xcode-project build-ipa \
-            --project "$CM_BUILD_DIR/Astara.xcodeproj" \
-            --scheme "$XCODE_SCHEME" \
-            --export-options-plist /Users/builder/export_options.plist
+          plutil -create xml1 /tmp/ExportOptions.plist
+          plutil -insert method -string "app-store-connect" /tmp/ExportOptions.plist
+          plutil -insert teamID -string "$APPLE_TEAM_ID" /tmp/ExportOptions.plist
+          plutil -insert signingStyle -string "manual" /tmp/ExportOptions.plist
+          plutil -insert provisioningProfiles -dictionary /tmp/ExportOptions.plist
+          plutil -insert provisioningProfiles.com.getastara.app -string "Astara_AppStore" /tmp/ExportOptions.plist
+          cat /tmp/ExportOptions.plist
+          xcodebuild -exportArchive \
+            -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -exportPath "$CM_BUILD_DIR/build/ios/ipa"
 
     artifacts:
       - build/ios/ipa/*.ipa
