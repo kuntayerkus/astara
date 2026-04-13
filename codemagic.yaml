@@ -91,6 +91,7 @@ workflows:
             -destination "generic/platform=iOS" \
             -configuration Release \
             -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
+            -derivedDataPath "$CM_BUILD_DIR/.derivedData" \
             DEVELOPMENT_TEAM="CL4KZ4JZDQ" \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
@@ -98,7 +99,9 @@ workflows:
             "CODE_SIGN_STYLE[sdk=macosx*]=Automatic" \
             "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]=" \
             "CODE_SIGNING_REQUIRED[sdk=macosx*]=NO" \
-            "CODE_SIGNING_ALLOWED[sdk=macosx*]=NO"
+            "CODE_SIGNING_ALLOWED[sdk=macosx*]=NO" \
+            SWIFT_STRICT_CONCURRENCY=minimal \
+            OTHER_SWIFT_FLAGS="-Xfrontend -warn-concurrency"
 
       - name: Export IPA
         script: |
