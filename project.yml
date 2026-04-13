@@ -49,7 +49,10 @@ targets:
       - package: ComposableArchitecture
       - package: KeychainAccess
       - package: Lottie
-    entitlements: Astara/Astara.entitlements
+    entitlements:
+      path: Astara/Astara.entitlements
+      properties:
+        aps-environment: production
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.getastara.app
