@@ -8,12 +8,15 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: AstaraASC   # Codemagic Settings → Integrations → App Store Connect
+      app_store_connect: Codemagic
 
     environment:
       xcode: 16.2
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.getastra.app
       vars:
-        BUNDLE_ID: "com.getastara.app"
+        BUNDLE_ID: "com.getastra.app"
         XCODE_SCHEME: "Astara"
 
     cache:
@@ -53,31 +56,15 @@ workflows:
           defaults write com.apple.dt.Xcode \
             IDESkipMacroFingerprintValidation -bool YES
 
-      - name: Set up code signing
-        script: |
-          # Sertifikayı import et
-          echo "$CERTIFICATE_P12_BASE64" | base64 --decode > /tmp/distribution.p12
-          keychain initialize
-          keychain add-certificates --certificate /tmp/distribution.p12 \
-            --certificate-password "$CERTIFICATE_P12_PASSWORD"
-
-          # Provisioning profile'ı yerleştir
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode \
-            > ~/Library/MobileDevice/Provisioning\ Profiles/Astara_AppStore.mobileprovision
-
-      - name: Set build number from TestFlight
-        script: |
-          LATEST=$(app-store-connect get-latest-testflight-build-number \
-            "$APP_STORE_APPLE_ID" 2>/dev/null || echo "0")
-          agvtool new-version -all $(($LATEST + 1))
-
       - name: Resolve SPM dependencies
         script: |
           xcodebuild -resolvePackageDependencies \
             -project Astara.xcodeproj \
             -scheme "$XCODE_SCHEME" \
             -derivedDataPath $CM_BUILD_DIR/.derivedData
+
+      - name: Set up code signing
+        script: xcode-project use-profiles
 
       - name: Archive
         script: |
@@ -87,26 +74,17 @@ workflows:
             -destination "generic/platform=iOS" \
             -configuration Release \
             -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID"
+            CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
         script: |
-          plutil -create xml1 /tmp/ExportOptions.plist
-          plutil -insert method -string "app-store-connect" /tmp/ExportOptions.plist
-          plutil -insert teamID -string "$APPLE_TEAM_ID" /tmp/ExportOptions.plist
-          plutil -insert signingStyle -string "manual" /tmp/ExportOptions.plist
-          plutil -insert provisioningProfiles -dictionary /tmp/ExportOptions.plist
-          plutil -insert provisioningProfiles.com.getastara.app -string "Astara_AppStore" /tmp/ExportOptions.plist
-          cat /tmp/ExportOptions.plist
-          xcodebuild -exportArchive \
-            -archivePath "$CM_BUILD_DIR/Astara.xcarchive" \
-            -exportOptionsPlist /tmp/ExportOptions.plist \
-            -exportPath "$CM_BUILD_DIR/build/ios/ipa"
+          xcode-project build-ipa \
+            --archive-path "$CM_BUILD_DIR/Astara.xcarchive"
 
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - ~/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - $CM_BUILD_DIR/Astara.xcarchive/**/*.dSYM
 
     publishing:
       email:
@@ -123,7 +101,7 @@ workflows:
           - Astara Testers
 
   # ──────────────────────────────────────────────────────────
-  # 2) Build & Test — main + develop branch'e push ve PR'larda
+  # 2) Build & Test
   # ──────────────────────────────────────────────────────────
   build-and-test:
     name: Build & Test
@@ -197,7 +175,7 @@ workflows:
       - $CM_BUILD_DIR/TestResults/**
 
   # ──────────────────────────────────────────────────────────
-  # 3) SwiftLint — her branch'e push'ta çalışır
+  # 3) SwiftLint
   # ──────────────────────────────────────────────────────────
   swiftlint:
     name: SwiftLint
