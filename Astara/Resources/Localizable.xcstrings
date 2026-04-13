@@ -1,846 +1,2386 @@
 {
-  "sourceLanguage" : "tr",
-  "strings" : {
-    "tab_home" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ana Sayfa" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Home" } }
-      }
-    },
-    "tab_chart" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Harita" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chart" } }
-      }
-    },
-    "tab_daily" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Günlük" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Daily" } }
-      }
-    },
-    "tab_compatibility" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Match" } }
-      }
-    },
-    "tab_profile" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Profil" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } }
-      }
-    },
-    "good_morning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Günaydın ✦" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Good morning ✦" } }
-      }
-    },
-    "element_energy" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Element Enerjisi" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Element Energy" } }
-      }
-    },
-    "last_updated" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Son güncelleme" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last updated" } }
-      }
-    },
-    "current_sky" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gökyüzü Şu An" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Current Sky" } }
-      }
-    },
-    "retro_active" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "retrosu aktif" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "retrograde active" } }
-      }
-    },
-    "daily_horoscope" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Günlük Yorum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Daily Horoscope" } }
-      }
-    },
-    "view_archive" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçmiş günleri gör" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "View past days" } }
-      }
-    },
-    "no_horoscope_available" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Henüz yorum yok.\nBirazdan tekrar dene." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No horoscope available.\nTry again soon." } }
-      }
-    },
-    "energy" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "enerji" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "energy" } }
-      }
-    },
-    "lucky_number" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Şanslı sayı" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lucky number" } }
-      }
-    },
-    "lucky_color" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Şanslı renk" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lucky color" } }
-      }
-    },
-    "archive_title" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Arşiv" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archive" } }
-      }
-    },
-    "archive_premium_title" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçmişe yolculuk Premium'la" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Travel to the past with Premium" } }
-      }
-    },
-    "archive_premium_body" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium ile geçmiş günlerin yorumlarına ulaş, enerjini takip et." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Access past daily readings and track your energy with Premium." } }
-      }
-    },
-    "go_premium" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium'a Geç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Go Premium" } }
-      }
-    },
-    "compatibility" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Compatibility" } }
-      }
-    },
-    "compatibility_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İki burç, bir hikaye" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Two signs, one story" } }
-      }
-    },
-    "first_sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İlk Burç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "First Sign" } }
-      }
-    },
-    "second_sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci Burç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second Sign" } }
-      }
-    },
-    "overall" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Genel" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Overall" } }
-      }
-    },
-    "love" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aşk" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Love" } }
-      }
-    },
-    "friendship" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Dostluk" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Friendship" } }
-      }
-    },
-    "work" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İş" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Work" } }
-      }
-    },
-    "see_full_analysis" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Detaylı Analiz" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Full Analysis" } }
-      }
-    },
-    "compatibility_analysis" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uyum Analizi" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Compatibility Analysis" } }
-      }
-    },
-    "score_breakdown" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Skor Dağılımı" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Score Breakdown" } }
-      }
-    },
-    "compatibility_low" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zor Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Challenging" } }
-      }
-    },
-    "compatibility_medium" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Orta Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Moderate" } }
-      }
-    },
-    "compatibility_good" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İyi Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Good Match" } }
-      }
-    },
-    "compatibility_high" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yüksek Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Great Match" } }
-      }
-    },
-    "compatibility_excellent" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mükemmel Uyum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Excellent Match" } }
-      }
-    },
-    "profile" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Profil" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile" } }
-      }
-    },
-    "birth_data" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğum Bilgileri" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Birth Data" } }
-      }
-    },
-    "notifications" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bildirimler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notifications" } }
-      }
-    },
-    "app_settings" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uygulama" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "App" } }
-      }
-    },
-    "edit_birth_data" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğum bilgilerini düzenle" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit birth data" } }
-      }
-    },
-    "daily_notifications" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Günlük bildirimler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Daily notifications" } }
-      }
-    },
-    "notification_time" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bildirim saati" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notification time" } }
-      }
-    },
-    "upgrade_to_premium" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Astara Premium'a Geç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Upgrade to Astara Premium" } }
-      }
-    },
-    "premium_teaser" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "AI yorum, transit takibi ve daha fazlası" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "AI insights, transit tracking and more" } }
-      }
-    },
-    "premium_active" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium Aktif" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Premium Active" } }
-      }
-    },
-    "premium_hero_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yıldızların sana anlatacağı çok şey var." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The stars have so much more to tell you." } }
-      }
-    },
-    "start_premium" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Premium'u Başlat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Premium" } }
-      }
-    },
-    "restore_purchases" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Satın alımları geri yükle" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restore purchases" } }
-      }
-    },
-    "subscription_legal" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Abonelik otomatik yenilenir. İstediğin zaman ayarlardan iptal edebilirsin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Subscription auto-renews. Cancel anytime in Settings." } }
-      }
-    },
-    "yearly_plan" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yıllık Plan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Yearly Plan" } }
-      }
-    },
-    "monthly_plan" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aylık Plan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Monthly Plan" } }
-      }
-    },
-    "best_value" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En Avantajlı" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best Value" } }
-      }
-    },
-    "language" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Dil" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Language" } }
-      }
-    },
-    "contact" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İletişim" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Contact" } }
-      }
-    },
-    "privacy_policy" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gizlilik Politikası" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Privacy Policy" } }
-      }
-    },
-    "notification_daily_title" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bugünün enerjisi hazır ✦" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today's energy is ready ✦" } }
-      }
-    },
-    "notification_daily_body" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gökyüzü sana bir şey söylüyor. Aç ve gör." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sky has something to tell you. Open and see." } }
-      }
-    },
-    "error_network" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İnternet bağlantısı yok" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No internet connection" } }
-      }
-    },
-    "error_decoding" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Veri okunamadı" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not read data" } }
-      }
-    },
-    "error_unauthorized" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yetkisiz erişim" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unauthorized" } }
-      }
-    },
-    "error_rate_limited" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çok fazla istek. Biraz bekle." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Too many requests. Please wait." } }
-      }
-    },
-    "error_invalid_url" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçersiz adres" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid URL" } }
-      }
-    },
-    "continue" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Devam Et" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } }
-      }
-    },
-    "when_were_you_born" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ne zaman doğdun?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "When were you born?" } }
-      }
-    },
-    "birth_date_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gezegenlerin neredeydi, onu arıyoruz" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "We're looking for where the planets were" } }
-      }
-    },
-    "what_time" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Saat kaçta?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "What time?" } }
-      }
-    },
-    "birth_time_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yükselen burcun için doğum saatin gerekli" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your birth time is needed for your rising sign" } }
-      }
-    },
-    "dont_know_birth_time" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğum saatimi bilmiyorum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I don't know my birth time" } }
-      }
-    },
-    "unknown_time_warning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yükselen burcun ve ev sistemin yaklaşık hesaplanacak." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your rising sign and houses will be approximate." } }
-      }
-    },
-    "where_were_you_born" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Nerede doğdun?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Where were you born?" } }
-      }
-    },
-    "search_city" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Şehir ara..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search city..." } }
-      }
-    },
-    "searching" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aranıyor..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Searching..." } }
-      }
-    },
-    "your_big_three" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Senin Üç Büyüğün" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your Big Three" } }
-      }
-    },
-    "sun" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Güneş" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sun" } }
-      }
-    },
-    "moon" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ay" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Moon" } }
-      }
-    },
-    "rising" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yükselen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Rising" } }
-      }
-    },
-    "push_title" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gökyüzü sana her gün bir şey söylüyor" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sky speaks to you every day" } }
-      }
-    },
-    "push_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Günlük enerjini ve transit uyarılarını kaçırma." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Don't miss your daily energy and transit alerts." } }
-      }
-    },
-    "allow_notifications" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bildirimleri Aç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Allow Notifications" } }
-      }
-    },
-    "maybe_later" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Belki Sonra" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Maybe Later" } }
-      }
-    },
-    "calculating_chart" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Haritanı çiziyoruz..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drawing your chart..." } }
-      }
-    },
-    "calculating_chart_subtitle" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gezegenler yerleşiyor" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The planets are aligning" } }
-      }
-    },
-    "chart_error_title" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Harita hesaplanamadı" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not calculate chart" } }
-      }
-    },
-    "retry" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tekrar Dene" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Retry" } }
-      }
-    },
-    "use_sample_chart" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Örnek harita ile devam et" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue with sample chart" } }
-      }
-    },
-    "your_chart" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Senin Haritan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your Chart" } }
-      }
-    },
-    "sun_sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Güneş Burcu" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sun Sign" } }
-      }
-    },
-    "moon_sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ay Burcu" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Moon Sign" } }
-      }
-    },
-    "rising_sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yükselen Burç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Rising Sign" } }
-      }
-    },
-    "sun_short" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Güneş" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sun" } }
-      }
-    },
-    "moon_short" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ay" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Moon" } }
-      }
-    },
-    "rising_short" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yükselen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Rising" } }
-      }
-    },
-    "view_aspects" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açıları Gör" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "View Aspects" } }
-      }
-    },
-    "aspect_grid" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açı Tablosu" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Aspect Grid" } }
-      }
-    },
-    "planets" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gezegenler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Planets" } }
-      }
-    },
-    "no_chart_data" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Harita verisi yok" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No chart data" } }
-      }
-    },
-    "retrograde" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Retro" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Retrograde" } }
-      }
-    },
-    "sign" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Burç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign" } }
-      }
-    },
-    "degree" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Derece" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Degree" } }
-      }
-    },
-    "absolute_degree" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Mutlak Derece" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Absolute Degree" } }
-      }
-    },
-    "house" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ev" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "House" } }
-      }
-    },
-    "element" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Element" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Element" } }
-      }
-    },
-    "modality" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Modalite" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Modality" } }
-      }
-    },
-    "aspects" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açılar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Aspects" } }
-      }
-    },
-    "sign_on_cusp" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Burç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign on Cusp" } }
-      }
-    },
-    "planets_in_house" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bu Evdeki Gezegenler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Planets in this House" } }
-      }
-    },
-    "house_1_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kendilik, dış görünüş, ilk izlenim" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Self, appearance, first impression" } }
-      }
-    },
-    "house_2_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Para, değerler, öz-değer" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Money, values, self-worth" } }
-      }
-    },
-    "house_3_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İletişim, kardeşler, kısa yolculuklar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Communication, siblings, short trips" } }
-      }
-    },
-    "house_4_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ev, aile, kökler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Home, family, roots" } }
-      }
-    },
-    "house_5_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yaratıcılık, aşk, eğlence" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Creativity, romance, fun" } }
-      }
-    },
-    "house_6_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sağlık, günlük rutinler, hizmet" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Health, daily routines, service" } }
-      }
-    },
-    "house_7_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İlişkiler, ortaklıklar, evlilik" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Relationships, partnerships, marriage" } }
-      }
-    },
-    "house_8_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Dönüşüm, paylaşılan kaynaklar, gizem" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Transformation, shared resources, mystery" } }
-      }
-    },
-    "house_9_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Felsefe, yurtdışı, yüksek öğrenim" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Philosophy, travel, higher education" } }
-      }
-    },
-    "house_10_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kariyer, itibar, toplumsal statü" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Career, reputation, public status" } }
-      }
-    },
-    "house_11_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Arkadaşlıklar, gruplar, umutlar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Friends, groups, hopes" } }
-      }
-    },
-    "house_12_meaning" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bilinçaltı, yalnızlık, maneviyat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Subconscious, solitude, spirituality" } }
-      }
-    },
-    "aries" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Koç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Aries" } }
-      }
-    },
-    "taurus" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Boğa" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Taurus" } }
-      }
-    },
-    "gemini" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkizler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Gemini" } }
-      }
-    },
-    "cancer" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yengeç" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancer" } }
-      }
-    },
-    "leo" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aslan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Leo" } }
-      }
-    },
-    "virgo" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Başak" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Virgo" } }
-      }
-    },
-    "libra" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Terazi" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Libra" } }
-      }
-    },
-    "scorpio" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Akrep" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Scorpio" } }
-      }
-    },
-    "sagittarius" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yay" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sagittarius" } }
-      }
-    },
-    "capricorn" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oğlak" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Capricorn" } }
-      }
-    },
-    "aquarius" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kova" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Aquarius" } }
-      }
-    },
-    "pisces" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Balık" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pisces" } }
-      }
-    },
-    "fire" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ateş" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fire" } }
-      }
-    },
-    "earth" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Toprak" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Earth" } }
-      }
-    },
-    "air" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Hava" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Air" } }
-      }
-    },
-    "water" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Su" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Water" } }
-      }
-    },
-    "cardinal" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Öncü" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cardinal" } }
-      }
-    },
-    "fixed" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sabit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fixed" } }
-      }
-    },
-    "mutable" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değişken" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mutable" } }
-      }
-    },
-    "save_changes" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değişiklikleri Kaydet" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Save Changes" } }
-      }
-    },
-    "coming_soon" : {
-      "localizations" : {
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yakında" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Coming Soon" } }
+  "version": "1.0",
+  "sourceLanguage": "tr",
+  "strings": {
+    "tab_home": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ana Sayfa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        }
+      }
+    },
+    "tab_chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harita"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chart"
+          }
+        }
+      }
+    },
+    "tab_daily": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily"
+          }
+        }
+      }
+    },
+    "tab_compatibility": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Match"
+          }
+        }
+      }
+    },
+    "tab_profile": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      }
+    },
+    "good_morning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günaydın ✦"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good morning ✦"
+          }
+        }
+      }
+    },
+    "element_energy": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element Enerjisi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element Energy"
+          }
+        }
+      }
+    },
+    "last_updated": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son güncelleme"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last updated"
+          }
+        }
+      }
+    },
+    "current_sky": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gökyüzü Şu An"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Sky"
+          }
+        }
+      }
+    },
+    "retro_active": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "retrosu aktif"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "retrograde active"
+          }
+        }
+      }
+    },
+    "daily_horoscope": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük Yorum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily Horoscope"
+          }
+        }
+      }
+    },
+    "view_archive": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçmiş günleri gör"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View past days"
+          }
+        }
+      }
+    },
+    "no_horoscope_available": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz yorum yok.\nBirazdan tekrar dene."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No horoscope available.\nTry again soon."
+          }
+        }
+      }
+    },
+    "energy": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "enerji"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "energy"
+          }
+        }
+      }
+    },
+    "lucky_number": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şanslı sayı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lucky number"
+          }
+        }
+      }
+    },
+    "lucky_color": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şanslı renk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lucky color"
+          }
+        }
+      }
+    },
+    "archive_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arşiv"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archive"
+          }
+        }
+      }
+    },
+    "archive_premium_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçmişe yolculuk Premium'la"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Travel to the past with Premium"
+          }
+        }
+      }
+    },
+    "archive_premium_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium ile geçmiş günlerin yorumlarına ulaş, enerjini takip et."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access past daily readings and track your energy with Premium."
+          }
+        }
+      }
+    },
+    "go_premium": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium'a Geç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go Premium"
+          }
+        }
+      }
+    },
+    "compatibility": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compatibility"
+          }
+        }
+      }
+    },
+    "compatibility_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İki burç, bir hikaye"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two signs, one story"
+          }
+        }
+      }
+    },
+    "first_sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk Burç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First Sign"
+          }
+        }
+      }
+    },
+    "second_sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkinci Burç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Second Sign"
+          }
+        }
+      }
+    },
+    "overall": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genel"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall"
+          }
+        }
+      }
+    },
+    "love": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aşk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Love"
+          }
+        }
+      }
+    },
+    "friendship": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dostluk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friendship"
+          }
+        }
+      }
+    },
+    "work": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work"
+          }
+        }
+      }
+    },
+    "see_full_analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detaylı Analiz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full Analysis"
+          }
+        }
+      }
+    },
+    "compatibility_analysis": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyum Analizi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compatibility Analysis"
+          }
+        }
+      }
+    },
+    "score_breakdown": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skor Dağılımı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score Breakdown"
+          }
+        }
+      }
+    },
+    "compatibility_low": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zor Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Challenging"
+          }
+        }
+      }
+    },
+    "compatibility_medium": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orta Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moderate"
+          }
+        }
+      }
+    },
+    "compatibility_good": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good Match"
+          }
+        }
+      }
+    },
+    "compatibility_high": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüksek Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Great Match"
+          }
+        }
+      }
+    },
+    "compatibility_excellent": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mükemmel Uyum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excellent Match"
+          }
+        }
+      }
+    },
+    "profile": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        }
+      }
+    },
+    "birth_data": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum Bilgileri"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth Data"
+          }
+        }
+      }
+    },
+    "notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirimler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        }
+      }
+    },
+    "app_settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App"
+          }
+        }
+      }
+    },
+    "edit_birth_data": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum bilgilerini düzenle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit birth data"
+          }
+        }
+      }
+    },
+    "daily_notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük bildirimler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily notifications"
+          }
+        }
+      }
+    },
+    "notification_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirim saati"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notification time"
+          }
+        }
+      }
+    },
+    "upgrade_to_premium": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Astara Premium'a Geç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Astara Premium"
+          }
+        }
+      }
+    },
+    "premium_teaser": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI yorum, transit takibi ve daha fazlası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI insights, transit tracking and more"
+          }
+        }
+      }
+    },
+    "premium_active": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium Aktif"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium Active"
+          }
+        }
+      }
+    },
+    "premium_hero_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldızların sana anlatacağı çok şey var."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The stars have so much more to tell you."
+          }
+        }
+      }
+    },
+    "start_premium": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium'u Başlat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Premium"
+          }
+        }
+      }
+    },
+    "restore_purchases": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın alımları geri yükle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "subscription_legal": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abonelik otomatik yenilenir. İstediğin zaman ayarlardan iptal edebilirsin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscription auto-renews. Cancel anytime in Settings."
+          }
+        }
+      }
+    },
+    "yearly_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıllık Plan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly Plan"
+          }
+        }
+      }
+    },
+    "monthly_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aylık Plan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly Plan"
+          }
+        }
+      }
+    },
+    "best_value": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En Avantajlı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best Value"
+          }
+        }
+      }
+    },
+    "language": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dil"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "contact": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İletişim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contact"
+          }
+        }
+      }
+    },
+    "privacy_policy": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizlilik Politikası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        }
+      }
+    },
+    "notification_daily_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünün enerjisi hazır ✦"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's energy is ready ✦"
+          }
+        }
+      }
+    },
+    "notification_daily_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gökyüzü sana bir şey söylüyor. Aç ve gör."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sky has something to tell you. Open and see."
+          }
+        }
+      }
+    },
+    "error_network": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnternet bağlantısı yok"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No internet connection"
+          }
+        }
+      }
+    },
+    "error_decoding": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Veri okunamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read data"
+          }
+        }
+      }
+    },
+    "error_unauthorized": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yetkisiz erişim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unauthorized"
+          }
+        }
+      }
+    },
+    "error_rate_limited": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çok fazla istek. Biraz bekle."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many requests. Please wait."
+          }
+        }
+      }
+    },
+    "error_invalid_url": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçersiz adres"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid URL"
+          }
+        }
+      }
+    },
+    "continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam Et"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
+    "when_were_you_born": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne zaman doğdun?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When were you born?"
+          }
+        }
+      }
+    },
+    "birth_date_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gezegenlerin neredeydi, onu arıyoruz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We're looking for where the planets were"
+          }
+        }
+      }
+    },
+    "what_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saat kaçta?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What time?"
+          }
+        }
+      }
+    },
+    "birth_time_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükselen burcun için doğum saatin gerekli"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your birth time is needed for your rising sign"
+          }
+        }
+      }
+    },
+    "dont_know_birth_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum saatimi bilmiyorum"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I don't know my birth time"
+          }
+        }
+      }
+    },
+    "unknown_time_warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükselen burcun ve ev sistemin yaklaşık hesaplanacak."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your rising sign and houses will be approximate."
+          }
+        }
+      }
+    },
+    "where_were_you_born": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nerede doğdun?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where were you born?"
+          }
+        }
+      }
+    },
+    "search_city": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şehir ara..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search city..."
+          }
+        }
+      }
+    },
+    "searching": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aranıyor..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching..."
+          }
+        }
+      }
+    },
+    "your_big_three": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senin Üç Büyüğün"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Big Three"
+          }
+        }
+      }
+    },
+    "sun": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güneş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sun"
+          }
+        }
+      }
+    },
+    "moon": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moon"
+          }
+        }
+      }
+    },
+    "rising": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükselen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rising"
+          }
+        }
+      }
+    },
+    "push_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gökyüzü sana her gün bir şey söylüyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sky speaks to you every day"
+          }
+        }
+      }
+    },
+    "push_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük enerjini ve transit uyarılarını kaçırma."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't miss your daily energy and transit alerts."
+          }
+        }
+      }
+    },
+    "allow_notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bildirimleri Aç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Notifications"
+          }
+        }
+      }
+    },
+    "maybe_later": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belki Sonra"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maybe Later"
+          }
+        }
+      }
+    },
+    "calculating_chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haritanı çiziyoruz..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drawing your chart..."
+          }
+        }
+      }
+    },
+    "calculating_chart_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gezegenler yerleşiyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The planets are aligning"
+          }
+        }
+      }
+    },
+    "chart_error_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harita hesaplanamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not calculate chart"
+          }
+        }
+      }
+    },
+    "retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tekrar Dene"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry"
+          }
+        }
+      }
+    },
+    "use_sample_chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Örnek harita ile devam et"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue with sample chart"
+          }
+        }
+      }
+    },
+    "your_chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senin Haritan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Chart"
+          }
+        }
+      }
+    },
+    "sun_sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güneş Burcu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sun Sign"
+          }
+        }
+      }
+    },
+    "moon_sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ay Burcu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moon Sign"
+          }
+        }
+      }
+    },
+    "rising_sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükselen Burç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rising Sign"
+          }
+        }
+      }
+    },
+    "sun_short": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güneş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sun"
+          }
+        }
+      }
+    },
+    "moon_short": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moon"
+          }
+        }
+      }
+    },
+    "rising_short": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükselen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rising"
+          }
+        }
+      }
+    },
+    "view_aspects": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açıları Gör"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Aspects"
+          }
+        }
+      }
+    },
+    "aspect_grid": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açı Tablosu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aspect Grid"
+          }
+        }
+      }
+    },
+    "planets": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gezegenler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planets"
+          }
+        }
+      }
+    },
+    "no_chart_data": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harita verisi yok"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No chart data"
+          }
+        }
+      }
+    },
+    "retrograde": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retro"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retrograde"
+          }
+        }
+      }
+    },
+    "sign": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Burç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign"
+          }
+        }
+      }
+    },
+    "degree": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derece"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Degree"
+          }
+        }
+      }
+    },
+    "absolute_degree": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mutlak Derece"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absolute Degree"
+          }
+        }
+      }
+    },
+    "house": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ev"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "House"
+          }
+        }
+      }
+    },
+    "element": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element"
+          }
+        }
+      }
+    },
+    "modality": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modalite"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modality"
+          }
+        }
+      }
+    },
+    "aspects": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açılar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aspects"
+          }
+        }
+      }
+    },
+    "sign_on_cusp": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Burç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign on Cusp"
+          }
+        }
+      }
+    },
+    "planets_in_house": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu Evdeki Gezegenler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planets in this House"
+          }
+        }
+      }
+    },
+    "house_1_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendilik, dış görünüş, ilk izlenim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self, appearance, first impression"
+          }
+        }
+      }
+    },
+    "house_2_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para, değerler, öz-değer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Money, values, self-worth"
+          }
+        }
+      }
+    },
+    "house_3_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İletişim, kardeşler, kısa yolculuklar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Communication, siblings, short trips"
+          }
+        }
+      }
+    },
+    "house_4_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ev, aile, kökler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home, family, roots"
+          }
+        }
+      }
+    },
+    "house_5_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaratıcılık, aşk, eğlence"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creativity, romance, fun"
+          }
+        }
+      }
+    },
+    "house_6_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sağlık, günlük rutinler, hizmet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health, daily routines, service"
+          }
+        }
+      }
+    },
+    "house_7_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlişkiler, ortaklıklar, evlilik"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relationships, partnerships, marriage"
+          }
+        }
+      }
+    },
+    "house_8_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dönüşüm, paylaşılan kaynaklar, gizem"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transformation, shared resources, mystery"
+          }
+        }
+      }
+    },
+    "house_9_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Felsefe, yurtdışı, yüksek öğrenim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Philosophy, travel, higher education"
+          }
+        }
+      }
+    },
+    "house_10_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kariyer, itibar, toplumsal statü"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Career, reputation, public status"
+          }
+        }
+      }
+    },
+    "house_11_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaşlıklar, gruplar, umutlar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends, groups, hopes"
+          }
+        }
+      }
+    },
+    "house_12_meaning": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilinçaltı, yalnızlık, maneviyat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subconscious, solitude, spirituality"
+          }
+        }
+      }
+    },
+    "aries": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aries"
+          }
+        }
+      }
+    },
+    "taurus": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boğa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taurus"
+          }
+        }
+      }
+    },
+    "gemini": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkizler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini"
+          }
+        }
+      }
+    },
+    "cancer": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yengeç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancer"
+          }
+        }
+      }
+    },
+    "leo": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aslan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leo"
+          }
+        }
+      }
+    },
+    "virgo": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Virgo"
+          }
+        }
+      }
+    },
+    "libra": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terazi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Libra"
+          }
+        }
+      }
+    },
+    "scorpio": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akrep"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scorpio"
+          }
+        }
+      }
+    },
+    "sagittarius": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sagittarius"
+          }
+        }
+      }
+    },
+    "capricorn": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oğlak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capricorn"
+          }
+        }
+      }
+    },
+    "aquarius": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kova"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquarius"
+          }
+        }
+      }
+    },
+    "pisces": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pisces"
+          }
+        }
+      }
+    },
+    "fire": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ateş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fire"
+          }
+        }
+      }
+    },
+    "earth": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toprak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earth"
+          }
+        }
+      }
+    },
+    "air": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hava"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Air"
+          }
+        }
+      }
+    },
+    "water": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Su"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Water"
+          }
+        }
+      }
+    },
+    "cardinal": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öncü"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cardinal"
+          }
+        }
+      }
+    },
+    "fixed": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sabit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixed"
+          }
+        }
+      }
+    },
+    "mutable": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değişken"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mutable"
+          }
+        }
+      }
+    },
+    "save_changes": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değişiklikleri Kaydet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Changes"
+          }
+        }
+      }
+    },
+    "coming_soon": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yakında"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coming Soon"
+          }
+        }
       }
     }
-  },
-  "version" : "1.0"
+  }
 }
