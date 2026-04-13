@@ -1,0 +1,180 @@
+workflows:
+  # ─────────────────────────────────────────────
+  # Build & Test (PR + push to develop/main)
+  # ─────────────────────────────────────────────
+  build-and-test:
+    name: Build & Test
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: 16.4
+      cocoapods: default
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: develop
+          include: true
+      cancel_previous_builds: true
+    cache:
+      cache_paths:
+        - $CM_BUILD_DIR/.derivedData
+    scripts:
+      - name: Install XcodeGen
+        script: brew install xcodegen
+
+      - name: Create xcconfig files
+        script: |
+          cp Astara/App/Configuration/Debug.xcconfig.example Astara/App/Configuration/Debug.xcconfig
+          cp Astara/App/Configuration/Release.xcconfig.example Astara/App/Configuration/Release.xcconfig
+
+      - name: Generate Xcode project
+        script: xcodegen generate
+
+      - name: Resolve SPM dependencies
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project Astara.xcodeproj \
+            -scheme Astara \
+            -derivedDataPath $CM_BUILD_DIR/.derivedData
+
+      - name: Build
+        script: |
+          xcodebuild build \
+            -project Astara.xcodeproj \
+            -scheme Astara \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            -configuration Debug \
+            -derivedDataPath $CM_BUILD_DIR/.derivedData \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Run Tests
+        script: |
+          xcodebuild test \
+            -project Astara.xcodeproj \
+            -scheme AstaraTests \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            -configuration Debug \
+            -derivedDataPath $CM_BUILD_DIR/.derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath $CM_BUILD_DIR/TestResults
+        test_report: $CM_BUILD_DIR/TestResults
+
+    artifacts:
+      - $CM_BUILD_DIR/TestResults/**
+
+  # ─────────────────────────────────────────────
+  # TestFlight Deploy (push to main only)
+  # ─────────────────────────────────────────────
+  testflight-deploy:
+    name: TestFlight Deploy
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: 16.4
+      cocoapods: default
+      groups:
+        - astara_credentials
+      vars:
+        BUNDLE_ID: com.getastara.app
+        XCODE_SCHEME: Astara
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    integrations:
+      app_store_connect: Astara_ASC
+    cache:
+      cache_paths:
+        - $CM_BUILD_DIR/.derivedData
+    scripts:
+      - name: Install XcodeGen
+        script: brew install xcodegen
+
+      - name: Create xcconfig files
+        script: |
+          cp Astara/App/Configuration/Debug.xcconfig.example Astara/App/Configuration/Debug.xcconfig
+          cp Astara/App/Configuration/Release.xcconfig.example Astara/App/Configuration/Release.xcconfig
+
+      - name: Generate Xcode project
+        script: xcodegen generate
+
+      - name: Allow Swift Macros
+        script: |
+          defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE
+          keychain add-certificates
+          xcode-project use-profiles
+
+      - name: Resolve SPM dependencies
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project Astara.xcodeproj \
+            -scheme $XCODE_SCHEME \
+            -derivedDataPath $CM_BUILD_DIR/.derivedData
+
+      - name: Build & Archive
+        script: |
+          xcodebuild archive \
+            -project Astara.xcodeproj \
+            -scheme $XCODE_SCHEME \
+            -destination "generic/platform=iOS" \
+            -configuration Release \
+            -archivePath $CM_BUILD_DIR/Astara.xcarchive \
+            -derivedDataPath $CM_BUILD_DIR/.derivedData \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$APP_STORE_CONNECT_TEAM_ID" \
+            CODE_SIGN_IDENTITY="Apple Distribution"
+
+      - name: Export IPA
+        script: |
+          xcode-project build-ipa \
+            --archive-path $CM_BUILD_DIR/Astara.xcarchive \
+            --export-options-plist /tmp/export_options.plist
+    artifacts:
+      - $CM_BUILD_DIR/Astara.xcarchive/**
+      - $CM_BUILD_DIR/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Astara Beta Testers
+
+  # ─────────────────────────────────────────────
+  # SwiftLint (all branches)
+  # ─────────────────────────────────────────────
+  swiftlint:
+    name: SwiftLint
+    instance_type: mac_mini_m2
+    max_build_duration: 10
+    environment:
+      xcode: 16.4
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: "*"
+          include: true
+      cancel_previous_builds: true
+    scripts:
+      - name: Install SwiftLint
+        script: brew install swiftlint
+
+      - name: Run SwiftLint
+        script: swiftlint lint --reporter json > $CM_BUILD_DIR/swiftlint_report.json || true
+
+    artifacts:
+      - $CM_BUILD_DIR/swiftlint_report.json
