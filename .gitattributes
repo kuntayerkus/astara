@@ -1,0 +1,26 @@
+# Normalize line endings to LF for all text files
+* text=auto eol=lf
+
+# Swift source files
+*.swift text eol=lf
+
+# Config files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xcconfig text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.xcstrings text eol=lf
+*.plist text eol=lf
+*.entitlements text eol=lf
+
+# Binary assets — no line ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.xcarchive binary
+*.ipa binary

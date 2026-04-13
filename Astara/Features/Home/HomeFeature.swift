@@ -11,6 +11,7 @@ struct HomeFeature {
         var planetPositions: [Planet] = []
         var selectedTab: Tab = .home
         var isLoading: Bool = false
+        var errorMessage: String?
         var lastUpdated: Date?
 
         // User data (set from onboarding)
@@ -19,6 +20,9 @@ struct HomeFeature {
 
         // Child features
         var chart: ChartFeature.State = .init()
+        var daily: DailyHoroscopeFeature.State = .init()
+        var compatibility: CompatibilityFeature.State = .init()
+        var profile: ProfileFeature.State = .init()
     }
 
     enum Tab: String, CaseIterable, Equatable {
@@ -51,11 +55,15 @@ struct HomeFeature {
         case loadDailyData
         case dailyDataLoaded(DailyHoroscope, [Element: Int], [Retrograde])
         case dailyDataLoadFailed
+        case retryDailyData
         case loadPlanetPositions
         case planetPositionsLoaded([Planet])
 
         // Child features
         case chart(ChartFeature.Action)
+        case daily(DailyHoroscopeFeature.Action)
+        case compatibility(CompatibilityFeature.Action)
+        case profile(ProfileFeature.Action)
     }
 
     @Dependency(\.horoscopeService) var horoscopeService
@@ -63,6 +71,18 @@ struct HomeFeature {
     var body: some ReducerOf<Self> {
         Scope(state: \.chart, action: \.chart) {
             ChartFeature()
+        }
+
+        Scope(state: \.daily, action: \.daily) {
+            DailyHoroscopeFeature()
+        }
+
+        Scope(state: \.compatibility, action: \.compatibility) {
+            CompatibilityFeature()
+        }
+
+        Scope(state: \.profile, action: \.profile) {
+            ProfileFeature()
         }
 
         Reduce { state, action in
@@ -77,8 +97,13 @@ struct HomeFeature {
                 state.selectedTab = tab
                 return .none
 
+            case .retryDailyData:
+                state.errorMessage = nil
+                return .send(.loadDailyData)
+
             case .loadDailyData:
                 state.isLoading = true
+                state.errorMessage = nil
                 let sign = state.userSunSign
                 return .run { send in
                     async let horoscopes = horoscopeService.fetchDailyHoroscopes()
@@ -103,10 +128,14 @@ struct HomeFeature {
                 state.elementEnergy = energy
                 state.activeRetrogrades = retrogrades
                 state.lastUpdated = Date()
+                // Sync user's sign into child features
+                state.daily.selectedSign = state.userSunSign
+                state.compatibility.sign1 = state.userSunSign
                 return .none
 
             case .dailyDataLoadFailed:
                 state.isLoading = false
+                state.errorMessage = String(localized: "error_load_failed")
                 return .none
 
             case .loadPlanetPositions:
@@ -124,6 +153,15 @@ struct HomeFeature {
                 return .none
 
             case .chart:
+                return .none
+
+            case .daily:
+                return .none
+
+            case .compatibility:
+                return .none
+
+            case .profile:
                 return .none
             }
         }

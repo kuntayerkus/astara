@@ -49,6 +49,7 @@ targets:
       - package: ComposableArchitecture
       - package: KeychainAccess
       - package: Lottie
+    entitlements: Astara/Astara.entitlements
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.getastara.app

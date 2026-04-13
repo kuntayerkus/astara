@@ -47,8 +47,11 @@ workflows:
         script: |
           cp Astara/App/Configuration/Debug.xcconfig.example \
              Astara/App/Configuration/Debug.xcconfig
-          cp Astara/App/Configuration/Release.xcconfig.example \
-             Astara/App/Configuration/Release.xcconfig
+          # Inject real secrets from Codemagic environment group (astara_credentials)
+          sed -e "s/REPLACE_WITH_REAL_KEY/${VPS_API_KEY}/" \
+              -e "s/REPLACE_WITH_REAL_USERNAME/${GEONAMES_USERNAME}/" \
+              Astara/App/Configuration/Release.xcconfig.example \
+              > Astara/App/Configuration/Release.xcconfig
 
       - name: Generate Xcode project
         script: xcodegen generate
@@ -194,6 +197,7 @@ workflows:
         script: xcodegen generate
 
       - name: Resolve SPM dependencies
+
         script: |
           xcodebuild -resolvePackageDependencies \
             -project Astara.xcodeproj \

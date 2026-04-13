@@ -22,7 +22,7 @@ struct AppFeature {
         case setDestination(Destination)
     }
 
-    @Dependency(\.userDefaults) var userDefaults
+    @Dependency(\.persistenceClient) var persistenceClient
 
     var body: some ReducerOf<Self> {
         Scope(state: \.onboarding, action: \.onboarding) {
@@ -36,9 +36,13 @@ struct AppFeature {
         Reduce { state, action in
             switch action {
             case .checkOnboardingStatus:
-                let completed = userDefaults.bool("onboarding_completed")
-                state.destination = completed ? .home : .onboarding
-                return .none
+                return .run { send in
+                    if let user = await persistenceClient.loadUser(), user.onboardingCompleted {
+                        await send(.setDestination(.home))
+                    } else {
+                        await send(.setDestination(.onboarding))
+                    }
+                }
 
             case .onboarding(.completeOnboarding):
                 // Transfer chart data from onboarding to home
@@ -50,8 +54,20 @@ struct AppFeature {
                     }
                 }
                 state.destination = .home
+                // Persist user data via SwiftData
+                let onboarding = state.onboarding
                 return .run { _ in
-                    await userDefaults.setBool(true, "onboarding_completed")
+                    guard let city = onboarding.selectedCity else { return }
+                    let time = onboarding.birthTimeUnknown ? nil : onboarding.birthTime
+                    await persistenceClient.saveUser(
+                        onboarding.birthDate,
+                        time,
+                        onboarding.birthTimeUnknown,
+                        city.name,
+                        city.latitude,
+                        city.longitude,
+                        city.timezone
+                    )
                 }
 
             case .setDestination(let destination):
@@ -65,34 +81,3 @@ struct AppFeature {
     }
 }
 
-// MARK: - UserDefaults Dependency
-
-struct UserDefaultsClient {
-    var bool: @Sendable (String) -> Bool
-    var setBool: @Sendable (Bool, String) async -> Void
-}
-
-extension UserDefaultsClient: DependencyKey {
-    static let liveValue = UserDefaultsClient(
-        bool: { key in
-            UserDefaults.standard.bool(forKey: key)
-        },
-        setBool: { value, key in
-            await MainActor.run {
-                UserDefaults.standard.set(value, forKey: key)
-            }
-        }
-    )
-
-    static let previewValue = UserDefaultsClient(
-        bool: { _ in false },
-        setBool: { _, _ in }
-    )
-}
-
-extension DependencyValues {
-    var userDefaults: UserDefaultsClient {
-        get { self[UserDefaultsClient.self] }
-        set { self[UserDefaultsClient.self] = newValue }
-    }
-}

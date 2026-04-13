@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import ComposableArchitecture
 
 @main
@@ -14,6 +15,7 @@ struct AstaraApp: App {
                     store.send(.checkOnboardingStatus)
                 }
         }
+        .modelContainer(ModelContainer.astara)
     }
 }
 

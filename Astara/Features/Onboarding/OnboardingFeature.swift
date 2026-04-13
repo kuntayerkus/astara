@@ -78,6 +78,7 @@ struct OnboardingFeature {
     @Dependency(\.continuousClock) var clock
     @Dependency(\.geoService) var geoService
     @Dependency(\.chartService) var chartService
+    @Dependency(\.notificationService) var notificationService
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -195,9 +196,9 @@ struct OnboardingFeature {
                 return .none
 
             case .requestPushPermission:
-                // Stub — real implementation with UNUserNotificationCenter
                 return .run { send in
-                    await send(.pushPermissionResult(true))
+                    let granted = await notificationService.requestPermission()
+                    await send(.pushPermissionResult(granted))
                 }
 
             case .pushPermissionResult:

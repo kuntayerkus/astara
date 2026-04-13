@@ -24,7 +24,7 @@
 - Lokalizasyon: TR'de daha samimi/ironik, EN'de daha witty/poetic
 
 ### Bundle & Domain
-- **Bundle ID:** `com.astara.app`
+- **Bundle ID:** `com.getastara.app`
 - **Domain:** astara.app (veya getastara.com)
 - **Deep links:** `astara://chart`, `astara://daily`, `astara://compatibility`
 - **Universal Links:** `https://astara.app/chart` → native app
@@ -722,35 +722,43 @@ Through hardships, to the stars. ✦
 
 ---
 
-## Geliştirme Sırası (Önerilen Sprint Planı)
+## Geliştirme Sırası (Sprint Durumu)
 
-### Sprint 1-2: Temel Altyapı
-- [ ] Xcode projesi + TCA kurulum + SPM dependencies
-- [ ] Design system (AstaraColors, AstaraTypography, Components)
-- [ ] APIClient + CacheService
-- [ ] SwiftData modelleri
-- [ ] Onboarding flow (UI only, "Ad astra per aspera" intro)
+### Sprint 1-2: Temel Altyapı ✅ TAMAMLANDI
+- [x] Xcode projesi + TCA kurulum + SPM dependencies
+- [x] Design system (AstaraColors, AstaraTypography, Components)
+- [x] APIClient + CacheService
+- [x] SwiftData modelleri
+- [x] Onboarding flow ("Ad astra per aspera" intro)
 
-### Sprint 3-4: Harita & Günlük
-- [ ] BirthDataInput + CitySearch (GeoNames)
-- [ ] ChartService → VPS entegrasyonu
-- [ ] Chart wheel rendering (SwiftUI Canvas)
-- [ ] Günlük burç veri çekme + gösterim
-- [ ] Element enerji bileşeni
+### Sprint 3-4: Harita & Günlük ✅ TAMAMLANDI
+- [x] BirthDataInput + CitySearch (GeoNames)
+- [x] ChartService → VPS entegrasyonu
+- [x] Chart wheel rendering (SwiftUI Canvas)
+- [x] Günlük burç veri çekme + gösterim
+- [x] Element enerji bileşeni
 
-### Sprint 5-6: Özellikler
-- [ ] Uyum hesaplama (yerel engine)
-- [ ] Retro takvimi
-- [ ] Gezegen pozisyonları ekranı
-- [ ] Push notification (APNs)
-- [ ] Home screen widget (WidgetKit)
+### Sprint 5-6: Özellikler ✅ TAMAMLANDI
+- [x] Uyum hesaplama (yerel engine — CompatibilityEngine)
+- [x] Retro takvimi
+- [x] Gezegen pozisyonları ekranı
+- [x] Push notification (APNs — NotificationService)
+- [x] SubscriptionService (StoreKit 2 iskelet — UI bağlantısı launch öncesi)
 
-### Sprint 7-8: Polish & Launch (TR)
-- [ ] Animasyonlar (Lottie + SwiftUI)
-- [ ] Offline desteği
-- [ ] App Store metadata & screenshots (TR)
-- [ ] TestFlight beta (TR users)
-- [ ] App Store Review submit
+### Sprint 7-8: Polish (🔄 Aktif — Test Aşaması)
+- [x] Astara.entitlements (aps-environment = production)
+- [x] PrivacyInfo.xcprivacy (UserDefaults + coarse location)
+- [x] .gitattributes (CRLF → LF)
+- [x] Release.xcconfig CI secret injection (codemagic.yaml)
+- [x] Push permission stub → gerçek UNUserNotificationCenter
+- [x] HomeFeature error handling + retry UX
+- [x] SwiftData persistence (PersistenceClient, AstaraApp, AppFeature, EditBirthDataView)
+- [ ] Unit testler (hedef: 20+)
+- [ ] Lottie: gerçek animasyon ekle veya dependency'yi kaldır
+- [ ] **LAUNCH ÖNCESI:** SubscriptionView ↔ StoreKit 2 (App Store Connect product ID sonrası)
+- [ ] **LAUNCH ÖNCESI:** App Store metadata, screenshots (6.7"), privacy policy URL
+- [ ] **LAUNCH ÖNCESI:** App Store distribution CI workflow (codemagic.yaml)
+- [ ] TestFlight beta → App Store Review submit
 
 ### Sprint 9-10: English & Growth
 - [ ] İngilizce lokalizasyon
@@ -758,6 +766,26 @@ Through hardships, to the stars. ✦
 - [ ] Viral bildirim sistemi
 - [ ] Paylaşım kartları (Instagram Stories)
 - [ ] ASO + UA campaign launch
+
+---
+
+## Mevcut Durum Özeti (2026-04-14)
+
+**Proje şu an test aşamasında.** Kod tamamlandı, App Store submission için kalan şeyler
+launch öncesi yapılacak (screenshots, StoreKit ürün bağlantısı, metadata).
+
+**Tamamlanan altyapı:**
+- Tüm feature'lar (Onboarding, Home, Chart, DailyHoroscope, Compatibility, Profile)
+- TCA mimarisi tam entegre
+- 140 lokalizasyon key (TR + EN)
+- SwiftData persistence (PersistenceClient + ModelContainer.astara)
+- CI/CD: Codemagic (TestFlight deploy, build-test, SwiftLint)
+
+**Kritik dosyalar (son değişiklikler):**
+- `Astara/Astara.entitlements` — APNs entitlement
+- `Astara/PrivacyInfo.xcprivacy` — Apple privacy manifest
+- `Astara/Core/Services/PersistenceClient.swift` — SwiftData dependency
+- `Astara/App/AppFeature.swift` — SwiftData'ya geçildi (UserDefaults kaldırıldı)
 
 ---
 

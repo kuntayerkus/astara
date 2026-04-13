@@ -17,6 +17,12 @@ enum AstaraDateFormatters {
         return f
     }()
 
+    static let displayDate: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "d MMMM yyyy, EEEE"
+        return f
+    }()
+
     static let timeOnly: DateFormatter = {
         let f = DateFormatter()
         f.dateStyle = .none

@@ -18,19 +18,19 @@ struct HomeView: View {
                     Label(HomeFeature.Tab.chart.title, systemImage: HomeFeature.Tab.chart.icon)
                 }
 
-            placeholderTab(title: String(localized: "tab_daily"), icon: "sun.max.fill")
+            DailyHoroscopeView(store: store.scope(state: \.daily, action: \.daily))
                 .tag(HomeFeature.Tab.daily)
                 .tabItem {
                     Label(HomeFeature.Tab.daily.title, systemImage: HomeFeature.Tab.daily.icon)
                 }
 
-            placeholderTab(title: String(localized: "tab_compatibility"), icon: "heart.fill")
+            CompatibilityView(store: store.scope(state: \.compatibility, action: \.compatibility))
                 .tag(HomeFeature.Tab.compatibility)
                 .tabItem {
                     Label(HomeFeature.Tab.compatibility.title, systemImage: HomeFeature.Tab.compatibility.icon)
                 }
 
-            placeholderTab(title: String(localized: "tab_profile"), icon: "person.fill")
+            ProfileView(store: store.scope(state: \.profile, action: \.profile))
                 .tag(HomeFeature.Tab.profile)
                 .tabItem {
                     Label(HomeFeature.Tab.profile.title, systemImage: HomeFeature.Tab.profile.icon)
@@ -69,6 +69,9 @@ struct HomeView: View {
                         ShimmerView()
                             .frame(height: 200)
                             .padding(.horizontal, AstaraSpacing.lg)
+                    } else if let errorMessage = store.errorMessage {
+                        errorBanner(message: errorMessage)
+                            .padding(.horizontal, AstaraSpacing.lg)
                     }
 
                     // Element energy
@@ -95,6 +98,28 @@ struct HomeView: View {
                 .padding(.bottom, AstaraSpacing.xxxl)
             }
         }
+    }
+
+    // MARK: - Error Banner
+
+    private func errorBanner(message: String) -> some View {
+        VStack(spacing: AstaraSpacing.sm) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 28))
+                .foregroundStyle(AstaraColors.gold)
+
+            Text(message)
+                .font(AstaraTypography.bodySmall)
+                .foregroundStyle(AstaraColors.textSecondary)
+                .multilineTextAlignment(.center)
+
+            AstaraButton(title: String(localized: "retry"), style: .secondary) {
+                store.send(.retryDailyData)
+            }
+            .frame(maxWidth: 160)
+        }
+        .padding(AstaraSpacing.lg)
+        .astaraCard()
     }
 
     // MARK: - Header
@@ -191,24 +216,6 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Placeholder Tab
-
-    private func placeholderTab(title: String, icon: String) -> some View {
-        ZStack {
-            GradientBackground()
-            VStack(spacing: AstaraSpacing.md) {
-                Image(systemName: icon)
-                    .font(.system(size: 48))
-                    .foregroundStyle(AstaraColors.gold.opacity(0.3))
-                Text(title)
-                    .font(AstaraTypography.titleLarge)
-                    .foregroundStyle(AstaraColors.textTertiary)
-                Text(String(localized: "coming_soon"))
-                    .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textTertiary)
-            }
-        }
-    }
 }
 
 #Preview {
