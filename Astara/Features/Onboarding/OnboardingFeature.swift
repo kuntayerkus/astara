@@ -178,7 +178,7 @@ struct OnboardingFeature {
                 state.isLoading = true
                 state.chartError = nil
                 guard let city = state.selectedCity else { return .none }
-                let dateStr = AstaraDateFormatters.birthDate.string(from: state.birthDate)
+                let dateStr = AstaraDateFormatters.apiDate.string(from: state.birthDate)
                 let timeStr = AstaraDateFormatters.birthTime.string(from: state.birthTime)
                 let timezone = city.timezone
                 let lat = city.latitude
@@ -198,6 +198,7 @@ struct OnboardingFeature {
 
             case .chartCalculated(let chart):
                 state.isLoading = false
+                state.chartError = nil
                 state.chart = chart
                 state.currentStep = .chartReveal
                 return .none
