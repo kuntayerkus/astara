@@ -771,22 +771,26 @@ Through hardships, to the stars. ✦
 
 ## Mevcut Durum Özeti (2026-04-14)
 
-**Proje şu an test aşamasında.** Kod tamamlandı, App Store submission için kalan şeyler
-launch öncesi yapılacak (screenshots, StoreKit ürün bağlantısı, metadata).
+**Proje şu an test aşamasında.** Kod tamamlandı, Codemagic üzerinden Xcode 16 / Swift 6 derlemeleri yapılıyor. App Store submission için kalan şeyler launch öncesi yapılacak (screenshots, StoreKit ürün bağlantısı, metadata).
+
+**Codemagic Build Hataları & Swift 6 Optimizasyonları (Nisan 2026):**
+- **XcodeGen (`project.yml`):** `entitlements` key parse hatası çözüldü (path vs property yapısına güncellendi).
+- **String Catalog:** Apple'ın katı JSON format beklentisi 때문에 bozulan `Localizable.xcstrings` düzeltildi (`version` key'i öne alındı, `extractionState` eklendi).
+- **SwiftDependencies:** `@DependencyClient` makrosunun "Default value required for non-throwing closure" hataları çözüldü (Explicit olarak `{ _ in }` default closure'ları eklendi). 
+- **SwiftData Concurrency:** `@Model` objesi olan `User` için `Sendable` non-conformance warning'i düzeltildi. Çözüm olarak `@Model` (referans tip) yerine değer tipi `UserDTO` kullanıldı (`PersistenceClient.loadUser`).
 
 **Tamamlanan altyapı:**
 - Tüm feature'lar (Onboarding, Home, Chart, DailyHoroscope, Compatibility, Profile)
-- TCA mimarisi tam entegre
-- 140 lokalizasyon key (TR + EN)
+- TCA mimarisi (Swift 6 concurrency kurallarına uygun)
+- 140 lokalizasyon key (TR + EN, Apple String Catalog)
 - SwiftData persistence (PersistenceClient + ModelContainer.astara)
-- CI/CD: Codemagic (TestFlight deploy, build-test, SwiftLint)
+- CI/CD: Codemagic (TestFlight deploy, SwiftLint)
 
 **Kritik dosyalar (son değişiklikler):**
-- `Astara/Astara.entitlements` — APNs entitlement
-- `Astara/PrivacyInfo.xcprivacy` — Apple privacy manifest
-- `Astara/Core/Services/PersistenceClient.swift` — SwiftData dependency
-- `Astara/App/AppFeature.swift` — SwiftData'ya geçildi (UserDefaults kaldırıldı)
-
+- `Astara/Resources/Localizable.xcstrings` — String Catalog (ASLA ELLE EDİTLEME, şema bozulabilir)
+- `Astara/Core/Services/PersistenceClient.swift` — SwiftData `UserDTO` optimizasyonu
+- `Astara/Core/Engine/AstrologyEngine.swift` vd. — `@DependencyClient` default closure fix'leri
+- `project.yml` — XcodeGen build config
 ---
 
 ## Referanslar
