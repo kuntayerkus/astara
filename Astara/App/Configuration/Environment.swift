@@ -11,20 +11,20 @@ enum APIEnvironment {
                let url = URL(string: urlString) {
                 return url
             }
-            return URL(string: "https://swiss.grio.works/api")!
+            return URL(string: "https://merkurmagduru.com/api")!
         case .staging:
-            return URL(string: "https://swiss.grio.works/api")!
+            return URL(string: "https://merkurmagduru.com/api")!
         }
     }
 
-    /// Static data files live at swiss.grio.works root (no /api prefix).
+    /// Static data files live at merkurmagduru.com root (no /api prefix).
     /// Endpoints like /data/daily-horoscope.json use this base.
     var staticDataURL: URL {
-        URL(string: "https://swiss.grio.works")!
+        URL(string: "https://merkurmagduru.com")!
     }
 
     var legacyBaseURL: URL {
-        URL(string: "https://swiss.grio.works/api")!
+        URL(string: "https://merkurmagduru.com/api")!
     }
 
     var vpsURL: URL {
