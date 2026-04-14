@@ -6,7 +6,22 @@ import ComposableArchitecture
 
 extension ModelContainer {
     static let astara: ModelContainer = {
-        try! ModelContainer(for: User.self)
+        let schema = Schema([User.self])
+        let modelConfiguration = ModelConfiguration(schema: schema)
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            print("ModelContainer initialization failed: \(error). Deleting store to recover.")
+            let url = modelConfiguration.url
+            try? FileManager.default.removeItem(at: url)
+            try? FileManager.default.removeItem(at: url.deletingPathExtension().appendingPathExtension("store-shm"))
+            try? FileManager.default.removeItem(at: url.deletingPathExtension().appendingPathExtension("store-wal"))
+            do {
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch {
+                fatalError("Failed to initialize ModelContainer even after clearing store: \(error)")
+            }
+        }
     }()
 }
 
