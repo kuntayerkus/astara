@@ -1,15 +1,10 @@
 import Foundation
 import ComposableArchitecture
 
+// date: "YYYY-MM-DD", time: "HH:mm", timezone: IANA e.g. "Europe/Istanbul"
 @DependencyClient
 struct ChartService {
-    var calculateChart: @Sendable (
-        _ date: String,     // "YYYY-MM-DD"
-        _ time: String,     // "HH:mm"
-        _ lat: Double,
-        _ lng: Double,
-        _ timezone: String  // IANA, e.g. "Europe/Istanbul"
-    ) async throws -> BirthChart
+    var calculateChart: @Sendable (_ date: String, _ time: String, _ lat: Double, _ lng: Double, _ timezone: String) async throws -> BirthChart
 }
 
 extension ChartService: DependencyKey {
