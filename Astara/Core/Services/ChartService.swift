@@ -4,62 +4,41 @@ import ComposableArchitecture
 @DependencyClient
 struct ChartService {
     var calculateChart: @Sendable (
-        _ date: String,
-        _ time: String,
+        _ date: String,     // "YYYY-MM-DD"
+        _ time: String,     // "HH:mm"
         _ lat: Double,
         _ lng: Double,
-        _ timezone: String
+        _ timezone: String  // IANA, e.g. "Europe/Istanbul"
     ) async throws -> BirthChart
 }
 
 extension ChartService: DependencyKey {
     static let liveValue: ChartService = {
-        @Dependency(\.apiClient) var apiClient
         @Dependency(\.cacheService) var cacheService
 
         return ChartService(
             calculateChart: { date, time, lat, lng, timezone in
-                // Validate IANA timezone before sending to VPS
                 guard IANATimezone.isValid(timezone) else {
                     throw APIError.invalidURL
                 }
 
                 let cacheKey = "chart_\(date)_\(time)_\(lat)_\(lng)_\(timezone)"
-
-                // Check cache (birthChart has infinite TTL)
-                if let cached = await cacheService.get(cacheKey, .birthChart) {
-                    if let chart = try? JSONDecoder().decode(BirthChart.self, from: cached) {
-                        return chart
-                    }
+                if let cached = await cacheService.get(cacheKey, .birthChart),
+                   let chart = try? JSONDecoder().decode(BirthChart.self, from: cached) {
+                    return chart
                 }
 
-                // Fetch from VPS
-                let endpoint = Endpoint(
-                    path: "/api/harita",
-                    queryItems: [
-                        URLQueryItem(name: "date", value: date),
-                        URLQueryItem(name: "time", value: time),
-                        URLQueryItem(name: "lat", value: String(lat)),
-                        URLQueryItem(name: "lng", value: String(lng)),
-                        URLQueryItem(name: "timezone", value: timezone)
-                    ],
-                    cachePolicy: .birthChart,
-                    isVPS: true
-                )
+                let params = try ChartRequestParams(date: date, time: time, lat: lat, lng: lng, timezone: timezone)
 
-                let data = try await apiClient.request(endpoint)
-
-                // Decode VPS response → map to BirthChart
-                let vpsResponse: VPSChartResponse
+                // Primary: swiss.grio.works (owned VPS — direct, no proxy)
+                // Fallback: merkurmagduru.com (same backend via proxy, no key needed)
+                let chart: BirthChart
                 do {
-                    vpsResponse = try JSONDecoder().decode(VPSChartResponse.self, from: data)
+                    chart = try await fetchFromVPS(params: params)
                 } catch {
-                    throw APIError.decodingError
+                    chart = try await fetchFromLegacy(params: params)
                 }
 
-                let chart = vpsResponse.toBirthChart()
-
-                // Cache the domain model (not raw VPS response)
                 if let chartData = try? JSONEncoder().encode(chart) {
                     await cacheService.set(cacheKey, chartData, .birthChart)
                 }
@@ -79,4 +58,86 @@ extension DependencyValues {
         get { self[ChartService.self] }
         set { self[ChartService.self] = newValue }
     }
+}
+
+// MARK: - Request Parameters
+
+private struct ChartRequestParams {
+    let yil: Int
+    let ay: Int
+    let gun: Int
+    let saat: Double
+    let enlem: Double
+    let boylam: Double
+    let timezone: String
+
+    init(date: String, time: String, lat: Double, lng: Double, timezone: String) throws {
+        let dateParts = date.split(separator: "-").compactMap { Int($0) }
+        guard dateParts.count == 3 else { throw APIError.invalidURL }
+        self.yil    = dateParts[0]
+        self.ay     = dateParts[1]
+        self.gun    = dateParts[2]
+
+        let timeParts = time.split(separator: ":").compactMap { Double($0) }
+        guard timeParts.count == 2 else { throw APIError.invalidURL }
+        self.saat   = timeParts[0] + timeParts[1] / 60.0
+
+        self.enlem    = lat
+        self.boylam   = lng
+        self.timezone = timezone
+    }
+
+    var queryItems: [URLQueryItem] {
+        [
+            URLQueryItem(name: "yil",      value: "\(yil)"),
+            URLQueryItem(name: "ay",       value: "\(ay)"),
+            URLQueryItem(name: "gun",      value: "\(gun)"),
+            URLQueryItem(name: "saat",     value: String(format: "%.4f", saat)),
+            URLQueryItem(name: "enlem",    value: String(format: "%.4f", enlem)),
+            URLQueryItem(name: "boylam",   value: String(format: "%.4f", boylam)),
+            URLQueryItem(name: "timezone", value: timezone)
+        ]
+    }
+}
+
+// MARK: - Fetchers
+
+/// Primary: swiss.grio.works/harita (owned VPS, requires X-API-Key)
+private func fetchFromVPS(params: ChartRequestParams) async throws -> BirthChart {
+    let environment = APIEnvironment.current
+    guard !environment.vpsAPIKey.isEmpty else { throw APIError.unauthorized }
+
+    var components = URLComponents(url: environment.vpsURL.appendingPathComponent("harita"),
+                                   resolvingAgainstBaseURL: false)!
+    components.queryItems = params.queryItems
+    guard let url = components.url else { throw APIError.invalidURL }
+
+    var request = URLRequest(url: url)
+    request.setValue(AppConstants.userAgent, forHTTPHeaderField: "User-Agent")
+    request.setValue(environment.vpsAPIKey, forHTTPHeaderField: "X-API-Key")
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+        throw APIError.networkError
+    }
+
+    return try JSONDecoder().decode(VPSChartResponse.self, from: data).toBirthChart()
+}
+
+/// Fallback: merkurmagduru.com/api/harita (proxies same VPS, no key needed)
+/// Remove this function once swiss.grio.works API key is confirmed working.
+private func fetchFromLegacy(params: ChartRequestParams) async throws -> BirthChart {
+    var components = URLComponents(string: "https://merkurmagduru.com/api/harita")!
+    components.queryItems = params.queryItems
+    guard let url = components.url else { throw APIError.invalidURL }
+
+    var request = URLRequest(url: url)
+    request.setValue(AppConstants.userAgent, forHTTPHeaderField: "User-Agent")
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+        throw APIError.networkError
+    }
+
+    return try JSONDecoder().decode(VPSChartResponse.self, from: data).toBirthChart()
 }

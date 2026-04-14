@@ -1243,6 +1243,40 @@
         }
       }
     },
+    "search_error": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arama başarısız. Bağlantını kontrol et."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search failed. Check your connection."
+          }
+        }
+      }
+    },
+    "no_results": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonuç bulunamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No results found"
+          }
+        }
+      }
+    },
     "your_big_three": {
       "extractionState": "manual",
       "localizations": {

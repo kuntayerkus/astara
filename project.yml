@@ -80,6 +80,10 @@ targets:
       properties:
         ITSAppUsesNonExemptEncryption: false
         CFBundleIconName: AppIcon
+        API_BASE_URL: $(API_BASE_URL)
+        VPS_URL: $(VPS_URL)
+        VPS_API_KEY: $(VPS_API_KEY)
+        GEONAMES_USERNAME: $(GEONAMES_USERNAME)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

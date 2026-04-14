@@ -7,79 +7,100 @@ struct GeoService {
     var fetchTimezone: @Sendable (_ lat: Double, _ lng: Double) async throws -> String
 }
 
+// MARK: - GeoNames API Response Models (private)
+
+private struct GeoNamesSearchResponse: Decodable {
+    let geonames: [GeoNamesCity]
+}
+
+private struct GeoNamesCity: Decodable {
+    let name: String
+    let countryName: String
+    let lat: String
+    let lng: String
+    let adminName1: String?
+    let timezone: GeoNamesTimezone?
+
+    struct GeoNamesTimezone: Decodable {
+        let timeZoneId: String
+    }
+}
+
 extension GeoService: DependencyKey {
     static let liveValue: GeoService = {
-        @Dependency(\.apiClient) var apiClient
         @Dependency(\.cacheService) var cacheService
+        let session = URLSession.shared
+        let environment = APIEnvironment.current
 
         return GeoService(
             searchCities: { query in
                 let cacheKey = "geo_\(query.lowercased())"
 
-                // Check cache
                 if let cached = await cacheService.get(cacheKey, .geoSearch),
                    let cities = try? JSONDecoder().decode([GeoCity].self, from: cached) {
                     return cities
                 }
 
-                // Fetch from VPS
-                let endpoint = Endpoint(
-                    path: "/api/geo",
-                    queryItems: [URLQueryItem(name: "q", value: query)],
-                    cachePolicy: .geoSearch,
-                    isVPS: true
-                )
+                // Direct GeoNames API call — VPS /api/geo endpoint is not available
+                let username = environment.geonamesUsername.isEmpty ? "demo" : environment.geonamesUsername
+                var components = URLComponents(string: "https://secure.geonames.org/searchJSON")!
+                components.queryItems = [
+                    URLQueryItem(name: "q", value: query),
+                    URLQueryItem(name: "maxRows", value: "10"),
+                    URLQueryItem(name: "style", value: "FULL"),
+                    URLQueryItem(name: "featureClass", value: "P"),
+                    URLQueryItem(name: "orderby", value: "population"),
+                    URLQueryItem(name: "username", value: username)
+                ]
 
-                let data = try await apiClient.request(endpoint)
-                let cities = try JSONDecoder().decode([GeoCity].self, from: data)
+                guard let url = components.url else { throw APIError.invalidURL }
 
-                // Cache the result
-                await cacheService.set(cacheKey, data, .geoSearch)
+                var request = URLRequest(url: url)
+                request.setValue(AppConstants.userAgent, forHTTPHeaderField: "User-Agent")
+
+                let (data, response) = try await session.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode) else {
+                    throw APIError.networkError
+                }
+
+                let geoResponse = try JSONDecoder().decode(GeoNamesSearchResponse.self, from: data)
+                let cities = geoResponse.geonames.compactMap { item -> GeoCity? in
+                    guard let lat = Double(item.lat), let lng = Double(item.lng) else { return nil }
+                    let tz = item.timezone?.timeZoneId ?? "UTC"
+                    let displayCountry = item.adminName1.map { "\($0), \(item.countryName)" } ?? item.countryName
+                    return GeoCity(
+                        name: item.name,
+                        country: displayCountry,
+                        latitude: lat,
+                        longitude: lng,
+                        timezone: tz
+                    )
+                }
+
+                if let encoded = try? JSONEncoder().encode(cities) {
+                    await cacheService.set(cacheKey, encoded, .geoSearch)
+                }
 
                 return cities
             },
             fetchTimezone: { lat, lng in
                 let cacheKey = "tz_\(lat)_\(lng)"
 
-                // Check cache
                 if let cached = await cacheService.get(cacheKey, .timezone),
                    let tz = String(data: cached, encoding: .utf8) {
                     return tz
                 }
 
-                // Fetch from VPS
-                let endpoint = Endpoint(
-                    path: "/api/timezone",
-                    queryItems: [
-                        URLQueryItem(name: "lat", value: String(lat)),
-                        URLQueryItem(name: "lng", value: String(lng))
-                    ],
-                    cachePolicy: .timezone,
-                    isVPS: true
-                )
-
-                let data = try await apiClient.request(endpoint)
-
-                // Try to decode as { "timezone": "..." } or plain string
-                struct TimezoneResponse: Decodable {
-                    let timezone: String
-                }
-
+                // Primary: VPS /timezone (local TimezoneFinder, no external deps)
+                // Fallback: GeoNames (when VPS key not yet configured)
                 let timezone: String
-                if let response = try? JSONDecoder().decode(TimezoneResponse.self, from: data) {
-                    timezone = response.timezone
-                } else if let plain = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines.union(.init(charactersIn: "\""))) {
-                    timezone = plain
+                if let tz = try? await fetchTimezoneFromVPS(lat: lat, lng: lng, session: session, environment: environment) {
+                    timezone = tz
                 } else {
-                    throw APIError.decodingError
+                    timezone = try await fetchTimezoneFromGeoNames(lat: lat, lng: lng, session: session, environment: environment)
                 }
 
-                // Validate IANA format
-                guard IANATimezone.isValid(timezone) else {
-                    throw APIError.decodingError
-                }
-
-                // Cache
                 if let tzData = timezone.data(using: .utf8) {
                     await cacheService.set(cacheKey, tzData, .timezone)
                 }
@@ -105,4 +126,65 @@ extension DependencyValues {
         get { self[GeoService.self] }
         set { self[GeoService.self] = newValue }
     }
+}
+
+// MARK: - Timezone Fetchers
+
+/// Primary: VPS /timezone uses local TimezoneFinder — no external dependency
+private func fetchTimezoneFromVPS(
+    lat: Double, lng: Double,
+    session: URLSession, environment: APIEnvironment
+) async throws -> String {
+    guard !environment.vpsAPIKey.isEmpty else { throw APIError.unauthorized }
+
+    var components = URLComponents(url: environment.vpsURL.appendingPathComponent("timezone"),
+                                   resolvingAgainstBaseURL: false)!
+    components.queryItems = [
+        URLQueryItem(name: "enlem", value: String(lat)),
+        URLQueryItem(name: "boylam", value: String(lng))
+    ]
+    guard let url = components.url else { throw APIError.invalidURL }
+
+    var request = URLRequest(url: url)
+    request.setValue(AppConstants.userAgent, forHTTPHeaderField: "User-Agent")
+    request.setValue(environment.vpsAPIKey, forHTTPHeaderField: "X-API-Key")
+
+    let (data, response) = try await session.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+        throw APIError.networkError
+    }
+
+    struct VPSTimezoneResponse: Decodable { let timezone: String }
+    let result = try JSONDecoder().decode(VPSTimezoneResponse.self, from: data)
+    guard IANATimezone.isValid(result.timezone) else { throw APIError.decodingError }
+    return result.timezone
+}
+
+/// Fallback: GeoNames (third-party, used when VPS key not yet configured)
+private func fetchTimezoneFromGeoNames(
+    lat: Double, lng: Double,
+    session: URLSession, environment: APIEnvironment
+) async throws -> String {
+    var components = URLComponents(string: "https://secure.geonames.org/timezoneJSON")!
+    components.queryItems = [
+        URLQueryItem(name: "lat",      value: String(lat)),
+        URLQueryItem(name: "lng",      value: String(lng)),
+        URLQueryItem(name: "username", value: environment.geonamesUsername.isEmpty ? "demo" : environment.geonamesUsername)
+    ]
+    guard let url = components.url else { throw APIError.invalidURL }
+
+    var request = URLRequest(url: url)
+    request.setValue(AppConstants.userAgent, forHTTPHeaderField: "User-Agent")
+
+    let (data, response) = try await session.data(for: request)
+    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+        throw APIError.networkError
+    }
+
+    struct GeoNamesResponse: Decodable { let timezoneId: String }
+    guard let result = try? JSONDecoder().decode(GeoNamesResponse.self, from: data),
+          IANATimezone.isValid(result.timezoneId) else {
+        throw APIError.decodingError
+    }
+    return result.timezoneId
 }

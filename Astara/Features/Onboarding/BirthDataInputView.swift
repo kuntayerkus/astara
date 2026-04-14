@@ -183,33 +183,51 @@ struct BirthDataInputView: View {
                     .tint(AstaraColors.gold)
             }
 
-            LazyVStack(spacing: AstaraSpacing.xxs) {
-                ForEach(store.searchResults) { city in
-                    Button {
-                        store.send(.selectCity(city))
-                    } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(city.name)
-                                    .font(AstaraTypography.bodyLarge)
-                                    .foregroundStyle(AstaraColors.textPrimary)
-                                Text(city.country)
-                                    .font(AstaraTypography.caption)
-                                    .foregroundStyle(AstaraColors.textTertiary)
+            if let error = store.searchError {
+                HStack(spacing: AstaraSpacing.xs) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 13))
+                    Text(error)
+                        .font(AstaraTypography.bodySmall)
+                }
+                .foregroundStyle(AstaraColors.ember400)
+            }
+
+            if !store.searchResults.isEmpty {
+                LazyVStack(spacing: 0) {
+                    ForEach(store.searchResults) { city in
+                        Button {
+                            store.send(.selectCity(city))
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(city.name)
+                                        .font(AstaraTypography.bodyLarge)
+                                        .foregroundStyle(AstaraColors.textPrimary)
+                                    Text(city.country)
+                                        .font(AstaraTypography.caption)
+                                        .foregroundStyle(AstaraColors.textTertiary)
+                                }
+                                Spacer()
+                                if store.selectedCity?.id == city.id {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(AstaraColors.gold)
+                                }
                             }
-                            Spacer()
-                            if store.selectedCity?.id == city.id {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(AstaraColors.gold)
-                            }
+                            .padding(.horizontal, AstaraSpacing.md)
+                            .padding(.vertical, AstaraSpacing.sm)
                         }
-                        .padding(.horizontal, AstaraSpacing.md)
-                        .padding(.vertical, AstaraSpacing.sm)
+                        if city.id != store.searchResults.last?.id {
+                            Divider().background(AstaraColors.cardBorder)
+                        }
                     }
                 }
+                .astaraCard()
+            } else if !store.isSearching && store.searchQuery.count >= 2 && store.searchError == nil && store.selectedCity == nil {
+                Text(String(localized: "no_results"))
+                    .font(AstaraTypography.bodySmall)
+                    .foregroundStyle(AstaraColors.textTertiary)
             }
-            .astaraCard()
-            .opacity(store.searchResults.isEmpty ? 0 : 1)
         }
     }
 }

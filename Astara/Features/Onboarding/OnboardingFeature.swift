@@ -38,6 +38,7 @@ struct OnboardingFeature {
         var searchResults: [GeoCity] = []
         var selectedCity: GeoCity?
         var isSearching: Bool = false
+        var searchError: String?
 
         // Chart
         var chart: BirthChart?
@@ -60,6 +61,7 @@ struct OnboardingFeature {
         case setSearchQuery(String)
         case searchCities
         case searchCitiesResponse([GeoCity])
+        case searchCitiesFailed
         case selectCity(GeoCity)
 
         // Chart
@@ -130,6 +132,8 @@ struct OnboardingFeature {
 
             case .setSearchQuery(let query):
                 state.searchQuery = query
+                state.selectedCity = nil
+                state.searchError = nil
                 guard query.count >= 2 else {
                     state.searchResults = []
                     return .none
@@ -141,13 +145,14 @@ struct OnboardingFeature {
 
             case .searchCities:
                 state.isSearching = true
+                state.searchError = nil
                 let query = state.searchQuery
                 return .run { send in
                     do {
                         let cities = try await geoService.searchCities(query)
                         await send(.searchCitiesResponse(cities))
                     } catch {
-                        await send(.searchCitiesResponse([]))
+                        await send(.searchCitiesFailed)
                     }
                 }
 
@@ -156,10 +161,17 @@ struct OnboardingFeature {
                 state.searchResults = cities
                 return .none
 
+            case .searchCitiesFailed:
+                state.isSearching = false
+                state.searchResults = []
+                state.searchError = String(localized: "search_error")
+                return .none
+
             case .selectCity(let city):
                 state.selectedCity = city
                 state.searchQuery = city.name
                 state.searchResults = []
+                state.searchError = nil
                 return .none
 
             case .calculateChart:

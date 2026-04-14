@@ -1,137 +1,78 @@
 import Foundation
 
-// MARK: - VPS /api/harita Response DTOs
+// MARK: - VPS /api/harita Actual Response
+//
+// API returns:
+// {
+//   "gezegenler": { "gunes": 354.4578, "ay": 154.8185, ... },  // ecliptic longitude 0–360°
+//   "evler": [132.2041, 153.252, ...],                         // 12 house cusp longitudes
+//   "ev_sistemi": "Placidus",
+//   "asteroidler": {}
+// }
 
 struct VPSChartResponse: Decodable {
-    let planets: [VPSPlanet]
-    let houses: [VPSHouse]
-    let aspects: [VPSAspect]?
-
-    // MARK: - Mapping to Domain Model
+    let gezegenler: [String: Double]
+    let evler: [Double]
 
     func toBirthChart() -> BirthChart {
-        let mappedPlanets = planets.compactMap { $0.toPlanet() }
-        let mappedHouses = houses.compactMap { $0.toHouse() }
-        let mappedAspects = (aspects ?? []).compactMap { $0.toAspect() }
-
-        return BirthChart(
-            planets: mappedPlanets,
-            houses: mappedHouses,
-            aspects: mappedAspects
-        )
-    }
-}
-
-// MARK: - VPS Planet
-
-struct VPSPlanet: Decodable {
-    let key: String
-    let sign: String
-    let degree: Double
-    let minute: Int
-    let isRetrograde: Bool
-
-    private enum CodingKeys: String, CodingKey {
-        case key
-        case sign
-        case degree
-        case minute
-        case isRetrograde = "is_retrograde"
+        let planets = buildPlanets()
+        let houses = buildHouses()
+        let aspects = buildAspects(from: planets)
+        return BirthChart(planets: planets, houses: houses, aspects: aspects)
     }
 
-    // Fallback: try both snake_case and camelCase
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        key = try container.decode(String.self, forKey: .key)
-        sign = try container.decode(String.self, forKey: .sign)
-        degree = try container.decode(Double.self, forKey: .degree)
-        minute = try container.decodeIfPresent(Int.self, forKey: .minute) ?? 0
-        // Try snake_case first, then camelCase fallback
-        if let retro = try? container.decode(Bool.self, forKey: .isRetrograde) {
-            isRetrograde = retro
-        } else {
-            // Fallback: try "retrograde" key
-            let fallbackContainer = try decoder.container(keyedBy: FallbackKeys.self)
-            isRetrograde = (try? fallbackContainer.decode(Bool.self, forKey: .retrograde)) ?? false
+    // MARK: - Planets
+
+    private func buildPlanets() -> [Planet] {
+        PlanetKey.allCases.compactMap { key in
+            guard let longitude = gezegenler[key.rawValue] else { return nil }
+            return planet(key: key, longitude: longitude)
         }
     }
 
-    private enum FallbackKeys: String, CodingKey {
-        case retrograde
+    private func planet(key: PlanetKey, longitude: Double) -> Planet {
+        let l = normalise(longitude)
+        let signIndex = Int(l / 30) % 12
+        let sign = ZodiacSign.allCases[signIndex]
+        let degWithinSign = l.truncatingRemainder(dividingBy: 30)
+        let minute = Int(degWithinSign.truncatingRemainder(dividingBy: 1) * 60)
+        return Planet(key: key, sign: sign, degree: l, minute: minute, isRetrograde: false)
     }
 
-    func toPlanet() -> Planet? {
-        guard let planetKey = PlanetKey(rawValue: key),
-              let zodiacSign = ZodiacSign(rawValue: sign) else {
-            return nil
+    // MARK: - Houses
+
+    private func buildHouses() -> [House] {
+        guard evler.count == 12 else { return [] }
+        return evler.enumerated().map { index, longitude in
+            let l = normalise(longitude)
+            let signIndex = Int(l / 30) % 12
+            let sign = ZodiacSign.allCases[signIndex]
+            return House(number: index + 1, sign: sign, degree: l)
         }
-        return Planet(
-            key: planetKey,
-            sign: zodiacSign,
-            degree: degree,
-            minute: minute,
-            isRetrograde: isRetrograde
-        )
     }
-}
 
-// MARK: - VPS House
+    // MARK: - Aspects (calculated locally — VPS does not return them)
 
-struct VPSHouse: Decodable {
-    let number: Int
-    let sign: String
-    let degree: Double
-
-    func toHouse() -> House? {
-        guard let zodiacSign = ZodiacSign(rawValue: sign) else {
-            return nil
+    private func buildAspects(from planets: [Planet]) -> [Aspect] {
+        var aspects: [Aspect] = []
+        let mainPlanets = planets.filter { $0.key.isPlanet }
+        for i in 0..<mainPlanets.count {
+            for j in (i + 1)..<mainPlanets.count {
+                let p1 = mainPlanets[i]
+                let p2 = mainPlanets[j]
+                if let type = AspectCalculator.detectAspect(p1.degree, p2.degree) {
+                    let orb = AspectCalculator.angularDistance(p1.degree, p2.degree)
+                    aspects.append(Aspect(planet1: p1.key, planet2: p2.key, type: type, orb: orb))
+                }
+            }
         }
-        return House(
-            number: number,
-            sign: zodiacSign,
-            degree: degree
-        )
-    }
-}
-
-// MARK: - VPS Aspect
-
-struct VPSAspect: Decodable {
-    let planet1: String
-    let planet2: String
-    let type: String
-    let orb: Double
-    let isApplying: Bool?
-
-    private enum CodingKeys: String, CodingKey {
-        case planet1
-        case planet2
-        case type
-        case orb
-        case isApplying = "is_applying"
+        return aspects
     }
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        planet1 = try container.decode(String.self, forKey: .planet1)
-        planet2 = try container.decode(String.self, forKey: .planet2)
-        type = try container.decode(String.self, forKey: .type)
-        orb = try container.decode(Double.self, forKey: .orb)
-        isApplying = try? container.decode(Bool.self, forKey: .isApplying)
-    }
+    // MARK: - Helpers
 
-    func toAspect() -> Aspect? {
-        guard let key1 = PlanetKey(rawValue: planet1),
-              let key2 = PlanetKey(rawValue: planet2),
-              let aspectType = AspectType(rawValue: type) else {
-            return nil
-        }
-        return Aspect(
-            planet1: key1,
-            planet2: key2,
-            type: aspectType,
-            orb: orb,
-            isApplying: isApplying ?? false
-        )
+    private func normalise(_ longitude: Double) -> Double {
+        let l = longitude.truncatingRemainder(dividingBy: 360)
+        return l < 0 ? l + 360 : l
     }
 }
