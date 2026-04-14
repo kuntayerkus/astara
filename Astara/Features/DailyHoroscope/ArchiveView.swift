@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ArchiveView: View {
     let sign: ZodiacSign
+    var onGoPremium: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 
     // Archive is a premium placeholder for now; structure is ready for v2
@@ -57,9 +58,12 @@ struct ArchiveView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AstaraSpacing.xl)
 
-                    AstaraButton(title: String(localized: "go_premium"), style: .primary) {}
-                        .padding(.horizontal, AstaraSpacing.xl)
-                        .padding(.top, AstaraSpacing.sm)
+                    AstaraButton(title: String(localized: "go_premium"), style: .primary) {
+                        onGoPremium?()
+                        dismiss()
+                    }
+                    .padding(.horizontal, AstaraSpacing.xl)
+                    .padding(.top, AstaraSpacing.sm)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct CompatibilityDetailView: View {
     let compatibility: Compatibility
+    var isPremium: Bool = false
+    var onGoPremium: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -24,11 +26,29 @@ struct CompatibilityDetailView: View {
                         // Score rings row
                         scoreRingsRow
 
-                        // Description
-                        descriptionCard
+                        // Description + Category (premium-gated)
+                        if isPremium {
+                            descriptionCard
+                            categoryBreakdown
+                        } else {
+                            ZStack(alignment: .bottom) {
+                                VStack(spacing: AstaraSpacing.lg) {
+                                    descriptionCard
+                                    categoryBreakdown
+                                }
+                                .blur(radius: 8)
+                                .allowsHitTesting(false)
 
-                        // Category breakdown
-                        categoryBreakdown
+                                PremiumLockOverlay(
+                                    title: String(localized: "compatibility_premium_title"),
+                                    subtitle: String(localized: "compatibility_premium_body")
+                                ) {
+                                    onGoPremium?()
+                                }
+                                .frame(minHeight: 240)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+                        }
                     }
                     .padding(.horizontal, AstaraSpacing.lg)
                     .padding(.bottom, AstaraSpacing.xxxl)
@@ -39,36 +59,12 @@ struct CompatibilityDetailView: View {
         .presentationDragIndicator(.hidden)
     }
 
-    // MARK: - Pair Header
-
     private var pairHeader: some View {
-        HStack(spacing: AstaraSpacing.lg) {
-            VStack(spacing: AstaraSpacing.xxs) {
-                Text(compatibility.sign1.symbol)
-                    .font(.system(size: 40))
-                Text(compatibility.sign1.turkishName)
-                    .font(AstaraTypography.labelLarge)
-                    .foregroundStyle(AstaraColors.textPrimary)
-            }
-
-            VStack(spacing: AstaraSpacing.xxs) {
-                Text("✕")
-                    .font(.custom("CormorantGaramond-Bold", size: 28))
-                    .foregroundStyle(AstaraColors.gold.opacity(0.5))
-                ScoreRingView(score: compatibility.overallScore, label: String(localized: "overall"), size: 72)
-            }
-
-            VStack(spacing: AstaraSpacing.xxs) {
-                Text(compatibility.sign2.symbol)
-                    .font(.system(size: 40))
-                Text(compatibility.sign2.turkishName)
-                    .font(AstaraTypography.labelLarge)
-                    .foregroundStyle(AstaraColors.textPrimary)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(AstaraSpacing.lg)
-        .astaraCard()
+        SynastryOrbitView(
+            sign1: compatibility.sign1,
+            sign2: compatibility.sign2,
+            score: compatibility.overallScore
+        )
     }
 
     // MARK: - Score Rings

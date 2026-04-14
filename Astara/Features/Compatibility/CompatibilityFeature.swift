@@ -10,6 +10,7 @@ struct CompatibilityFeature {
         var result: Compatibility?
         var isCalculating: Bool = false
         var showDetail: Bool = false
+        var isPremium: Bool = false
     }
 
     enum Action: Equatable {
@@ -20,6 +21,7 @@ struct CompatibilityFeature {
         case resultReady(Compatibility)
         case toggleDetail
         case swapSigns
+        case requestPremium
     }
 
     @Dependency(\.compatibilityEngine) var compatibilityEngine
@@ -67,6 +69,9 @@ struct CompatibilityFeature {
                 state.sign2 = tmp
                 state.result = nil
                 return .send(.calculate)
+
+            case .requestPremium:
+                return .none
             }
         }
     }

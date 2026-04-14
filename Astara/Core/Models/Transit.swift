@@ -1,6 +1,6 @@
 import Foundation
 
-struct Transit: Codable, Equatable, Identifiable {
+struct Transit: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
     let planet: PlanetKey
     let fromSign: ZodiacSign

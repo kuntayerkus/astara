@@ -1,6 +1,6 @@
 import Foundation
 
-enum ZodiacSign: String, Codable, CaseIterable, Identifiable {
+enum ZodiacSign: String, Codable, CaseIterable, Identifiable, Sendable {
     case aries, taurus, gemini, cancer, leo, virgo
     case libra, scorpio, sagittarius, capricorn, aquarius, pisces
 
@@ -90,7 +90,7 @@ enum ZodiacSign: String, Codable, CaseIterable, Identifiable {
 
 // MARK: - Element
 
-enum Element: String, Codable, CaseIterable {
+enum Element: String, Codable, CaseIterable, Sendable {
     case fire, earth, air, water
 
     var localizedName: String {
@@ -100,7 +100,7 @@ enum Element: String, Codable, CaseIterable {
 
 // MARK: - Modality
 
-enum Modality: String, Codable, CaseIterable {
+enum Modality: String, Codable, CaseIterable, Sendable {
     case cardinal, fixed, mutable
 
     var localizedName: String {

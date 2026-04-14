@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DailyCardView: View {
     let horoscope: DailyHoroscope
+    @State private var ringProgress: CGFloat = 0
 
     var body: some View {
         VStack(spacing: AstaraSpacing.md) {
@@ -53,7 +54,7 @@ struct DailyCardView: View {
                 HStack {
                     luckyItem(icon: "number", text: "\(number)")
                     Spacer()
-                    luckyItem(icon: "paintpalette.fill", text: color)
+                    luckyColorItem(color)
                 }
             }
         }
@@ -70,7 +71,7 @@ struct DailyCardView: View {
                 .frame(width: 56, height: 56)
 
             Circle()
-                .trim(from: 0, to: CGFloat(horoscope.energy) / 100)
+                .trim(from: 0, to: ringProgress)
                 .stroke(
                     energyColor,
                     style: StrokeStyle(lineWidth: 4, lineCap: .round)
@@ -85,6 +86,11 @@ struct DailyCardView: View {
                 Text("%")
                     .font(AstaraTypography.caption)
                     .foregroundStyle(AstaraColors.textTertiary)
+            }
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.9, dampingFraction: 0.65).delay(0.15)) {
+                ringProgress = CGFloat(horoscope.energy) / 100
             }
         }
     }
@@ -106,6 +112,39 @@ struct DailyCardView: View {
             Text(text)
                 .font(AstaraTypography.caption)
                 .foregroundStyle(AstaraColors.textTertiary)
+        }
+    }
+
+    private func luckyColorItem(_ colorName: String) -> some View {
+        HStack(spacing: AstaraSpacing.xxs) {
+            if let swatch = swatchColor(for: colorName) {
+                Circle()
+                    .fill(swatch)
+                    .frame(width: 12, height: 12)
+                    .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 0.5))
+            }
+            Text(colorName)
+                .font(AstaraTypography.caption)
+                .foregroundStyle(AstaraColors.textTertiary)
+        }
+    }
+
+    private func swatchColor(for name: String) -> Color? {
+        switch name.lowercased() {
+        case "mor", "purple":           return Color(hex: "#9333EA")
+        case "kırmızı", "red":          return AstaraColors.fire
+        case "mavi", "blue":            return AstaraColors.air
+        case "yeşil", "green":          return AstaraColors.sage400
+        case "sarı", "yellow":          return Color(hex: "#FDE047")
+        case "turuncu", "orange":       return AstaraColors.ember400
+        case "beyaz", "white":          return Color.white.opacity(0.8)
+        case "siyah", "black":          return Color(hex: "#1a1a2e")
+        case "pembe", "pink":           return Color(hex: "#F472B6")
+        case "altın", "gold":           return AstaraColors.gold
+        case "lacivert", "navy":        return Color(hex: "#1e3a5f")
+        case "turkuaz", "turquoise":    return Color(hex: "#2DD4BF")
+        case "gri", "gray", "grey":     return AstaraColors.mist400
+        default:                         return nil
         }
     }
 }

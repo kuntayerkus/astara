@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-enum AspectType: String, Codable, CaseIterable {
+enum AspectType: String, Codable, CaseIterable, Sendable {
     case conjunction
     case sextile
     case square
@@ -56,7 +56,7 @@ enum AspectType: String, Codable, CaseIterable {
     }
 }
 
-struct Aspect: Codable, Equatable, Identifiable {
+struct Aspect: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
     let planet1: PlanetKey
     let planet2: PlanetKey

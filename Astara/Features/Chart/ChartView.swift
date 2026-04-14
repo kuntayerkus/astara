@@ -49,9 +49,19 @@ struct ChartView: View {
                         planetList(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
 
-                        // Aspects button
-                        AstaraButton(title: String(localized: "view_aspects"), style: .secondary) {
-                            store.send(.toggleAspectGrid)
+                        // Action buttons row
+                        VStack(spacing: AstaraSpacing.sm) {
+                            AstaraButton(title: String(localized: "view_aspects"), style: .secondary) {
+                                store.send(.toggleAspectGrid)
+                            }
+                            HStack(spacing: AstaraSpacing.sm) {
+                                AstaraButton(title: String(localized: "ai_chart_reading"), style: .primary) {
+                                    store.send(.toggleAIInterpretation)
+                                }
+                                AstaraButton(title: String(localized: "share_chart"), style: .secondary) {
+                                    store.send(.toggleChartShare)
+                                }
+                            }
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
                     }
@@ -69,9 +79,14 @@ struct ChartView: View {
             )
         ) {
             if let key = store.selectedPlanet, let chart = store.chart {
-                PlanetDetailSheet(chart: chart, planetKey: key)
-                    .presentationDetents([.medium])
-                    .presentationDragIndicator(.visible)
+                PlanetDetailSheet(
+                    chart: chart,
+                    planetKey: key,
+                    isPremium: store.isPremium,
+                    onGoPremium: { store.send(.requestPremium) }
+                )
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
         }
         .sheet(
@@ -96,6 +111,30 @@ struct ChartView: View {
                 AspectGridView(chart: chart)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
+            }
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { store.showAIInterpretation },
+                set: { if !$0 { store.send(.toggleAIInterpretation) } }
+            )
+        ) {
+            if let chart = store.chart {
+                AIInterpretationView(
+                    chart: chart,
+                    isPremium: store.isPremium,
+                    onGoPremium: { store.send(.requestPremium) }
+                )
+            }
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { store.showChartShare },
+                set: { if !$0 { store.send(.toggleChartShare) } }
+            )
+        ) {
+            if let chart = store.chart {
+                ChartShareView(chart: chart)
             }
         }
     }

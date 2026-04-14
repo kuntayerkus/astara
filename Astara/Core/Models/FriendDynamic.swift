@@ -1,6 +1,6 @@
 import Foundation
 
-struct FriendDynamic: Codable, Equatable, Identifiable {
+struct FriendDynamic: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
     let friendName: String
     let friendSign: ZodiacSign

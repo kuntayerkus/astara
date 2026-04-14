@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HoroscopeCardView: View {
     let horoscope: DailyHoroscope
+    @State private var ringProgress: CGFloat = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.lg) {
@@ -65,8 +66,8 @@ struct HoroscopeCardView: View {
             // Lucky row
             if let number = horoscope.luckyNumber, let color = horoscope.luckyColor {
                 HStack(spacing: AstaraSpacing.lg) {
-                    luckyBadge(icon: "number.circle.fill", label: String(localized: "lucky_number"), value: "\(number)")
-                    luckyBadge(icon: "circle.fill", label: String(localized: "lucky_color"), value: color)
+                    luckyBadge(icon: "number.circle.fill", label: String(localized: "lucky_number"), value: "\(number)", swatch: nil)
+                    luckyColorBadge(label: String(localized: "lucky_color"), colorName: color)
                     Spacer()
                 }
             }
@@ -84,11 +85,10 @@ struct HoroscopeCardView: View {
                 .frame(width: 64, height: 64)
 
             Circle()
-                .trim(from: 0, to: CGFloat(horoscope.energy) / 100)
+                .trim(from: 0, to: ringProgress)
                 .stroke(energyColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                 .frame(width: 64, height: 64)
                 .rotationEffect(.degrees(-90))
-                .animation(.easeOut(duration: 0.8), value: horoscope.energy)
 
             VStack(spacing: 0) {
                 Text("\(horoscope.energy)")
@@ -97,6 +97,11 @@ struct HoroscopeCardView: View {
                 Text(String(localized: "energy"))
                     .font(.system(size: 8))
                     .foregroundStyle(AstaraColors.textTertiary)
+            }
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.9, dampingFraction: 0.65).delay(0.15)) {
+                ringProgress = CGFloat(horoscope.energy) / 100
             }
         }
     }
@@ -112,7 +117,7 @@ struct HoroscopeCardView: View {
 
     // MARK: - Lucky Badge
 
-    private func luckyBadge(icon: String, label: String, value: String) -> some View {
+    private func luckyBadge(icon: String, label: String, value: String, swatch: Color?) -> some View {
         VStack(spacing: 2) {
             Text(label)
                 .font(.system(size: 9))
@@ -128,6 +133,47 @@ struct HoroscopeCardView: View {
                     .font(AstaraTypography.labelMedium)
                     .foregroundStyle(AstaraColors.textSecondary)
             }
+        }
+    }
+
+    private func luckyColorBadge(label: String, colorName: String) -> some View {
+        VStack(spacing: 2) {
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundStyle(AstaraColors.textTertiary)
+                .tracking(1)
+                .textCase(.uppercase)
+
+            HStack(spacing: 4) {
+                if let swatch = swatchColor(for: colorName) {
+                    Circle()
+                        .fill(swatch)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 0.5))
+                }
+                Text(colorName)
+                    .font(AstaraTypography.labelMedium)
+                    .foregroundStyle(AstaraColors.textSecondary)
+            }
+        }
+    }
+
+    private func swatchColor(for name: String) -> Color? {
+        switch name.lowercased() {
+        case "mor", "purple":           return Color(hex: "#9333EA")
+        case "kırmızı", "red":          return AstaraColors.fire
+        case "mavi", "blue":            return AstaraColors.air
+        case "yeşil", "green":          return AstaraColors.sage400
+        case "sarı", "yellow":          return Color(hex: "#FDE047")
+        case "turuncu", "orange":       return AstaraColors.ember400
+        case "beyaz", "white":          return Color.white.opacity(0.8)
+        case "siyah", "black":          return Color(hex: "#1a1a2e")
+        case "pembe", "pink":           return Color(hex: "#F472B6")
+        case "altın", "gold":           return AstaraColors.gold
+        case "lacivert", "navy":        return Color(hex: "#1e3a5f")
+        case "turkuaz", "turquoise":    return Color(hex: "#2DD4BF")
+        case "gri", "gray", "grey":     return AstaraColors.mist400
+        default:                         return nil
         }
     }
 }

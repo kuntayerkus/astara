@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RetroAlertBanner: View {
     let retrogrades: [Retrograde]
+    @State private var glowPulsing = false
 
     var body: some View {
         VStack(spacing: AstaraSpacing.xs) {
@@ -9,6 +10,7 @@ struct RetroAlertBanner: View {
                 retroRow(retro: retro)
             }
         }
+        .onAppear { glowPulsing = true }
     }
 
     private func retroRow(retro: Retrograde) -> some View {
@@ -35,6 +37,20 @@ struct RetroAlertBanner: View {
         }
         .padding(AstaraSpacing.md)
         .astaraCard(cornerRadius: AstaraSpacing.cornerRadiusMd)
+        .overlay(
+            RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd)
+                .stroke(
+                    AstaraColors.ember400.opacity(glowPulsing ? 0.5 : 0.12),
+                    lineWidth: 1
+                )
+                .shadow(
+                    color: AstaraColors.ember400.opacity(glowPulsing ? 0.35 : 0.0),
+                    radius: 8
+                )
+                .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: glowPulsing)
+        )
+        .scaleEffect(glowPulsing ? 1.004 : 1.0)
+        .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: glowPulsing)
     }
 }
 

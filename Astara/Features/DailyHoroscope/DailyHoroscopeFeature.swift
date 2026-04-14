@@ -20,6 +20,7 @@ struct DailyHoroscopeFeature {
         case horoscopesLoaded([DailyHoroscope])
         case loadFailed
         case toggleArchive
+        case requestPremium
     }
 
     @Dependency(\.horoscopeService) var horoscopeService
@@ -72,6 +73,9 @@ struct DailyHoroscopeFeature {
 
             case .toggleArchive:
                 state.showArchive.toggle()
+                return .none
+
+            case .requestPremium:
                 return .none
             }
         }

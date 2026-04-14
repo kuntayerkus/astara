@@ -3,6 +3,7 @@ import ComposableArchitecture
 
 struct HomeView: View {
     @Bindable var store: StoreOf<HomeFeature>
+    @State private var cardsAppeared = false
 
     var body: some View {
         TabView(selection: $store.selectedTab.sending(\.selectTab)) {
@@ -11,6 +12,7 @@ struct HomeView: View {
                 .tabItem {
                     Label(HomeFeature.Tab.home.title, systemImage: HomeFeature.Tab.home.icon)
                 }
+                .badge(store.activeRetrogrades.isEmpty ? 0 : store.activeRetrogrades.count)
 
             ChartView(store: store.scope(state: \.chart, action: \.chart))
                 .tag(HomeFeature.Tab.chart)
@@ -23,6 +25,7 @@ struct HomeView: View {
                 .tabItem {
                     Label(HomeFeature.Tab.daily.title, systemImage: HomeFeature.Tab.daily.icon)
                 }
+                .badge(store.hasNewDailyContent ? "●" : nil)
 
             CompatibilityView(store: store.scope(state: \.compatibility, action: \.compatibility))
                 .tag(HomeFeature.Tab.compatibility)
@@ -56,20 +59,36 @@ struct HomeView: View {
                     // Header
                     header
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 20).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.0), value: cardsAppeared)
                     streakCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.06), value: cardsAppeared)
                     astaraScoreCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.12), value: cardsAppeared)
                     week360Card
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.18), value: cardsAppeared)
                     ritualJournalCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.22), value: cardsAppeared)
                     synastryFeedCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.26), value: cardsAppeared)
                     dailyTasksCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.30), value: cardsAppeared)
                     moodCheckinCard
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.34), value: cardsAppeared)
 
                     // Big Three mini-card (if chart exists)
                     if let chart = store.userChart {
@@ -106,6 +125,17 @@ struct HomeView: View {
                     if !store.planetPositions.isEmpty {
                         PlanetPositionsView(planets: store.planetPositions)
                             .padding(.horizontal, AstaraSpacing.lg)
+                    } else if store.isLoading {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: AstaraSpacing.sm) {
+                                ForEach(0..<7, id: \.self) { _ in
+                                    ShimmerView()
+                                        .frame(width: 64, height: 80)
+                                        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                                }
+                            }
+                            .padding(.horizontal, AstaraSpacing.lg)
+                        }
                     }
 
                     // Last updated
@@ -197,6 +227,11 @@ struct HomeView: View {
                 }
                 .padding(.top, AstaraSpacing.md)
                 .padding(.bottom, AstaraSpacing.xxxl)
+                .onAppear {
+                    if !cardsAppeared {
+                        withAnimation { cardsAppeared = true }
+                    }
+                }
             }
             .refreshable {
                 Haptics.selection()
@@ -230,9 +265,18 @@ struct HomeView: View {
 
     private func errorBanner(message: String) -> some View {
         VStack(spacing: AstaraSpacing.md) {
-            Image(systemName: "wifi.slash")
-                .font(.system(size: 32))
-                .foregroundStyle(AstaraColors.gold.opacity(0.5))
+            ZStack {
+                Circle()
+                    .fill(AstaraColors.gold.opacity(0.06))
+                    .frame(width: 72, height: 72)
+                Image(systemName: "moon.stars.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(AstaraColors.gold.opacity(0.45))
+            }
+
+            Text(String(localized: "error_stars_unreachable"))
+                .font(AstaraTypography.titleMedium)
+                .foregroundStyle(AstaraColors.textPrimary)
 
             Text(message)
                 .font(AstaraTypography.bodySmall)
@@ -271,10 +315,16 @@ struct HomeView: View {
                     .font(AstaraTypography.bodyMedium)
                     .foregroundStyle(AstaraColors.textSecondary)
 
-                Text("ASTARA")
-                    .font(.custom("CormorantGaramond-Bold", size: 32))
-                    .foregroundStyle(AstaraColors.gold)
-                    .tracking(6)
+                HStack(spacing: AstaraSpacing.md) {
+                    Text("ASTARA")
+                        .font(.custom("CormorantGaramond-Bold", size: 32))
+                        .foregroundStyle(AstaraColors.gold)
+                        .tracking(6)
+                    
+                    MoonPhaseView(size: 32, showName: false)
+                        .offset(y: 2)
+                        .shadow(color: AstaraColors.gold.opacity(0.15), radius: 8)
+                }
 
                 Text(AstaraDateFormatters.displayDate.string(from: Date()))
                     .font(AstaraTypography.caption)
@@ -454,34 +504,70 @@ struct HomeView: View {
             Text("My Week 360")
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
-            if store.weekTransits.isEmpty {
-                Text("Haftalik akis hazirlaniyor...")
+            if store.weekTransits.isEmpty && store.isLoading {
+                VStack(spacing: AstaraSpacing.sm) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack(spacing: AstaraSpacing.sm) {
+                            ShimmerView()
+                                .frame(width: 28, height: 28)
+                                .clipShape(Circle())
+                            VStack(alignment: .leading, spacing: 4) {
+                                ShimmerView().frame(height: 13).frame(maxWidth: .infinity)
+                                ShimmerView().frame(height: 11).frame(width: 160)
+                            }
+                        }
+                    }
+                }
+            } else if store.weekTransits.isEmpty {
+                Text(String(localized: "weekly_flow_loading"))
                     .font(AstaraTypography.bodySmall)
                     .foregroundStyle(AstaraColors.textSecondary)
             } else {
                 ForEach(store.weekTransits.prefix(3)) { transit in
-                    HStack(alignment: .top, spacing: AstaraSpacing.sm) {
-                        Text(transit.planet.symbol)
-                            .font(.system(size: 18))
-                        VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
-                            Text("\(transit.fromSign.turkishName) → \(transit.toSign.turkishName)")
-                                .font(AstaraTypography.labelMedium)
-                                .foregroundStyle(AstaraColors.textPrimary)
-                            Text(transit.description)
-                                .font(AstaraTypography.caption)
-                                .foregroundStyle(AstaraColors.textSecondary)
-                                .lineLimit(2)
+                    transitRow(transit)
+                }
+
+                if !store.isPremium && store.weekTransits.count > 3 {
+                    ZStack(alignment: .bottom) {
+                        if let extra = store.weekTransits.dropFirst(3).first {
+                            transitRow(extra)
+                                .blur(radius: 6)
+                                .allowsHitTesting(false)
                         }
-                        Spacer()
-                        Text(transit.date)
-                            .font(AstaraTypography.caption)
-                            .foregroundStyle(AstaraColors.textTertiary)
+                        PremiumLockOverlay(
+                            title: String(localized: "week360_premium_title"),
+                            subtitle: String(localized: "week360_premium_body")
+                        ) {
+                            store.send(.profile(.setSubscriptionPresented(true)))
+                        }
+                        .frame(height: 140)
                     }
+                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
                 }
             }
         }
         .padding(AstaraSpacing.md)
         .astaraCard()
+    }
+
+    private func transitRow(_ transit: Transit) -> some View {
+        HStack(alignment: .top, spacing: AstaraSpacing.sm) {
+            Text(transit.planet.symbol)
+                .font(.system(size: 18))
+            VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
+                Text("\(transit.fromSign.turkishName) → \(transit.toSign.turkishName)")
+                    .font(AstaraTypography.labelMedium)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                Text(transit.description)
+                    .font(AstaraTypography.caption)
+                    .foregroundStyle(AstaraColors.textSecondary)
+                    .lineLimit(2)
+            }
+            Spacer()
+            Text(transit.date)
+                .font(AstaraTypography.caption)
+                .foregroundStyle(AstaraColors.textTertiary)
+        }
     }
 
     private var ritualJournalCard: some View {
@@ -577,19 +663,32 @@ struct HomeView: View {
             Text("Mood check-in")
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
-            HStack(spacing: AstaraSpacing.xs) {
+            HStack(spacing: AstaraSpacing.sm) {
                 ForEach(1...5, id: \.self) { mood in
                     Button {
                         Haptics.selection()
                         store.send(.setMood(mood))
                     } label: {
                         Text(moodEmoji(mood))
-                            .font(.system(size: 22))
-                            .padding(6)
-                            .background((store.todaysMood == mood ? AstaraColors.gold.opacity(0.2) : .clear))
+                            .font(.system(size: 28))
+                            .padding(10)
+                            .background(
+                                store.todaysMood == mood
+                                    ? AstaraColors.gold.opacity(0.25)
+                                    : Color.white.opacity(0.04)
+                            )
                             .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(
+                                    store.todaysMood == mood ? AstaraColors.gold : Color.clear,
+                                    lineWidth: 1.5
+                                )
+                            )
+                            .scaleEffect(store.todaysMood == mood ? 1.15 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: store.todaysMood)
                     }
                     .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity)
                 }
             }
             AstaraButton(title: "Check-in kaydet", style: .secondary) {
@@ -634,35 +733,93 @@ struct HomeView: View {
     }
 
     private var askAstaraSheet: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.md) {
-            Text("Ask Astara")
-                .font(AstaraTypography.titleLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            Text("Gunluk hak: \(store.isPremium ? "Sinirsiz" : "\(store.askQuotaRemaining)")")
-                .font(AstaraTypography.caption)
-                .foregroundStyle(AstaraColors.textTertiary)
-            TextField("Sorunu yaz...", text: $store.askQuestionText.sending(\.setAskQuestionText))
-                .textFieldStyle(.plain)
-                .font(AstaraTypography.bodyMedium)
-                .foregroundStyle(AstaraColors.textPrimary)
-                .padding(AstaraSpacing.sm)
-                .background(AstaraColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
-            AstaraButton(title: "Sor", style: .primary, isDisabled: store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) {
-                store.send(.submitAskQuestion)
+        ZStack {
+            GradientBackground()
+            StarfieldView() // Magical background feel
+
+            VStack(spacing: AstaraSpacing.xl) {
+                Text(String(localized: "ask_astara"))
+                    .font(AstaraTypography.titleLarge)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                    .padding(.top, AstaraSpacing.xl)
+
+                if store.askQuotaRemaining == 0 && !store.isPremium {
+                    // Premium teaser
+                    VStack(spacing: AstaraSpacing.lg) {
+                        OracleSphereView(isThinking: false)
+                            .opacity(0.5)
+                            .grayscale(0.8)
+                        
+                        Text(String(localized: "ask_quota_exhausted_title"))
+                            .font(AstaraTypography.titleMedium)
+                            .foregroundStyle(AstaraColors.textPrimary)
+                            .multilineTextAlignment(.center)
+                        
+                        Text(String(localized: "ask_quota_exhausted_body"))
+                            .font(AstaraTypography.bodySmall)
+                            .foregroundStyle(AstaraColors.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, AstaraSpacing.md)
+                        
+                        AstaraButton(title: String(localized: "go_premium"), style: .primary) {
+                            store.send(.openAskAstara(false))
+                            store.send(.profile(.setSubscriptionPresented(true)))
+                        }
+                        .padding(.horizontal, AstaraSpacing.lg)
+                    }
+                    .frame(maxWidth: .infinity)
+                    Spacer()
+                } else {
+                    Text(store.isPremium ? String(localized: "ask_quota_unlimited") : "\(String(localized: "ask_quota_remaining")): \(store.askQuotaRemaining)")
+                        .font(AstaraTypography.caption)
+                        .foregroundStyle(store.isPremium ? AstaraColors.gold : AstaraColors.textTertiary)
+                    
+                    Spacer()
+                    
+                    // The Magical Oracle Sphere
+                    OracleSphereView(isThinking: store.isAskingAstara)
+                    
+                    if let response = store.askResponse {
+                        ScrollView(showsIndicators: false) {
+                            Text(response)
+                                .font(AstaraTypography.bodyMedium)
+                                .foregroundStyle(AstaraColors.textPrimary)
+                                .multilineTextAlignment(.center)
+                                .padding(AstaraSpacing.lg)
+                                .astaraCard()
+                        }
+                        .frame(maxHeight: 200)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    } else {
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(spacing: AstaraSpacing.sm) {
+                        TextField(String(localized: "ask_placeholder"), text: $store.askQuestionText.sending(\.setAskQuestionText))
+                            .textFieldStyle(.plain)
+                            .font(AstaraTypography.bodyMedium)
+                            .foregroundStyle(AstaraColors.textPrimary)
+                            .padding(AstaraSpacing.md)
+                            .background(AstaraColors.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+                            .overlay(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg).stroke(AstaraColors.cardBorder, lineWidth: 1))
+                            .disabled(store.isAskingAstara)
+                        
+                        AstaraButton(
+                            title: String(localized: "ask_button"),
+                            style: .primary,
+                            isDisabled: store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.isAskingAstara
+                        ) {
+                            store.send(.submitAskQuestion)
+                        }
+                    }
+                    .padding(.horizontal, AstaraSpacing.lg)
+                    .padding(.bottom, AstaraSpacing.lg)
+                }
             }
-            if let response = store.askResponse {
-                Text(response)
-                    .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textSecondary)
-                    .padding(AstaraSpacing.sm)
-                    .background(AstaraColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
-            }
-            Spacer()
         }
-        .padding(AstaraSpacing.lg)
-        .astaraBackground()
     }
 
     private var timeTravelSheet: some View {
@@ -677,6 +834,15 @@ struct HomeView: View {
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
+            .tint(AstaraColors.gold)
+            .colorScheme(.dark)
+            .padding(AstaraSpacing.sm)
+            .background(AstaraColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                    .stroke(AstaraColors.cardBorder, lineWidth: 1)
+            )
             if let insight = store.timeTravelInsight {
                 VStack(alignment: .leading, spacing: AstaraSpacing.xs) {
                     Text(insight.title)

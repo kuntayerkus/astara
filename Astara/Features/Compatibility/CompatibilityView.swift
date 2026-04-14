@@ -39,7 +39,11 @@ struct CompatibilityView: View {
             set: { if !$0 { store.send(.toggleDetail) } }
         )) {
             if let result = store.result {
-                CompatibilityDetailView(compatibility: result)
+                CompatibilityDetailView(
+                    compatibility: result,
+                    isPremium: store.isPremium,
+                    onGoPremium: { store.send(.requestPremium) }
+                )
             }
         }
         .onAppear {

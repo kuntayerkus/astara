@@ -1,14 +1,43 @@
 import UIKit
 import UserNotifications
+import SwiftUI
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        setupAppearance()
         // Register for remote notifications
         UNUserNotificationCenter.current().delegate = self
         return true
+    }
+
+    private func setupAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        
+        // Frosted glass effect
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        
+        let activeColor = UIColor(red: 212/255, green: 175/255, blue: 55/255, alpha: 1.0) // Gold
+        let inactiveColor = UIColor.white.withAlphaComponent(0.4)
+        
+        let itemAppearance = UITabBarItemAppearance()
+        itemAppearance.normal.iconColor = inactiveColor
+        itemAppearance.normal.titleTextAttributes = [.foregroundColor: inactiveColor]
+        
+        itemAppearance.selected.iconColor = activeColor
+        itemAppearance.selected.titleTextAttributes = [.foregroundColor: activeColor]
+        
+        appearance.stackedLayoutAppearance = itemAppearance
+        appearance.inlineLayoutAppearance = itemAppearance
+        appearance.compactInlineLayoutAppearance = itemAppearance
+        
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
     }
 
     func application(

@@ -1,6 +1,6 @@
 import Foundation
 
-struct DailyHoroscope: Codable, Equatable, Identifiable {
+struct DailyHoroscope: Codable, Equatable, Identifiable, Sendable {
     var id: String { "\(sign.rawValue)-\(date)" }
 
     let sign: ZodiacSign

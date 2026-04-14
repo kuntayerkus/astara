@@ -4,7 +4,7 @@ import ComposableArchitecture
 
 // MARK: - Product IDs
 
-enum AstaraProduct: String, CaseIterable {
+enum AstaraProduct: String, CaseIterable, Sendable {
     case monthlyPremium = "com.getastara.app.premium.monthly"
     case yearlyPremium  = "com.getastara.app.premium.yearly"
 
@@ -13,7 +13,7 @@ enum AstaraProduct: String, CaseIterable {
 
 // MARK: - Subscription Status
 
-enum SubscriptionStatus: Equatable {
+enum SubscriptionStatus: Equatable, Sendable {
     case free
     case premium(expiresAt: Date)
     case unknown

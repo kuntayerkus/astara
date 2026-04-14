@@ -30,9 +30,11 @@ struct HomeFeature {
         var askQuestionText: String = ""
         var askResponse: String?
         var askQuotaRemaining: Int = 1
+        var isAskingAstara: Bool = false
         var showTimeTravel: Bool = false
         var timeTravelDate: Date = Date()
         var timeTravelInsight: TimeTravelInsight?
+        var hasNewDailyContent: Bool = false
 
         // User data (set from onboarding)
         var userSunSign: ZodiacSign = .aries
@@ -142,6 +144,9 @@ struct HomeFeature {
 
             case .selectTab(let tab):
                 state.selectedTab = tab
+                if tab == .daily {
+                    state.hasNewDailyContent = false
+                }
                 return .none
 
             case .retryDailyData:
@@ -175,6 +180,7 @@ struct HomeFeature {
                 state.elementEnergy = energy
                 state.activeRetrogrades = retrogrades
                 state.lastUpdated = Date()
+                state.hasNewDailyContent = true
                 let shouldPersistReadTask = state.completedTasks.contains("read_daily_card") == false
                 if shouldPersistReadTask {
                     state.completedTasks.insert("read_daily_card")
@@ -251,6 +257,8 @@ struct HomeFeature {
                 state.moodHistory = engagement.moods
                 state.todaysMood = engagement.moods.first(where: { dayKey(for: $0.date) == engagement.taskDateKey })?.mood
                 state.isPremium = isPremium
+                state.chart.isPremium = isPremium
+                state.compatibility.isPremium = isPremium
                 if engagement.askDateKey != today {
                     engagement.askDateKey = today
                     engagement.askCountToday = 0
@@ -355,6 +363,8 @@ struct HomeFeature {
                 state.showAskAstara = show
                 if show == false {
                     state.askQuestionText = ""
+                    state.askResponse = nil
+                    state.isAskingAstara = false
                 }
                 return .none
 
@@ -372,12 +382,14 @@ struct HomeFeature {
                 let sign = state.userSunSign
                 let horoscope = state.dailyHoroscope
                 state.askResponse = nil
+                state.isAskingAstara = true
                 return .run { send in
                     let answer = await askAstaraService.ask(question, sign, horoscope)
                     await send(.askAnswered(answer))
                 }
 
             case .askAnswered(let answer):
+                state.isAskingAstara = false
                 state.askResponse = answer
                 state.completedTasks.insert("ask_astara")
                 if state.isPremium == false, state.askQuotaRemaining > 0 {
@@ -407,11 +419,20 @@ struct HomeFeature {
                 state.timeTravelInsight = insight
                 return .none
 
+            case .chart(.requestPremium):
+                return .send(.profile(.setSubscriptionPresented(true)))
+
             case .chart:
                 return .none
 
+            case .daily(.requestPremium):
+                return .send(.profile(.setSubscriptionPresented(true)))
+
             case .daily:
                 return .none
+
+            case .compatibility(.requestPremium):
+                return .send(.profile(.setSubscriptionPresented(true)))
 
             case .compatibility:
                 return .none

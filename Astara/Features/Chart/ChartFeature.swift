@@ -11,6 +11,9 @@ struct ChartFeature {
         var showPlanetDetail: Bool = false
         var showHouseDetail: Bool = false
         var showAspectGrid: Bool = false
+        var isPremium: Bool = false
+        var showAIInterpretation: Bool = false
+        var showChartShare: Bool = false
     }
 
     enum Action: Equatable {
@@ -21,6 +24,9 @@ struct ChartFeature {
         case selectHouse(Int)
         case dismissHouseDetail
         case toggleAspectGrid
+        case requestPremium
+        case toggleAIInterpretation
+        case toggleChartShare
     }
 
     var body: some ReducerOf<Self> {
@@ -55,6 +61,17 @@ struct ChartFeature {
 
             case .toggleAspectGrid:
                 state.showAspectGrid.toggle()
+                return .none
+
+            case .requestPremium:
+                return .none
+
+            case .toggleAIInterpretation:
+                state.showAIInterpretation.toggle()
+                return .none
+
+            case .toggleChartShare:
+                state.showChartShare.toggle()
                 return .none
             }
         }

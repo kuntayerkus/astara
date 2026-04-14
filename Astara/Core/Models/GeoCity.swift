@@ -1,6 +1,6 @@
 import Foundation
 
-struct GeoCity: Codable, Equatable, Identifiable {
+struct GeoCity: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
     let name: String
     let country: String

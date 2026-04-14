@@ -1,6 +1,6 @@
 import Foundation
 
-struct Compatibility: Codable, Equatable, Identifiable {
+struct Compatibility: Codable, Equatable, Identifiable, Sendable {
     var id: String { "\(sign1.rawValue)-\(sign2.rawValue)" }
 
     let sign1: ZodiacSign

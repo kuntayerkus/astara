@@ -2415,6 +2415,159 @@
           }
         }
       }
+    },
+    "week360_premium_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haftalık Akış Premium'la"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly Flow with Premium"
+          }
+        }
+      }
+    },
+    "week360_premium_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm haftanın gökyüzü hareketlerini önceden gör ve planlarını yap."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See the sky movements of the whole week in advance and make your plans."
+          }
+        }
+      }
+    },
+    "weekly_flow_loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haftalık akış yükleniyor..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading weekly flow..."
+          }
+        }
+      }
+    },
+    "ask_quota_exhausted_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük Soru Hakkı Doldu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily Question Quota Exhausted"
+          }
+        }
+      }
+    },
+    "ask_quota_exhausted_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldızlara dilediğin kadar soru sormak için Astara Premium'a geç."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Astara Premium to ask the stars as many questions as you wish."
+          }
+        }
+      }
+    },
+    "ask_quota_remaining": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalan soru hakkı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questions remaining"
+          }
+        }
+      }
+    },
+    "ask_quota_unlimited": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınırsız soru hakkı (Premium)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited questions (Premium)"
+          }
+        }
+      }
+    },
+    "ask_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Örn: Aşk hayatım bu hafta nasıl?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g., How is my love life this week?"
+          }
+        }
+      }
+    },
+    "ask_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask"
+          }
+        }
+      }
     }
   }
 }

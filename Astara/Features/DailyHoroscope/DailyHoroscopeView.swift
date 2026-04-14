@@ -73,7 +73,10 @@ struct DailyHoroscopeView: View {
             get: { store.showArchive },
             set: { if !$0 { store.send(.toggleArchive) } }
         )) {
-            ArchiveView(sign: store.selectedSign)
+            ArchiveView(sign: store.selectedSign) {
+                    store.send(.toggleArchive)
+                    store.send(.requestPremium)
+                }
         }
         .onAppear {
             store.send(.onAppear(userSign: store.selectedSign))

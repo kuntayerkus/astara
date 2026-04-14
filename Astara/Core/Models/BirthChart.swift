@@ -1,6 +1,6 @@
 import Foundation
 
-struct BirthChart: Codable, Equatable {
+struct BirthChart: Codable, Equatable, Sendable {
     let planets: [Planet]
     let houses: [House]
     let aspects: [Aspect]

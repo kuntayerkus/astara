@@ -1,6 +1,6 @@
 import Foundation
 
-struct AstaraScore: Codable, Equatable {
+struct AstaraScore: Codable, Equatable, Sendable {
     let love: Int
     let work: Int
     let energy: Int

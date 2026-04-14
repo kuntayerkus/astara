@@ -1,6 +1,6 @@
 import Foundation
 
-struct Retrograde: Codable, Equatable, Identifiable {
+struct Retrograde: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
     let planet: PlanetKey
     let startDate: String

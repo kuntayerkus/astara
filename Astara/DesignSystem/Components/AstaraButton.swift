@@ -34,6 +34,7 @@ struct AstaraButton: View {
             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
             .overlay(borderOverlay)
         }
+        .buttonStyle(AstaraSpringButtonStyle())
         .disabled(isDisabled || isLoading)
         .opacity(isDisabled ? 0.5 : 1)
     }
@@ -73,6 +74,15 @@ struct AstaraButton: View {
         case .ghost:
             EmptyView()
         }
+    }
+}
+
+struct AstaraSpringButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .brightness(configuration.isPressed ? 0.04 : 0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

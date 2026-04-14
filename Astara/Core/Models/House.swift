@@ -1,6 +1,6 @@
 import Foundation
 
-struct House: Codable, Equatable, Identifiable {
+struct House: Codable, Equatable, Identifiable, Sendable {
     var id: Int { number }
 
     let number: Int

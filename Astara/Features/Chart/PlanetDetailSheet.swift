@@ -3,6 +3,8 @@ import SwiftUI
 struct PlanetDetailSheet: View {
     let chart: BirthChart
     let planetKey: PlanetKey
+    var isPremium: Bool = false
+    var onGoPremium: (() -> Void)? = nil
 
     private var planet: Planet? {
         chart.planet(for: planetKey)
@@ -29,10 +31,77 @@ struct PlanetDetailSheet: View {
                     if !planetAspects.isEmpty {
                         aspectsCard(aspects: planetAspects)
                     }
+
+                    // AI Interpretation (premium-gated)
+                    aiInterpretationSection
                 }
                 .padding(AstaraSpacing.lg)
             }
         }
+    }
+
+    // MARK: - AI Interpretation Section
+
+    private var aiInterpretationSection: some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+            HStack {
+                Image(systemName: "sparkles")
+                    .foregroundStyle(AstaraColors.gold)
+                Text(String(localized: "ai_interpretation"))
+                    .font(AstaraTypography.labelLarge)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                Spacer()
+                if !isPremium {
+                    Text("PREMIUM")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(AstaraColors.gold)
+                        .clipShape(Capsule())
+                }
+            }
+
+            if isPremium {
+                Text(String(localized: "ai_interpretation_placeholder"))
+                    .font(AstaraTypography.bodySmall)
+                    .foregroundStyle(AstaraColors.textSecondary)
+                    .lineSpacing(4)
+            } else {
+                ZStack {
+                    Text(String(localized: "ai_interpretation_placeholder"))
+                        .font(AstaraTypography.bodySmall)
+                        .foregroundStyle(AstaraColors.textSecondary)
+                        .lineSpacing(4)
+                        .blur(radius: 5)
+                        .allowsHitTesting(false)
+
+                    Button {
+                        Haptics.light()
+                        onGoPremium?()
+                    } label: {
+                        Label(String(localized: "unlock_interpretation"), systemImage: "lock.open.fill")
+                            .font(AstaraTypography.labelMedium)
+                            .foregroundStyle(AstaraColors.backgroundStart)
+                            .padding(.horizontal, AstaraSpacing.md)
+                            .padding(.vertical, AstaraSpacing.xs)
+                            .background(
+                                LinearGradient(
+                                    colors: [AstaraColors.gold, AstaraColors.goldLight],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .clipShape(Capsule())
+                            .shadow(color: AstaraColors.gold.opacity(0.4), radius: 10)
+                    }
+                    .buttonStyle(AstaraSpringButtonStyle())
+                }
+                .frame(minHeight: 72)
+            }
+        }
+        .padding(AstaraSpacing.md)
+        .astaraCard()
     }
 
     // MARK: - Header

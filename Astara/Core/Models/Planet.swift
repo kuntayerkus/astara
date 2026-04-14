@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Planet Key
 // CRITICAL: No Turkish characters — these match VPS API expectations exactly
 
-enum PlanetKey: String, Codable, CaseIterable, Identifiable {
+enum PlanetKey: String, Codable, CaseIterable, Identifiable, Sendable {
     case gunes, ay, merkur, venus, mars
     case jupiter, saturn, uranus, neptun, pluton
     case yukselen, mc, vertex
@@ -60,7 +60,7 @@ enum PlanetKey: String, Codable, CaseIterable, Identifiable {
 
 // MARK: - Planet Position
 
-struct Planet: Codable, Equatable, Identifiable {
+struct Planet: Codable, Equatable, Identifiable, Sendable {
     var id: String { key.rawValue }
 
     let key: PlanetKey

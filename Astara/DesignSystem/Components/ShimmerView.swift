@@ -2,35 +2,40 @@ import SwiftUI
 
 struct ShimmerView: View {
     var cornerRadius: CGFloat = AstaraSpacing.cornerRadiusMd
-    @State private var phase: CGFloat = 0
+    @State private var isAnimating = false
 
     var body: some View {
-        RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(AstaraColors.cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                .clear,
-                                Color.white.opacity(0.08),
-                                .clear,
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
+        GeometryReader { geometry in
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(AstaraColors.cardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: .clear, location: 0),
+                                    .init(color: AstaraColors.gold.opacity(0.05), location: 0.3),
+                                    .init(color: AstaraColors.goldLight.opacity(0.15), location: 0.5),
+                                    .init(color: AstaraColors.gold.opacity(0.05), location: 0.7),
+                                    .init(color: .clear, location: 1),
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .offset(x: phase)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .onAppear {
-                withAnimation(
-                    .linear(duration: 1.5)
-                    .repeatForever(autoreverses: false)
-                ) {
-                    phase = UIScreen.main.bounds.width
-                }
+                        .frame(width: geometry.size.width * 2)
+                        .offset(x: isAnimating ? geometry.size.width : -geometry.size.width * 2)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        }
+        .onAppear {
+            withAnimation(
+                .linear(duration: 1.6)
+                .repeatForever(autoreverses: false)
+            ) {
+                isAnimating = true
             }
+        }
     }
 }
 
