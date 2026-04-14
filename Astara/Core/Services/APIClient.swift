@@ -19,6 +19,7 @@ struct Endpoint {
     let body: (any Encodable)?
     let cachePolicy: CachePolicy?
     let isVPS: Bool
+    let isStaticData: Bool
 
     init(
         path: String,
@@ -26,7 +27,8 @@ struct Endpoint {
         queryItems: [URLQueryItem]? = nil,
         body: (any Encodable)? = nil,
         cachePolicy: CachePolicy? = nil,
-        isVPS: Bool = false
+        isVPS: Bool = false,
+        isStaticData: Bool = false
     ) {
         self.path = path
         self.method = method
@@ -34,6 +36,7 @@ struct Endpoint {
         self.body = body
         self.cachePolicy = cachePolicy
         self.isVPS = isVPS
+        self.isStaticData = isStaticData
     }
 }
 
@@ -74,7 +77,14 @@ extension APIClient: DependencyKey {
 
         return APIClient(
             request: { endpoint in
-                let baseURL = endpoint.isVPS ? environment.vpsURL : environment.baseURL
+                let baseURL: URL
+                if endpoint.isVPS {
+                    baseURL = environment.vpsURL
+                } else if endpoint.isStaticData {
+                    baseURL = environment.staticDataURL
+                } else {
+                    baseURL = environment.baseURL
+                }
 
                 guard var components = URLComponents(
                     url: baseURL.appendingPathComponent(endpoint.path),

@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Solar Fire-Style Natal Chart Wheel
+
 struct ChartWheelView: View {
     let chart: BirthChart
     var onPlanetTap: ((PlanetKey) -> Void)?
@@ -9,238 +11,327 @@ struct ChartWheelView: View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
             let center = CGPoint(x: size / 2, y: size / 2)
-            let outerRadius = size / 2 - 4
-            let zodiacRingWidth: CGFloat = size * 0.12
-            let innerZodiacRadius = outerRadius - zodiacRingWidth
-            let houseRingWidth: CGFloat = size * 0.28
-            let innerHouseRadius = innerZodiacRadius - houseRingWidth
-            let planetRingRadius = innerZodiacRadius - houseRingWidth * 0.5
-            let ascDegree = chart.ascendant?.degree ?? 0
+            let outerR = size / 2 - 2
+            let zodiacWidth: CGFloat = size * 0.1
+            let zodiacInnerR = outerR - zodiacWidth
+            let planetRingR = zodiacInnerR - size * 0.06
+            let houseInnerR = zodiacInnerR - size * 0.22
+            let aspectR = houseInnerR - 2
+            let ascDeg = chart.ascendant?.degree ?? 0
 
             ZStack {
-                // Layer 1: Zodiac ring (12 segments)
-                zodiacRing(
-                    center: center,
-                    outerRadius: outerRadius,
-                    innerRadius: innerZodiacRadius,
-                    ascDegree: ascDegree,
-                    size: size
-                )
-
-                // Layer 2: House cusps
-                houseCusps(
-                    center: center,
-                    outerRadius: innerZodiacRadius,
-                    innerRadius: innerHouseRadius,
-                    ascDegree: ascDegree,
-                    size: size
-                )
-
-                // Layer 3: Aspect lines
-                aspectLines(
-                    center: center,
-                    radius: innerHouseRadius * 0.95,
-                    ascDegree: ascDegree
-                )
-
-                // Layer 4: Planet glyphs
-                planetGlyphs(
-                    center: center,
-                    radius: planetRingRadius,
-                    ascDegree: ascDegree,
-                    size: size
-                )
-
-                // Layer 5: Center glow
+                // 1: Outer border circle
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [AstaraColors.gold.opacity(0.15), .clear],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: innerHouseRadius * 0.5
-                        )
-                    )
-                    .frame(width: innerHouseRadius, height: innerHouseRadius)
+                    .stroke(AstaraColors.gold.opacity(0.4), lineWidth: 1.5)
+                    .frame(width: outerR * 2, height: outerR * 2)
                     .position(center)
+
+                // 2: Zodiac ring (12 colored segments + symbols + tick marks)
+                zodiacRing(center: center, outerR: outerR, innerR: zodiacInnerR, ascDeg: ascDeg, size: size)
+
+                // 3: Inner zodiac border
+                Circle()
+                    .stroke(AstaraColors.gold.opacity(0.35), lineWidth: 1)
+                    .frame(width: zodiacInnerR * 2, height: zodiacInnerR * 2)
+                    .position(center)
+
+                // 4: House cusps (lines from zodiac inner to house inner)
+                houseCusps(center: center, outerR: zodiacInnerR, innerR: houseInnerR, ascDeg: ascDeg, size: size)
+
+                // 5: Inner circle border
+                Circle()
+                    .stroke(AstaraColors.gold.opacity(0.25), lineWidth: 1)
+                    .frame(width: houseInnerR * 2, height: houseInnerR * 2)
+                    .position(center)
+
+                // 6: Aspect web (inside the inner circle)
+                aspectLines(center: center, radius: aspectR, ascDeg: ascDeg)
+
+                // 7: Center glow
+                RadialGradient(
+                    colors: [AstaraColors.gold.opacity(0.08), .clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: houseInnerR * 0.4
+                )
+                .frame(width: houseInnerR * 0.8, height: houseInnerR * 0.8)
+                .position(center)
+
+                // 8: Planet glyphs (between zodiac inner and house inner)
+                planetGlyphs(center: center, ringOuter: zodiacInnerR, ringInner: houseInnerR, ascDeg: ascDeg, size: size)
+
+                // 9: House numbers (inside house ring)
+                houseNumbers(center: center, radius: houseInnerR + (zodiacInnerR - houseInnerR) * 0.15, ascDeg: ascDeg, size: size)
             }
             .frame(width: size, height: size)
         }
         .aspectRatio(1, contentMode: .fit)
     }
 
-    // MARK: - Angle Calculation
+    // MARK: - Angle Helpers
 
-    /// ASC at 9 o'clock (left). Astrology charts go counterclockwise.
-    private func canvasAngle(for eclipticDegree: Double, ascDegree: Double) -> Double {
-        180.0 + ascDegree - eclipticDegree
+    /// Converts ecliptic longitude to canvas angle.
+    /// ASC sits at 9 o'clock (180°). Chart goes counterclockwise.
+    private func canvasAngle(for eclipticDeg: Double, ascDeg: Double) -> Double {
+        180.0 + ascDeg - eclipticDeg
     }
 
-    private func pointOnCircle(center: CGPoint, radius: CGFloat, angleDegrees: Double) -> CGPoint {
-        let radians = angleDegrees * .pi / 180
+    private func point(center: CGPoint, radius: CGFloat, angleDeg: Double) -> CGPoint {
+        let rad = angleDeg * .pi / 180
         return CGPoint(
-            x: center.x + radius * cos(CGFloat(radians)),
-            y: center.y - radius * sin(CGFloat(radians)) // Y flipped in SwiftUI
+            x: center.x + radius * cos(CGFloat(rad)),
+            y: center.y - radius * sin(CGFloat(rad))
         )
     }
 
     // MARK: - Zodiac Ring
 
-    private func zodiacRing(center: CGPoint, outerRadius: CGFloat, innerRadius: CGFloat, ascDegree: Double, size: CGFloat) -> some View {
-        Canvas { context, _ in
-            for (index, sign) in ZodiacSign.allCases.enumerated() {
-                let startDeg = Double(index) * 30.0
-                let endDeg = startDeg + 30.0
+    private func zodiacRing(center: CGPoint, outerR: CGFloat, innerR: CGFloat, ascDeg: Double, size: CGFloat) -> some View {
+        Canvas { ctx, _ in
+            let tickR = outerR - (outerR - innerR) * 0.25
 
-                let startAngle = canvasAngle(for: startDeg, ascDegree: ascDegree)
-                let endAngle = canvasAngle(for: endDeg, ascDegree: ascDegree)
+            for (i, sign) in ZodiacSign.allCases.enumerated() {
+                let startEcl = Double(i) * 30.0
+                let endEcl = startEcl + 30.0
+                let startA = canvasAngle(for: startEcl, ascDeg: ascDeg)
+                let endA = canvasAngle(for: endEcl, ascDeg: ascDeg)
 
-                // Draw segment
-                var path = Path()
-                path.addArc(center: center, radius: outerRadius, startAngle: .degrees(-startAngle), endAngle: .degrees(-endAngle), clockwise: true)
-                path.addArc(center: center, radius: innerRadius, startAngle: .degrees(-endAngle), endAngle: .degrees(-startAngle), clockwise: false)
-                path.closeSubpath()
+                // Filled segment
+                var seg = Path()
+                seg.addArc(center: center, radius: outerR, startAngle: .degrees(-startA), endAngle: .degrees(-endA), clockwise: true)
+                seg.addArc(center: center, radius: innerR, startAngle: .degrees(-endA), endAngle: .degrees(-startA), clockwise: false)
+                seg.closeSubpath()
 
-                let elementColor = colorForElement(sign.element)
-                context.fill(path, with: .color(elementColor.opacity(0.15)))
-                context.stroke(path, with: .color(AstaraColors.gold.opacity(0.3)), lineWidth: 0.5)
+                let elemColor = elementColor(sign.element)
+                ctx.fill(seg, with: .color(elemColor.opacity(0.12)))
+                ctx.stroke(seg, with: .color(AstaraColors.gold.opacity(0.2)), lineWidth: 0.5)
+
+                // 5° tick marks inside the zodiac ring
+                for tick in stride(from: startEcl, to: endEcl, by: 5) {
+                    let a = canvasAngle(for: tick, ascDeg: ascDeg)
+                    let isMain = Int(tick) % 10 == 0
+                    let from = point(center: center, radius: outerR, angleDeg: a)
+                    let to = point(center: center, radius: isMain ? tickR : tickR + (outerR - tickR) * 0.4, angleDeg: a)
+                    var line = Path()
+                    line.move(to: from)
+                    line.addLine(to: to)
+                    ctx.stroke(line, with: .color(AstaraColors.gold.opacity(isMain ? 0.3 : 0.15)), lineWidth: 0.5)
+                }
             }
         }
         .frame(width: size, height: size)
         .overlay {
-            // Zodiac symbols
-            ForEach(Array(ZodiacSign.allCases.enumerated()), id: \.element) { index, sign in
-                let midDegree = Double(index) * 30.0 + 15.0
-                let angle = canvasAngle(for: midDegree, ascDegree: ascDegree)
-                let symbolRadius = (outerRadius + innerRadius) / 2
-                let point = pointOnCircle(center: center, radius: symbolRadius, angleDegrees: angle)
+            // Zodiac symbols centered in each segment
+            ForEach(Array(ZodiacSign.allCases.enumerated()), id: \.element) { i, sign in
+                let midEcl = Double(i) * 30.0 + 15.0
+                let a = canvasAngle(for: midEcl, ascDeg: ascDeg)
+                let symR = (outerR + innerR) / 2
+                let pt = point(center: center, radius: symR, angleDeg: a)
 
                 Text(sign.symbol)
-                    .font(.system(size: size * 0.035))
-                    .foregroundStyle(colorForElement(sign.element))
-                    .position(point)
+                    .font(.system(size: size * 0.032))
+                    .foregroundStyle(elementColor(sign.element).opacity(0.9))
+                    .position(pt)
             }
         }
     }
 
     // MARK: - House Cusps
 
-    private func houseCusps(center: CGPoint, outerRadius: CGFloat, innerRadius: CGFloat, ascDegree: Double, size: CGFloat) -> some View {
-        Canvas { context, _ in
+    private func houseCusps(center: CGPoint, outerR: CGFloat, innerR: CGFloat, ascDeg: Double, size: CGFloat) -> some View {
+        Canvas { ctx, _ in
             for house in chart.houses {
-                let angle = canvasAngle(for: house.degree, ascDegree: ascDegree)
-                let outer = pointOnCircle(center: center, radius: outerRadius, angleDegrees: angle)
-                let inner = pointOnCircle(center: center, radius: innerRadius, angleDegrees: angle)
+                let a = canvasAngle(for: house.degree, ascDeg: ascDeg)
+                let outerPt = point(center: center, radius: outerR, angleDeg: a)
+                let innerPt = point(center: center, radius: innerR, angleDeg: a)
 
                 var line = Path()
-                line.move(to: outer)
-                line.addLine(to: inner)
+                line.move(to: outerPt)
+                line.addLine(to: innerPt)
 
-                let isAngle = house.number == 1 || house.number == 4 || house.number == 7 || house.number == 10
-                let lineWidth: CGFloat = isAngle ? 1.5 : 0.5
-                let opacity: Double = isAngle ? 0.6 : 0.25
+                let isAngular = house.number == 1 || house.number == 4 || house.number == 7 || house.number == 10
+                let lw: CGFloat = isAngular ? 1.5 : 0.5
+                let opacity: Double = isAngular ? 0.55 : 0.2
+                ctx.stroke(line, with: .color(AstaraColors.gold.opacity(opacity)), lineWidth: lw)
 
-                context.stroke(line, with: .color(AstaraColors.gold.opacity(opacity)), lineWidth: lineWidth)
+                // Degree label at cusp (just inside zodiac ring)
+                if isAngular {
+                    let signDeg = Int(house.degree) % 30
+                    let labelR = outerR + 1
+                    let labelPt = point(center: center, radius: labelR, angleDeg: a)
+                    let text = Text("\(signDeg)°")
+                        .font(.system(size: size * 0.018, weight: .medium))
+                        .foregroundColor(AstaraColors.gold.opacity(0.6))
+                    ctx.draw(ctx.resolve(text), at: labelPt)
+                }
             }
         }
         .frame(width: size, height: size)
-        .overlay {
-            // House numbers
-            ForEach(chart.houses, id: \.number) { house in
-                let nextHouse = chart.houses.first(where: { $0.number == (house.number % 12) + 1 })
-                let nextDegree = nextHouse?.degree ?? (house.degree + 30)
-                let midDegree = midpointDegree(from: house.degree, to: nextDegree)
-                let angle = canvasAngle(for: midDegree, ascDegree: ascDegree)
-                let labelRadius = innerRadius + (outerRadius - innerRadius) * 0.2
-                let point = pointOnCircle(center: center, radius: labelRadius, angleDegrees: angle)
+    }
 
-                Text(house.romanNumeral)
-                    .font(.system(size: size * 0.025))
-                    .foregroundStyle(AstaraColors.textTertiary)
-                    .position(point)
-            }
+    // MARK: - House Numbers
+
+    private func houseNumbers(center: CGPoint, radius: CGFloat, ascDeg: Double, size: CGFloat) -> some View {
+        ForEach(chart.houses, id: \.number) { house in
+            let nextHouse = chart.houses.first { $0.number == (house.number % 12) + 1 }
+            let nextDeg = nextHouse?.degree ?? (house.degree + 30)
+            let midDeg = midpoint(from: house.degree, to: nextDeg)
+            let a = canvasAngle(for: midDeg, ascDeg: ascDeg)
+            let pt = point(center: center, radius: radius, angleDeg: a)
+
+            Text(house.romanNumeral)
+                .font(.system(size: size * 0.022, weight: .light))
+                .foregroundStyle(AstaraColors.textTertiary.opacity(0.6))
+                .position(pt)
         }
     }
 
     // MARK: - Aspect Lines
 
-    private func aspectLines(center: CGPoint, radius: CGFloat, ascDegree: Double) -> some View {
-        Canvas { context, _ in
+    private func aspectLines(center: CGPoint, radius: CGFloat, ascDeg: Double) -> some View {
+        Canvas { ctx, _ in
             for aspect in chart.aspects {
                 guard let p1 = chart.planet(for: aspect.planet1),
                       let p2 = chart.planet(for: aspect.planet2) else { continue }
 
-                let angle1 = canvasAngle(for: p1.degree, ascDegree: ascDegree)
-                let angle2 = canvasAngle(for: p2.degree, ascDegree: ascDegree)
-
-                let point1 = pointOnCircle(center: center, radius: radius, angleDegrees: angle1)
-                let point2 = pointOnCircle(center: center, radius: radius, angleDegrees: angle2)
+                let a1 = canvasAngle(for: p1.degree, ascDeg: ascDeg)
+                let a2 = canvasAngle(for: p2.degree, ascDeg: ascDeg)
+                let pt1 = point(center: center, radius: radius, angleDeg: a1)
+                let pt2 = point(center: center, radius: radius, angleDeg: a2)
 
                 var line = Path()
-                line.move(to: point1)
-                line.addLine(to: point2)
+                line.move(to: pt1)
+                line.addLine(to: pt2)
 
-                let color = colorForAspect(aspect.type)
+                let color = aspectColor(aspect.type)
+                let strength = max(0.2, 1.0 - aspect.orb / aspect.type.defaultOrb)
                 let style = StrokeStyle(
-                    lineWidth: 0.8,
-                    dash: aspect.isApplying ? [4, 3] : []
+                    lineWidth: aspect.type.isHarmonious ? 0.8 : 1.0,
+                    dash: aspect.type == .opposition ? [4, 3] : (aspect.type == .square ? [2, 2] : [])
                 )
-                context.stroke(line, with: .color(color.opacity(0.5)), style: style)
+                ctx.stroke(line, with: .color(color.opacity(strength * 0.6)), style: style)
             }
         }
     }
 
     // MARK: - Planet Glyphs
 
-    private func planetGlyphs(center: CGPoint, radius: CGFloat, ascDegree: Double, size: CGFloat) -> some View {
-        let planets = resolveOverlaps(chart.planets, ascDegree: ascDegree)
+    private func planetGlyphs(center: CGPoint, ringOuter: CGFloat, ringInner: CGFloat, ascDeg: Double, size: CGFloat) -> some View {
+        let planets = spreadPlanets(chart.planets, ascDeg: ascDeg)
+        let defaultR = ringOuter - (ringOuter - ringInner) * 0.45
 
         return ZStack {
-            ForEach(planets) { planet in
-                let angle = canvasAngle(for: planet.degree, ascDegree: ascDegree)
-                let point = pointOnCircle(center: center, radius: radius, angleDegrees: angle)
+            ForEach(planets) { entry in
+                let a = canvasAngle(for: entry.displayDegree, ascDeg: ascDeg)
+                let r = entry.isOffset ? defaultR - size * 0.04 : defaultR
+                let pt = point(center: center, radius: r, angleDeg: a)
+
+                // Thin line from actual position on zodiac ring to glyph
+                let actualA = canvasAngle(for: entry.planet.degree, ascDeg: ascDeg)
+                let zodiacPt = point(center: center, radius: ringOuter - 1, angleDeg: actualA)
+                let glyphEdgePt = point(center: center, radius: r + size * 0.015, angleDeg: a)
+
+                Canvas { ctx, _ in
+                    var tick = Path()
+                    tick.move(to: zodiacPt)
+                    tick.addLine(to: glyphEdgePt)
+                    ctx.stroke(tick, with: .color(AstaraColors.gold.opacity(0.15)), lineWidth: 0.5)
+                }
+                .frame(width: size, height: size)
+                .allowsHitTesting(false)
 
                 Button {
-                    onPlanetTap?(planet.key)
+                    onPlanetTap?(entry.planet.key)
                 } label: {
                     VStack(spacing: 0) {
-                        Text(planet.key.symbol)
-                            .font(.system(size: size * 0.04, weight: .medium))
-                            .foregroundStyle(planet.isRetrograde ? AstaraColors.ember400 : AstaraColors.gold)
+                        Text(entry.planet.key.symbol)
+                            .font(.system(size: size * 0.036, weight: .medium))
+                            .foregroundStyle(planetColor(entry.planet))
 
-                        if planet.isRetrograde {
-                            Text("R")
-                                .font(.system(size: size * 0.018, weight: .bold))
-                                .foregroundStyle(AstaraColors.ember400)
-                        }
+                        // Degree below glyph
+                        Text(shortDegree(entry.planet))
+                            .font(.system(size: size * 0.016))
+                            .foregroundStyle(AstaraColors.textTertiary.opacity(0.7))
                     }
                 }
                 .buttonStyle(.plain)
-                .position(point)
+                .position(pt)
             }
         }
     }
 
-    // MARK: - Overlap Resolution
+    // MARK: - Planet Spread (avoid overlaps)
 
-    private func resolveOverlaps(_ planets: [Planet], ascDegree: Double) -> [Planet] {
-        // For now return as-is — visual overlap is acceptable at this scale.
-        // Future enhancement: radially offset planets within 5° of each other.
-        planets
+    private struct SpreadEntry: Identifiable {
+        var id: String { planet.id }
+        let planet: Planet
+        let displayDegree: Double
+        let isOffset: Bool
+    }
+
+    private func spreadPlanets(_ planets: [Planet], ascDeg: Double) -> [SpreadEntry] {
+        let sorted = planets.sorted { $0.degree < $1.degree }
+        let minGap: Double = 8.0
+        var entries: [SpreadEntry] = []
+
+        for planet in sorted {
+            var displayDeg = planet.degree
+            var isOffset = false
+
+            for existing in entries {
+                let dist = abs(displayDeg - existing.displayDegree)
+                let shortDist = min(dist, 360 - dist)
+                if shortDist < minGap {
+                    displayDeg = existing.displayDegree + minGap
+                    if displayDeg >= 360 { displayDeg -= 360 }
+                    isOffset = true
+                }
+            }
+
+            entries.append(SpreadEntry(planet: planet, displayDegree: displayDeg, isOffset: isOffset))
+        }
+
+        return entries
     }
 
     // MARK: - Helpers
 
-    private func midpointDegree(from start: Double, to end: Double) -> Double {
+    private func midpoint(from start: Double, to end: Double) -> Double {
         if end >= start {
             return (start + end) / 2
-        } else {
-            let mid = (start + end + 360) / 2
-            return mid.truncatingRemainder(dividingBy: 360)
+        }
+        let mid = (start + end + 360) / 2
+        return mid.truncatingRemainder(dividingBy: 360)
+    }
+
+    private func shortDegree(_ planet: Planet) -> String {
+        let deg = Int(planet.degree) % 30
+        let retro = planet.isRetrograde ? "r" : ""
+        return "\(deg)°\(retro)"
+    }
+
+    private func planetColor(_ planet: Planet) -> Color {
+        if planet.isRetrograde {
+            return AstaraColors.ember400
+        }
+        switch planet.key {
+        case .gunes: return AstaraColors.gold
+        case .ay: return AstaraColors.mist400
+        case .merkur: return Color(hex: "#A8D8EA")
+        case .venus: return AstaraColors.sage400
+        case .mars: return AstaraColors.fire
+        case .jupiter: return Color(hex: "#C9A96E")
+        case .saturn: return Color(hex: "#8B7340")
+        case .uranus: return AstaraColors.air
+        case .neptun: return AstaraColors.water
+        case .pluton: return Color(hex: "#9B59B6")
+        case .yukselen: return AstaraColors.gold
+        case .mc: return AstaraColors.goldLight
+        case .vertex: return AstaraColors.textTertiary
         }
     }
 
-    private func colorForElement(_ element: Element) -> Color {
+    private func elementColor(_ element: Element) -> Color {
         switch element {
         case .fire: AstaraColors.fire
         case .earth: AstaraColors.earth
@@ -249,11 +340,13 @@ struct ChartWheelView: View {
         }
     }
 
-    private func colorForAspect(_ type: AspectType) -> Color {
+    private func aspectColor(_ type: AspectType) -> Color {
         switch type {
         case .conjunction: AstaraColors.gold
-        case .sextile, .trine: AstaraColors.sage400
-        case .square, .opposition: AstaraColors.fire
+        case .sextile: AstaraColors.sage400
+        case .trine: AstaraColors.air
+        case .square: AstaraColors.fire
+        case .opposition: AstaraColors.ember400
         }
     }
 }
@@ -262,6 +355,6 @@ struct ChartWheelView: View {
     ZStack {
         GradientBackground()
         ChartWheelView(chart: .preview)
-            .padding(24)
+            .padding(16)
     }
 }

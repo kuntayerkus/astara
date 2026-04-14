@@ -33,6 +33,8 @@ struct PersistenceClient {
         _ longitude: Double,
         _ timezone: String
     ) async -> Void
+    var setPremiumStatus: @Sendable (_ isPremium: Bool) async -> Void
+    var updateEngagement: @Sendable (_ engagement: UserEngagementState) async -> Void
 }
 
 // MARK: - Sendable DTO for cross-isolation transfer
@@ -50,6 +52,47 @@ struct UserDTO: Sendable, Equatable {
     let locale: String
     let onboardingCompleted: Bool
     let createdAt: Date
+    let engagement: UserEngagementState
+}
+
+struct MoodEntry: Codable, Equatable, Sendable, Identifiable {
+    let id: UUID
+    let date: Date
+    let mood: Int
+    let note: String
+
+    init(id: UUID = UUID(), date: Date, mood: Int, note: String) {
+        self.id = id
+        self.date = date
+        self.mood = mood
+        self.note = note
+    }
+}
+
+struct UserEngagementState: Equatable, Sendable {
+    var streakCount: Int
+    var longestStreak: Int
+    var lastOpenDate: Date?
+    var taskDateKey: String
+    var completedTasks: Set<String>
+    var moods: [MoodEntry]
+    var lastShareDate: Date?
+    var askDateKey: String
+    var askCountToday: Int
+    var journalCount: Int
+
+    static let empty = UserEngagementState(
+        streakCount: 0,
+        longestStreak: 0,
+        lastOpenDate: nil,
+        taskDateKey: "",
+        completedTasks: [],
+        moods: [],
+        lastShareDate: nil,
+        askDateKey: "",
+        askCountToday: 0,
+        journalCount: 0
+    )
 }
 
 extension PersistenceClient: DependencyKey {
@@ -90,7 +133,8 @@ extension PersistenceClient: DependencyKey {
                     isPremium: user.isPremium,
                     locale: user.locale,
                     onboardingCompleted: user.onboardingCompleted,
-                    createdAt: user.createdAt
+                    createdAt: user.createdAt,
+                    engagement: decodeEngagement(from: user)
                 )
             }
         },
@@ -109,13 +153,50 @@ extension PersistenceClient: DependencyKey {
                 user.birthTimezone = timezone
                 try? ctx.save()
             }
+        },
+
+        setPremiumStatus: { isPremium in
+            await MainActor.run {
+                let ctx = ModelContainer.astara.mainContext
+                let descriptor = FetchDescriptor<User>()
+                guard let user = (try? ctx.fetch(descriptor))?.first else { return }
+                user.isPremium = isPremium
+                try? ctx.save()
+            }
+        },
+
+        updateEngagement: { engagement in
+            await MainActor.run {
+                let ctx = ModelContainer.astara.mainContext
+                let descriptor = FetchDescriptor<User>()
+                guard let user = (try? ctx.fetch(descriptor))?.first else { return }
+
+                user.streakCount = engagement.streakCount
+                user.longestStreak = engagement.longestStreak
+                user.lastOpenDate = engagement.lastOpenDate
+                user.taskDateKey = engagement.taskDateKey
+                user.completedTasksCSV = engagement.completedTasks.sorted().joined(separator: ",")
+                user.lastShareDate = engagement.lastShareDate
+                user.askDateKey = engagement.askDateKey
+                user.askCountToday = engagement.askCountToday
+                user.journalCount = engagement.journalCount
+
+                if let moodData = try? JSONEncoder().encode(engagement.moods),
+                   let moodJSON = String(data: moodData, encoding: .utf8) {
+                    user.moodHistoryJSON = moodJSON
+                }
+
+                try? ctx.save()
+            }
         }
     )
 
     static let previewValue = PersistenceClient(
         saveUser: { _, _, _, _, _, _, _ in },
         loadUser: { nil },
-        updateUser: { _, _, _, _, _, _, _ in }
+        updateUser: { _, _, _, _, _, _, _ in },
+        setPremiumStatus: { _ in },
+        updateEngagement: { _ in }
     )
 }
 
@@ -124,4 +205,34 @@ extension DependencyValues {
         get { self[PersistenceClient.self] }
         set { self[PersistenceClient.self] = newValue }
     }
+}
+
+private func decodeEngagement(from user: User) -> UserEngagementState {
+    let tasks = Set(
+        user.completedTasksCSV
+            .split(separator: ",")
+            .map(String.init)
+            .filter { !$0.isEmpty }
+    )
+
+    let moods: [MoodEntry]
+    if let data = user.moodHistoryJSON.data(using: .utf8),
+       let decoded = try? JSONDecoder().decode([MoodEntry].self, from: data) {
+        moods = decoded
+    } else {
+        moods = []
+    }
+
+    return UserEngagementState(
+        streakCount: user.streakCount,
+        longestStreak: user.longestStreak,
+        lastOpenDate: user.lastOpenDate,
+        taskDateKey: user.taskDateKey,
+        completedTasks: tasks,
+        moods: moods,
+        lastShareDate: user.lastShareDate,
+        askDateKey: user.askDateKey,
+        askCountToday: user.askCountToday,
+        journalCount: user.journalCount
+    )
 }

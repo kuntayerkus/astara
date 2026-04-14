@@ -27,14 +27,14 @@ extension HoroscopeService: DependencyKey {
 
                 let endpoint = Endpoint(
                     path: "/data/daily-horoscope.json",
-                    cachePolicy: .dailyHoroscope
+                    cachePolicy: .dailyHoroscope,
+                    isStaticData: true
                 )
 
                 let data = try await apiClient.request(endpoint)
                 let response = try JSONDecoder().decode(DailyHoroscopeResponse.self, from: data)
                 let horoscopes = response.toDailyHoroscopes()
 
-                // Cache the mapped domain models
                 if let cacheData = try? JSONEncoder().encode(horoscopes) {
                     await cacheService.set(cacheKey, cacheData, .dailyHoroscope)
                 }
@@ -51,7 +51,8 @@ extension HoroscopeService: DependencyKey {
 
                 let endpoint = Endpoint(
                     path: "/data/daily-energy.json",
-                    cachePolicy: .dailyEnergy
+                    cachePolicy: .dailyEnergy,
+                    isStaticData: true
                 )
 
                 let data = try await apiClient.request(endpoint)
@@ -71,7 +72,8 @@ extension HoroscopeService: DependencyKey {
 
                 let endpoint = Endpoint(
                     path: "/data/planet-positions.json",
-                    cachePolicy: .planetPositions
+                    cachePolicy: .planetPositions,
+                    isStaticData: true
                 )
 
                 let data = try await apiClient.request(endpoint)
@@ -94,7 +96,8 @@ extension HoroscopeService: DependencyKey {
 
                 let endpoint = Endpoint(
                     path: "/data/retro-calendar.json",
-                    cachePolicy: .retroCalendar
+                    cachePolicy: .retroCalendar,
+                    isStaticData: true
                 )
 
                 let data = try await apiClient.request(endpoint)

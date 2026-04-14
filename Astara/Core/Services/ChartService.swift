@@ -10,6 +10,7 @@ struct ChartService {
 extension ChartService: DependencyKey {
     static let liveValue: ChartService = {
         @Dependency(\.cacheService) var cacheService
+        @Dependency(\.astrologyEngine) var astrologyEngine
 
         return ChartService(
             calculateChart: { date, time, lat, lng, timezone in
@@ -27,11 +28,22 @@ extension ChartService: DependencyKey {
 
                 // Primary: swiss.grio.works (owned VPS — direct, no proxy)
                 // Fallback: merkurmagduru.com (same backend via proxy, no key needed)
+                // Final fallback: local approximation engine (legacy-compatible low-precision model)
                 let chart: BirthChart
                 do {
-                    chart = try await fetchFromVPS(params: params)
+                    let remote = try await fetchFromVPS(params: params)
+                    chart = astrologyEngine.validateChart(remote)
+                        ? remote
+                        : try astrologyEngine.fallbackChart(date, time, lat, lng, timezone)
                 } catch {
-                    chart = try await fetchFromLegacy(params: params)
+                    do {
+                        let remote = try await fetchFromLegacy(params: params)
+                        chart = astrologyEngine.validateChart(remote)
+                            ? remote
+                            : try astrologyEngine.fallbackChart(date, time, lat, lng, timezone)
+                    } catch {
+                        chart = try astrologyEngine.fallbackChart(date, time, lat, lng, timezone)
+                    }
                 }
 
                 if let chartData = try? JSONEncoder().encode(chart) {

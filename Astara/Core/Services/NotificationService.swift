@@ -1,13 +1,16 @@
 import Foundation
 import UserNotifications
+import UIKit
 import ComposableArchitecture
 
 @DependencyClient
 struct NotificationService {
     var requestPermission: @Sendable () async -> Bool = { false }
     var scheduleDaily: @Sendable (_ hour: Int, _ minute: Int) async -> Void
+    var scheduleTransitAlert: @Sendable (_ title: String, _ body: String, _ afterSeconds: TimeInterval) async -> Void
     var cancelAll: @Sendable () async -> Void
     var isAuthorized: @Sendable () async -> Bool = { false }
+    var syncDeviceToken: @Sendable (_ token: String) async throws -> Void
 }
 
 extension NotificationService: DependencyKey {
@@ -15,7 +18,13 @@ extension NotificationService: DependencyKey {
         requestPermission: {
             let center = UNUserNotificationCenter.current()
             do {
-                return try await center.requestAuthorization(options: [.alert, .badge, .sound])
+                let granted = try await center.requestAuthorization(options: [.alert, .badge, .sound])
+                if granted {
+                    await MainActor.run {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+                return granted
             } catch {
                 return false
             }
@@ -44,6 +53,19 @@ extension NotificationService: DependencyKey {
             try? await center.add(request)
         },
 
+        scheduleTransitAlert: { title, body, afterSeconds in
+            let center = UNUserNotificationCenter.current()
+            let content = UNMutableNotificationContent()
+            content.title = title
+            content.body = body
+            content.sound = .default
+            content.userInfo = ["type": "transit_alert"]
+
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(5, afterSeconds), repeats: false)
+            let request = UNNotificationRequest(identifier: "astara.transit.\(UUID().uuidString)", content: content, trigger: trigger)
+            try? await center.add(request)
+        },
+
         cancelAll: {
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         },
@@ -51,14 +73,33 @@ extension NotificationService: DependencyKey {
         isAuthorized: {
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             return settings.authorizationStatus == .authorized
+        },
+
+        syncDeviceToken: { token in
+            @Dependency(\.apiClient) var apiClient
+
+            struct NotificationTokenRequest: Encodable {
+                let apnsToken: String
+                let platform: String
+            }
+
+            let endpoint = Endpoint(
+                path: "notifications/token",
+                method: .post,
+                body: NotificationTokenRequest(apnsToken: token, platform: "ios")
+            )
+
+            _ = try await apiClient.request(endpoint)
         }
     )
 
     static let previewValue = NotificationService(
         requestPermission: { true },
         scheduleDaily: { _, _ in },
+        scheduleTransitAlert: { _, _, _ in },
         cancelAll: {},
-        isAuthorized: { true }
+        isAuthorized: { true },
+        syncDeviceToken: { _ in }
     )
 }
 

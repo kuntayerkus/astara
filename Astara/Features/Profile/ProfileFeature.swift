@@ -8,6 +8,11 @@ struct ProfileFeature {
         var userName: String = ""
         var birthCity: String = ""
         var birthDate: Date = Date()
+        var birthTime: Date?
+        var birthTimeUnknown: Bool = false
+        var birthLatitude: Double = 0
+        var birthLongitude: Double = 0
+        var birthTimezone: String = "Europe/Istanbul"
         var isPremium: Bool = false
         var subscriptionStatus: SubscriptionStatus = .unknown
         var notificationsEnabled: Bool = false
@@ -15,31 +20,62 @@ struct ProfileFeature {
         var showEditBirthData: Bool = false
         var showSubscription: Bool = false
         var isLoadingSubscription: Bool = false
+        var purchaseErrorMessage: String?
     }
 
     enum Action: Equatable {
         case onAppear
+        case loadUserData
+        case userDataLoaded(UserDTO)
         case checkNotificationStatus
         case notificationStatusResult(Bool)
         case checkSubscriptionStatus
         case subscriptionStatusResult(SubscriptionStatus)
         case toggleNotifications(Bool)
         case setDailyNotificationHour(Int)
-        case toggleEditBirthData
-        case toggleSubscription
+        case showEditBirthData
+        case dismissEditBirthData
+        case birthDataSaved
+        case setSubscriptionPresented(Bool)
+        case purchaseMonthly
+        case purchaseYearly
+        case restorePurchases
+        case purchaseFinished(SubscriptionStatus)
+        case purchaseFailed(String)
     }
 
     @Dependency(\.notificationService) var notificationService
     @Dependency(\.subscriptionService) var subscriptionService
+    @Dependency(\.persistenceClient) var persistenceClient
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .onAppear:
                 return .merge(
+                    .send(.loadUserData),
                     .send(.checkNotificationStatus),
                     .send(.checkSubscriptionStatus)
                 )
+
+            case .loadUserData:
+                return .run { send in
+                    if let user = await persistenceClient.loadUser() {
+                        await send(.userDataLoaded(user))
+                    }
+                }
+
+            case .userDataLoaded(let user):
+                state.userName = user.name
+                state.birthCity = user.birthCity
+                state.birthDate = user.birthDate
+                state.birthTime = user.birthTime
+                state.birthTimeUnknown = user.birthTimeUnknown
+                state.birthLatitude = user.birthLatitude
+                state.birthLongitude = user.birthLongitude
+                state.birthTimezone = user.birthTimezone
+                state.isPremium = user.isPremium
+                return .none
 
             case .checkNotificationStatus:
                 return .run { send in
@@ -92,12 +128,77 @@ struct ProfileFeature {
                 }
                 return .none
 
-            case .toggleEditBirthData:
-                state.showEditBirthData.toggle()
+            case .showEditBirthData:
+                state.showEditBirthData = true
                 return .none
 
-            case .toggleSubscription:
-                state.showSubscription.toggle()
+            case .dismissEditBirthData:
+                state.showEditBirthData = false
+                return .send(.loadUserData)
+
+            case .birthDataSaved:
+                state.showEditBirthData = false
+                return .send(.loadUserData)
+
+            case .setSubscriptionPresented(let isPresented):
+                state.showSubscription = isPresented
+                if isPresented {
+                    state.purchaseErrorMessage = nil
+                }
+                return .none
+
+            case .purchaseMonthly:
+                state.isLoadingSubscription = true
+                state.purchaseErrorMessage = nil
+                return .run { send in
+                    do {
+                        let status = try await subscriptionService.purchase(.monthlyPremium)
+                        await send(.purchaseFinished(status))
+                    } catch {
+                        await send(.purchaseFailed(error.localizedDescription))
+                    }
+                }
+
+            case .purchaseYearly:
+                state.isLoadingSubscription = true
+                state.purchaseErrorMessage = nil
+                return .run { send in
+                    do {
+                        let status = try await subscriptionService.purchase(.yearlyPremium)
+                        await send(.purchaseFinished(status))
+                    } catch {
+                        await send(.purchaseFailed(error.localizedDescription))
+                    }
+                }
+
+            case .restorePurchases:
+                state.isLoadingSubscription = true
+                state.purchaseErrorMessage = nil
+                return .run { send in
+                    do {
+                        let status = try await subscriptionService.restore()
+                        await send(.purchaseFinished(status))
+                    } catch {
+                        await send(.purchaseFailed(error.localizedDescription))
+                    }
+                }
+
+            case .purchaseFinished(let status):
+                state.isLoadingSubscription = false
+                state.subscriptionStatus = status
+                state.isPremium = {
+                    if case .premium = status { return true }
+                    return false
+                }()
+                state.showSubscription = false
+                let isPremium = state.isPremium
+                return .run { _ in
+                    await persistenceClient.setPremiumStatus(isPremium)
+                }
+
+            case .purchaseFailed(let message):
+                state.isLoadingSubscription = false
+                state.purchaseErrorMessage = message
                 return .none
             }
         }

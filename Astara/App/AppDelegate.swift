@@ -1,4 +1,5 @@
 import UIKit
+import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -15,8 +16,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        // TODO: Send token to backend in v2
-        print("APNs token: \(token)")
+        NotificationCenter.default.post(
+            name: .astaraDidRegisterDeviceToken,
+            object: nil,
+            userInfo: ["token": token]
+        )
     }
 
     func application(
@@ -43,7 +47,28 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        // TODO: Handle notification tap (deep link to relevant screen)
+        let userInfo = response.notification.request.content.userInfo
+        if let deepLink = userInfo["deep_link"] as? String, let url = URL(string: deepLink) {
+            NotificationCenter.default.post(name: .astaraDidOpenDeepLink, object: url)
+        } else if let type = userInfo["type"] as? String {
+            let path: String
+            switch type {
+            case "daily_energy":
+                path = AppConstants.DeepLink.dailyPath
+            default:
+                path = AppConstants.DeepLink.chartPath
+            }
+
+            if let url = URL(string: "\(AppConstants.DeepLink.scheme)://\(path)") {
+                NotificationCenter.default.post(name: .astaraDidOpenDeepLink, object: url)
+            }
+        }
+
         completionHandler()
     }
+}
+
+extension Notification.Name {
+    static let astaraDidRegisterDeviceToken = Notification.Name("astara.didRegisterDeviceToken")
+    static let astaraDidOpenDeepLink = Notification.Name("astara.didOpenDeepLink")
 }

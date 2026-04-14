@@ -5,10 +5,13 @@ struct EditBirthDataView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
+    var onSave: (() -> Void)?
+
     @State private var birthDate = Date()
     @State private var birthTime = Date()
     @State private var birthCity = ""
     @State private var timeUnknown = false
+    @State private var isSaving = false
 
     var body: some View {
         ZStack {
@@ -82,8 +85,8 @@ struct EditBirthDataView: View {
 
                         AstaraButton(title: String(localized: "save_changes"), style: .primary) {
                             saveChanges()
-                            dismiss()
                         }
+                        .disabled(isSaving)
                     }
                     .padding(.horizontal, AstaraSpacing.lg)
                     .padding(.bottom, AstaraSpacing.xxxl)
@@ -107,12 +110,19 @@ struct EditBirthDataView: View {
     }
 
     private func saveChanges() {
+        isSaving = true
         let descriptor = FetchDescriptor<User>()
-        guard let user = (try? modelContext.fetch(descriptor))?.first else { return }
+        guard let user = (try? modelContext.fetch(descriptor))?.first else {
+            isSaving = false
+            return
+        }
         user.birthDate = birthDate
         user.birthTime = timeUnknown ? nil : birthTime
         user.birthTimeUnknown = timeUnknown
         try? modelContext.save()
+        isSaving = false
+        onSave?()
+        dismiss()
     }
 }
 

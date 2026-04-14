@@ -17,6 +17,7 @@ struct DailyHoroscopeView: View {
 
                 // Sign selector carousel
                 SignSelectorView(selectedSign: store.selectedSign) { sign in
+                    Haptics.selection()
                     store.send(.selectSign(sign))
                 }
                 .padding(.bottom, AstaraSpacing.md)
@@ -36,8 +37,16 @@ struct DailyHoroscopeView: View {
                             emptyState
                         }
 
+                        if let errorMessage = store.errorMessage {
+                            Text(errorMessage)
+                                .font(AstaraTypography.caption)
+                                .foregroundStyle(AstaraColors.ember400)
+                                .padding(.horizontal, AstaraSpacing.lg)
+                        }
+
                         // Archive button
                         Button {
+                            Haptics.selection()
                             store.send(.toggleArchive)
                         } label: {
                             HStack(spacing: AstaraSpacing.xs) {
@@ -53,6 +62,10 @@ struct DailyHoroscopeView: View {
                     }
                     .padding(.bottom, AstaraSpacing.xxxl)
                     .animation(.easeInOut(duration: 0.25), value: store.selectedSign)
+                }
+                .refreshable {
+                    Haptics.selection()
+                    store.send(.refreshHoroscopes)
                 }
             }
         }

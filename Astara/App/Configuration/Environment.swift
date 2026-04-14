@@ -11,10 +11,16 @@ enum APIEnvironment {
                let url = URL(string: urlString) {
                 return url
             }
-            return URL(string: "https://astara.app/api")!
+            return URL(string: "https://merkurmagduru.com/api")!
         case .staging:
-            return URL(string: "http://localhost:3000/api")!
+            return URL(string: "https://merkurmagduru.com/api")!
         }
+    }
+
+    /// Static data files live at merkurmagduru.com root (no /api prefix).
+    /// Endpoints like /data/daily-horoscope.json use this base.
+    var staticDataURL: URL {
+        URL(string: "https://merkurmagduru.com")!
     }
 
     var legacyBaseURL: URL {

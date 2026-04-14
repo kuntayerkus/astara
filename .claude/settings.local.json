@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:docs.codemagic.io)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(xcodegen generate:*)",
+      "Bash(~/.mint/bin/xcodegen generate:*)",
+      "Bash(/opt/homebrew/bin/xcodegen generate:*)",
+      "Bash(mint run:*)"
     ]
   }
 }

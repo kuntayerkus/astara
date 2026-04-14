@@ -23,6 +23,18 @@ final class User {
     var onboardingCompleted: Bool
     var createdAt: Date
 
+    // Engagement
+    var streakCount: Int
+    var longestStreak: Int
+    var lastOpenDate: Date?
+    var taskDateKey: String
+    var completedTasksCSV: String
+    var moodHistoryJSON: String
+    var lastShareDate: Date?
+    var askDateKey: String
+    var askCountToday: Int
+    var journalCount: Int
+
     init(
         id: UUID = UUID(),
         name: String = "",
@@ -36,7 +48,17 @@ final class User {
         isPremium: Bool = false,
         locale: String = "tr",
         onboardingCompleted: Bool = false,
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        streakCount: Int = 0,
+        longestStreak: Int = 0,
+        lastOpenDate: Date? = nil,
+        taskDateKey: String = "",
+        completedTasksCSV: String = "",
+        moodHistoryJSON: String = "[]",
+        lastShareDate: Date? = nil,
+        askDateKey: String = "",
+        askCountToday: Int = 0,
+        journalCount: Int = 0
     ) {
         self.id = id
         self.name = name
@@ -51,5 +73,15 @@ final class User {
         self.locale = locale
         self.onboardingCompleted = onboardingCompleted
         self.createdAt = createdAt
+        self.streakCount = streakCount
+        self.longestStreak = longestStreak
+        self.lastOpenDate = lastOpenDate
+        self.taskDateKey = taskDateKey
+        self.completedTasksCSV = completedTasksCSV
+        self.moodHistoryJSON = moodHistoryJSON
+        self.lastShareDate = lastShareDate
+        self.askDateKey = askDateKey
+        self.askCountToday = askCountToday
+        self.journalCount = journalCount
     }
 }

@@ -1,12 +1,16 @@
 import SwiftUI
+import ComposableArchitecture
 
 struct SubscriptionView: View {
-    let isPremium: Bool
+    @Bindable var store: StoreOf<ProfileFeature>
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedPlan: AstaraProduct = .yearlyPremium
 
     private let features: [(icon: String, text: String)] = [
         ("sun.and.horizon.fill", "Yükselen burç günlük yorumu"),
         ("sparkles", "AI kişisel yorum (Gemini)"),
+        ("calendar.badge.clock", "My Week 360 ve Time Travel"),
+        ("questionmark.bubble.fill", "Ask Astara limitsiz soru"),
         ("arrow.triangle.2.circlepath", "Tam transit takibi"),
         ("heart.fill", "Sınırsız uyum testi"),
         ("circle.grid.2x2.fill", "Synastry — iki harita"),
@@ -17,6 +21,8 @@ struct SubscriptionView: View {
     var body: some View {
         ZStack {
             GradientBackground()
+            StarfieldView(starCount: 45)
+                .opacity(0.16)
 
             VStack(spacing: 0) {
                 // Handle
@@ -70,29 +76,60 @@ struct SubscriptionView: View {
                                 title: String(localized: "yearly_plan"),
                                 price: "₺599.99 / yıl",
                                 badge: String(localized: "best_value"),
-                                isHighlighted: true
+                                isHighlighted: selectedPlan == .yearlyPremium
                             )
+                            .onTapGesture {
+                                selectedPlan = .yearlyPremium
+                            }
 
                             pricingOption(
                                 title: String(localized: "monthly_plan"),
                                 price: "₺79.99 / ay",
                                 badge: nil,
-                                isHighlighted: false
+                                isHighlighted: selectedPlan == .monthlyPremium
                             )
+                            .onTapGesture {
+                                selectedPlan = .monthlyPremium
+                            }
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
 
                         // CTA
                         AstaraButton(title: String(localized: "start_premium"), style: .primary) {
-                            dismiss()
+                            if selectedPlan == .yearlyPremium {
+                                store.send(.purchaseYearly)
+                            } else {
+                                store.send(.purchaseMonthly)
+                            }
                         }
+                        .opacity(store.isLoadingSubscription ? 0.7 : 1)
+                        .disabled(store.isLoadingSubscription)
                         .padding(.horizontal, AstaraSpacing.lg)
+
+                        if let errorMessage = store.purchaseErrorMessage {
+                            HStack(spacing: AstaraSpacing.xs) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(AstaraColors.ember400)
+                                Text(errorMessage)
+                                    .font(AstaraTypography.caption)
+                                    .foregroundStyle(AstaraColors.textSecondary)
+                                    .multilineTextAlignment(.leading)
+                            }
+                            .padding(AstaraSpacing.sm)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(AstaraColors.ember600.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                            .padding(.horizontal, AstaraSpacing.lg)
+                        }
 
                         // Restore + legal
                         VStack(spacing: AstaraSpacing.xs) {
-                            Button(String(localized: "restore_purchases")) {}
+                            Button(String(localized: "restore_purchases")) {
+                                store.send(.restorePurchases)
+                            }
                                 .font(AstaraTypography.caption)
                                 .foregroundStyle(AstaraColors.textTertiary)
+                                .disabled(store.isLoadingSubscription)
 
                             Text(String(localized: "subscription_legal"))
                                 .font(.system(size: 10))
@@ -107,6 +144,11 @@ struct SubscriptionView: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
+        .onChange(of: store.showSubscription) { _, isShown in
+            if !isShown {
+                dismiss()
+            }
+        }
     }
 
     private func pricingOption(title: String, price: String, badge: String?, isHighlighted: Bool) -> some View {
@@ -146,12 +188,21 @@ struct SubscriptionView: View {
             RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
                 .stroke(isHighlighted ? AstaraColors.gold.opacity(0.3) : AstaraColors.cardBorder, lineWidth: 1)
         )
+        .shadow(
+            color: isHighlighted ? AstaraColors.gold.opacity(0.2) : .clear,
+            radius: isHighlighted ? 14 : 0,
+            y: isHighlighted ? 6 : 0
+        )
     }
 }
 
 #Preview {
     Color.black
         .sheet(isPresented: .constant(true)) {
-            SubscriptionView(isPremium: false)
+            SubscriptionView(
+                store: Store(initialState: ProfileFeature.State()) {
+                    ProfileFeature()
+                }
+            )
         }
 }

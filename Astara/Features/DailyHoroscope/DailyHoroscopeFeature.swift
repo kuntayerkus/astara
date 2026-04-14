@@ -9,12 +9,14 @@ struct DailyHoroscopeFeature {
         var selectedSign: ZodiacSign = .aries
         var isLoading: Bool = false
         var showArchive: Bool = false
+        var errorMessage: String?
     }
 
     enum Action: Equatable {
         case onAppear(userSign: ZodiacSign)
         case selectSign(ZodiacSign)
         case loadHoroscopes
+        case refreshHoroscopes
         case horoscopesLoaded([DailyHoroscope])
         case loadFailed
         case toggleArchive
@@ -36,6 +38,19 @@ struct DailyHoroscopeFeature {
             case .loadHoroscopes:
                 guard state.horoscopes.isEmpty else { return .none }
                 state.isLoading = true
+                state.errorMessage = nil
+                return .run { send in
+                    do {
+                        let horoscopes = try await horoscopeService.fetchDailyHoroscopes()
+                        await send(.horoscopesLoaded(horoscopes))
+                    } catch {
+                        await send(.loadFailed)
+                    }
+                }
+
+            case .refreshHoroscopes:
+                state.isLoading = true
+                state.errorMessage = nil
                 return .run { send in
                     do {
                         let horoscopes = try await horoscopeService.fetchDailyHoroscopes()
@@ -52,6 +67,7 @@ struct DailyHoroscopeFeature {
 
             case .loadFailed:
                 state.isLoading = false
+                state.errorMessage = String(localized: "error_load_failed")
                 return .none
 
             case .toggleArchive:

@@ -1,4 +1,5 @@
 import XCTest
+@testable import Astara
 
 final class AstaraTests: XCTestCase {
     func testZodiacSignCount() {
@@ -41,5 +42,51 @@ final class AstaraTests: XCTestCase {
         XCTAssertNotNil(chart.risingSign)
         XCTAssertFalse(chart.planets.isEmpty)
         XCTAssertFalse(chart.houses.isEmpty)
+    }
+
+    func testDeepLinkChartRoutesToChartTab() {
+        let url = URL(string: "astara://chart")!
+        let tab = AppFeature.mapDeepLinkToTab(url)
+        XCTAssertEqual(tab, .chart)
+    }
+
+    func testDeepLinkDailyRoutesToDailyTab() {
+        let url = URL(string: "astara://daily")!
+        let tab = AppFeature.mapDeepLinkToTab(url)
+        XCTAssertEqual(tab, .daily)
+    }
+
+    func testDeepLinkCompatibilityRoutesToCompatibilityTab() {
+        let url = URL(string: "astara://compatibility")!
+        let tab = AppFeature.mapDeepLinkToTab(url)
+        XCTAssertEqual(tab, .compatibility)
+    }
+
+    func testDeepLinkUnknownReturnsNil() {
+        let url = URL(string: "astara://unknown")!
+        let tab = AppFeature.mapDeepLinkToTab(url)
+        XCTAssertNil(tab)
+    }
+
+    func testLocalFallbackChartProducesCorePoints() throws {
+        let chart = try AstrologyEngineClient.liveValue.fallbackChart(
+            "1995-03-15",
+            "14:30",
+            41.01,
+            28.98,
+            "Europe/Istanbul"
+        )
+
+        XCTAssertFalse(chart.planets.isEmpty)
+        XCTAssertEqual(chart.houses.count, 12)
+        XCTAssertNotNil(chart.sunSign)
+        XCTAssertNotNil(chart.moonSign)
+        XCTAssertNotNil(chart.risingSign)
+
+        if let asc = chart.ascendant {
+            XCTAssertTrue((0...360).contains(asc.degree))
+        } else {
+            XCTFail("Ascendant must exist in fallback chart")
+        }
     }
 }

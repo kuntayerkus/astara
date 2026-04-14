@@ -42,19 +42,25 @@ struct ProfileView: View {
                 }
                 .padding(.bottom, AstaraSpacing.xxxl)
             }
+            .refreshable {
+                Haptics.selection()
+                store.send(.onAppear)
+            }
         }
         .onAppear { store.send(.onAppear) }
         .sheet(isPresented: Binding(
             get: { store.showSubscription },
-            set: { if !$0 { store.send(.toggleSubscription) } }
+            set: { store.send(.setSubscriptionPresented($0)) }
         )) {
-            SubscriptionView(isPremium: store.isPremium)
+            SubscriptionView(store: store)
         }
         .sheet(isPresented: Binding(
             get: { store.showEditBirthData },
-            set: { if !$0 { store.send(.toggleEditBirthData) } }
+            set: { if !$0 { store.send(.dismissEditBirthData) } }
         )) {
-            EditBirthDataView()
+            EditBirthDataView(
+                onSave: { store.send(.birthDataSaved) }
+            )
         }
     }
 
@@ -95,11 +101,12 @@ struct ProfileView: View {
     // MARK: - Premium
 
     private var premiumBanner: some View {
-        Button { store.send(.toggleSubscription) } label: {
+        Button { store.send(.setSubscriptionPresented(true)) } label: {
             HStack(spacing: AstaraSpacing.md) {
                 Image(systemName: "star.circle.fill")
                     .font(.system(size: 28))
                     .foregroundStyle(AstaraColors.gold)
+                    .shadow(color: AstaraColors.gold.opacity(0.35), radius: 8, y: 2)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(String(localized: "upgrade_to_premium"))
@@ -132,12 +139,14 @@ struct ProfileView: View {
             )
         }
         .buttonStyle(.plain)
+        .shadow(color: AstaraColors.gold.opacity(0.12), radius: 16, y: 8)
     }
 
     private var premiumActiveBadge: some View {
         HStack(spacing: AstaraSpacing.sm) {
             Image(systemName: "star.circle.fill")
                 .foregroundStyle(AstaraColors.gold)
+                .shadow(color: AstaraColors.gold.opacity(0.35), radius: 8, y: 2)
             Text(String(localized: "premium_active"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.gold)
@@ -146,35 +155,89 @@ struct ProfileView: View {
                 .foregroundStyle(AstaraColors.sage400)
         }
         .padding(AstaraSpacing.md)
-        .astaraCard()
+        .background(
+            LinearGradient(
+                colors: [AstaraColors.gold.opacity(0.14), AstaraColors.cardBackground],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+        .overlay(
+            RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                .stroke(AstaraColors.gold.opacity(0.3), lineWidth: 1)
+        )
     }
 
     // MARK: - Birth Data
 
     private var birthDataRow: some View {
-        Button { store.send(.toggleEditBirthData) } label: {
-            HStack {
-                Image(systemName: "calendar")
-                    .frame(width: 28)
-                    .foregroundStyle(AstaraColors.gold)
+        Button { store.send(.showEditBirthData) } label: {
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "calendar")
+                        .frame(width: 28)
+                        .foregroundStyle(AstaraColors.gold)
 
-                Text(String(localized: "edit_birth_data"))
-                    .font(AstaraTypography.bodyMedium)
-                    .foregroundStyle(AstaraColors.textPrimary)
+                    Text(String(localized: "edit_birth_data"))
+                        .font(AstaraTypography.bodyMedium)
+                        .foregroundStyle(AstaraColors.textPrimary)
 
-                Spacer()
+                    Spacer()
 
-                Text(store.birthDate, style: .date)
-                    .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textTertiary)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12))
+                        .foregroundStyle(AstaraColors.textTertiary)
+                }
+                .padding(AstaraSpacing.md)
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundStyle(AstaraColors.textTertiary)
+                Divider().background(AstaraColors.cardBorder)
+
+                VStack(spacing: AstaraSpacing.xs) {
+                    birthInfoRow(
+                        icon: "birthday.cake",
+                        label: String(localized: "birth_date"),
+                        value: AstaraDateFormatters.longDate.string(from: store.birthDate)
+                    )
+                    if !store.birthTimeUnknown, let time = store.birthTime {
+                        birthInfoRow(
+                            icon: "clock",
+                            label: String(localized: "birth_time"),
+                            value: AstaraDateFormatters.timeOnly.string(from: time)
+                        )
+                    }
+                    if !store.birthCity.isEmpty {
+                        birthInfoRow(
+                            icon: "mappin.circle",
+                            label: String(localized: "birth_city"),
+                            value: store.birthCity
+                        )
+                    }
+                }
+                .padding(.horizontal, AstaraSpacing.md)
+                .padding(.vertical, AstaraSpacing.sm)
             }
-            .padding(AstaraSpacing.md)
         }
         .buttonStyle(.plain)
+    }
+
+    private func birthInfoRow(icon: String, label: String, value: String) -> some View {
+        HStack(spacing: AstaraSpacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 13))
+                .foregroundStyle(AstaraColors.textTertiary)
+                .frame(width: 20)
+
+            Text(label)
+                .font(AstaraTypography.caption)
+                .foregroundStyle(AstaraColors.textTertiary)
+
+            Spacer()
+
+            Text(value)
+                .font(AstaraTypography.bodySmall)
+                .foregroundStyle(AstaraColors.textSecondary)
+        }
     }
 
     // MARK: - Notifications
