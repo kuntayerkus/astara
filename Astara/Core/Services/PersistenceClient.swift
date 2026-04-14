@@ -145,7 +145,7 @@ extension PersistenceClient: DependencyKey {
                     birthLatitude: user.birthLatitude,
                     birthLongitude: user.birthLongitude,
                     birthTimezone: user.birthTimezone,
-                    isPremium: user.isPremium,
+                    isPremium: true, // user.isPremium,
                     locale: user.locale,
                     onboardingCompleted: user.onboardingCompleted,
                     createdAt: user.createdAt,

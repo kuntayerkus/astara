@@ -1,42 +1,46 @@
 import Foundation
 
 // MARK: - Daily Horoscope Response
-// Handles /data/daily-horoscope.json — array of horoscopes for all 12 signs
+// Handles /data/daily-horoscope.json
 
 struct DailyHoroscopeResponse: Decodable {
     let date: String
-    let horoscopes: [DailyHoroscopeEntry]
+    let signs: [String: DailyHoroscopeEntry]
 
     struct DailyHoroscopeEntry: Decodable {
-        let sign: String
         let text: String
         let energy: Int
         let theme: String
         let tip: String
         let luckyNumber: Int?
         let luckyColor: String?
-
+        
         private enum CodingKeys: String, CodingKey {
-            case sign, text, energy, theme, tip
-            case luckyNumber = "lucky_number"
-            case luckyColor = "lucky_color"
+            case text, energy, theme, tip
+            case lucky = "lucky"
+            case luckyColor
         }
-
+        
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            sign = try container.decode(String.self, forKey: .sign)
             text = try container.decode(String.self, forKey: .text)
             energy = try container.decode(Int.self, forKey: .energy)
             theme = try container.decode(String.self, forKey: .theme)
             tip = try container.decode(String.self, forKey: .tip)
-            luckyNumber = try? container.decode(Int.self, forKey: .luckyNumber)
+            
+            if let stringValue = try? container.decode(String.self, forKey: .lucky) {
+                luckyNumber = Int(stringValue)
+            } else {
+                luckyNumber = try? container.decode(Int.self, forKey: .lucky)
+            }
+            
             luckyColor = try? container.decode(String.self, forKey: .luckyColor)
         }
     }
 
     func toDailyHoroscopes() -> [DailyHoroscope] {
-        horoscopes.compactMap { entry in
-            guard let zodiacSign = ZodiacSign(rawValue: entry.sign) else { return nil }
+        signs.compactMap { (key, entry) in
+            guard let zodiacSign = ZodiacSign(rawValue: key.lowercased()) else { return nil }
             return DailyHoroscope(
                 sign: zodiacSign,
                 date: date,
@@ -52,48 +56,60 @@ struct DailyHoroscopeResponse: Decodable {
 }
 
 // MARK: - Daily Energy Response
-// Handles /data/daily-energy.json — element energy percentages
+// Handles /data/daily-energy.json
 
 struct DailyEnergyResponse: Decodable {
-    let fire: Int
-    let earth: Int
-    let air: Int
-    let water: Int
+    let date: String
+    let elements: [String: ElementEntry]
+    
+    struct ElementEntry: Decodable {
+        let level: Int
+    }
 
     func toElementEnergy() -> [Element: Int] {
         [
-            .fire: fire,
-            .earth: earth,
-            .air: air,
-            .water: water
+            .fire: elements["fire"]?.level ?? 0,
+            .earth: elements["earth"]?.level ?? 0,
+            .air: elements["air"]?.level ?? 0,
+            .water: elements["water"]?.level ?? 0
         ]
     }
 }
 
 // MARK: - Planet Positions Response
-// Handles /data/planet-positions.json — current sky positions
+// Handles /data/planet-positions.json
 
 struct PlanetPositionsResponse: Decodable {
     let date: String
     let planets: [PlanetPositionEntry]
 
     struct PlanetPositionEntry: Decodable {
-        let key: String
-        let sign: String
+        let name: String
+        let signEn: String
         let degree: Double
-        let minute: Int?
-        let isRetrograde: Bool?
-
-        private enum CodingKeys: String, CodingKey {
-            case key, sign, degree, minute
-            case isRetrograde = "is_retrograde"
-        }
+        let retrograde: Bool?
 
         func toPlanet() -> Planet? {
-            guard let planetKey = PlanetKey(rawValue: key),
-                  let zodiacSign = ZodiacSign(rawValue: sign) else { return nil }
+            // Map Turkish names or english signs to PlanetKey
+            let keyStr: String
+            switch name.lowercased() {
+            case "güneş": keyStr = "gunes"
+            case "ay": keyStr = "ay"
+            case "merkür": keyStr = "merkur"
+            case "venüs": keyStr = "venus"
+            case "mars": keyStr = "mars"
+            case "jüpiter": keyStr = "jupiter"
+            case "satürn": keyStr = "saturn"
+            case "uranüs": keyStr = "uranus"
+            case "neptün": keyStr = "neptun"
+            case "plüton": keyStr = "pluton"
+            default: return nil
+            }
+            
+            guard let planetKey = PlanetKey(rawValue: keyStr),
+                  let zodiacSign = ZodiacSign(rawValue: signEn.lowercased()) else { return nil }
             return Planet(key: planetKey, sign: zodiacSign, degree: degree,
-                          minute: minute ?? 0, isRetrograde: isRetrograde ?? false)
+                          minute: 0, isRetrograde: retrograde ?? false)
         }
     }
 
@@ -103,46 +119,44 @@ struct PlanetPositionsResponse: Decodable {
 }
 
 // MARK: - Retro Calendar Response
-// Handles /data/retro-calendar.json — retrograde schedule
+// Handles /data/retro-calendar.json
 
 struct RetroCalendarResponse: Decodable {
     let retrogrades: [RetroCalendarEntry]
 
     struct RetroCalendarEntry: Decodable {
         let planet: String
-        let startDate: String
-        let endDate: String
-        let preRetroDate: String?
-        let postRetroDate: String?
+        let start: String
+        let end: String
 
-        private enum CodingKeys: String, CodingKey {
-            case planet
-            case startDate = "start_date"
-            case endDate = "end_date"
-            case preRetroDate = "pre_retro_date"
-            case postRetroDate = "post_retro_date"
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            planet = try container.decode(String.self, forKey: .planet)
-            startDate = try container.decode(String.self, forKey: .startDate)
-            endDate = try container.decode(String.self, forKey: .endDate)
-            preRetroDate = try? container.decode(String.self, forKey: .preRetroDate)
-            postRetroDate = try? container.decode(String.self, forKey: .postRetroDate)
+        func toRetrograde() -> Retrograde? {
+            let keyStr: String
+            switch planet.lowercased() {
+            case "güneş", "gunes": keyStr = "gunes"
+            case "ay": keyStr = "ay"
+            case "merkür", "merkur": keyStr = "merkur"
+            case "venüs", "venus": keyStr = "venus"
+            case "mars": keyStr = "mars"
+            case "jüpiter", "jupiter": keyStr = "jupiter"
+            case "satürn", "saturn": keyStr = "saturn"
+            case "uranüs", "uranus": keyStr = "uranus"
+            case "neptün", "neptun": keyStr = "neptun"
+            case "plüton", "pluton": keyStr = "pluton"
+            default: return nil
+            }
+            
+            guard let planetKey = PlanetKey(rawValue: keyStr) else { return nil }
+            return Retrograde(
+                planet: planetKey,
+                startDate: start,
+                endDate: end,
+                preRetroDate: nil,
+                postRetroDate: nil
+            )
         }
     }
 
     func toRetrogrades() -> [Retrograde] {
-        retrogrades.compactMap { entry in
-            guard let planetKey = PlanetKey(rawValue: entry.planet) else { return nil }
-            return Retrograde(
-                planet: planetKey,
-                startDate: entry.startDate,
-                endDate: entry.endDate,
-                preRetroDate: entry.preRetroDate,
-                postRetroDate: entry.postRetroDate
-            )
-        }
+        retrogrades.compactMap { $0.toRetrograde() }
     }
 }
