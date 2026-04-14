@@ -78,6 +78,7 @@ targets:
     info:
       path: Astara/Info.plist
       properties:
+        ITSAppUsesNonExemptEncryption: false
         CFBundleIconName: AppIcon
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
