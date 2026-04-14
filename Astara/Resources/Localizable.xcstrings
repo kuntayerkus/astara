@@ -2568,6 +2568,278 @@
           }
         }
       }
+    },
+    "error_stars_unreachable": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldızlara şu an ulaşılamıyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stars are currently unreachable"
+          }
+        }
+      }
+    },
+    "error_load_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükleme başarısız. Lütfen tekrar dene."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load failed. Please try again."
+          }
+        }
+      }
+    },
+    "ai_chart_reading": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapay Zeka Analizi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI Chart Reading"
+          }
+        }
+      }
+    },
+    "share_chart": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haritayı Paylaş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share Chart"
+          }
+        }
+      }
+    },
+    "birth_date": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum Tarihi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth Date"
+          }
+        }
+      }
+    },
+    "birth_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum Saati"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth Time"
+          }
+        }
+      }
+    },
+    "birth_city": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum Şehri"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birth City"
+          }
+        }
+      }
+    },
+    "ai_interpretation": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapay Zeka Yorumu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI Interpretation"
+          }
+        }
+      }
+    },
+    "ai_interpretation_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldızların mesajı deşifre ediliyor..."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deciphering stars..."
+          }
+        }
+      }
+    },
+    "ai_powered_by_gemini": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Gemini ile"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Powered by Google Gemini"
+          }
+        }
+      }
+    },
+    "ai_premium_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Analiz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Analysis"
+          }
+        }
+      }
+    },
+    "ai_premium_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapay zeka ile tüm detayları keşfetmek için Premium'a geç."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Premium for full AI analysis."
+          }
+        }
+      }
+    },
+    "ai_v2_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tam AI sentezleme yakında Astara v2.0 ile geliyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full AI synthesis comes with Astara v2.0."
+          }
+        }
+      }
+    },
+    "ai_generate_prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğum haritanın gizemini çöz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock your birth chart mysteries."
+          }
+        }
+      }
+    },
+    "ai_generate_button": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analizi Başlat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Reading"
+          }
+        }
+      }
+    },
+    "ai_interpretation_v1_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bir Astara v1 demosu. Gerçek AI harita sentezleme motoru v2.0 ile hayat bulacak!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a v1 demo. Real AI chart synthesis engine arrives with v2.0!"
+          }
+        }
+      }
     }
   }
 }
