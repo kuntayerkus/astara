@@ -3,7 +3,8 @@ import UIKit
 
 enum ShareManager {
     /// Present a share sheet with the given items
-    static func share(_ items: [Any], sourceView: UIView? = nil) {
+    @MainActor
+    static func share(_ items: [any Sendable], sourceView: UIView? = nil) {
         let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
 
         // Exclude types that don't fit astrology content
