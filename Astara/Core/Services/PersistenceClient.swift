@@ -23,7 +23,7 @@ struct PersistenceClient {
         _ longitude: Double,
         _ timezone: String
     ) async -> Void
-    var loadUser: @Sendable () async -> User?
+    var loadUser: @Sendable () async -> UserDTO? = { nil }
     var updateUser: @Sendable (
         _ birthDate: Date,
         _ birthTime: Date?,
@@ -33,6 +33,23 @@ struct PersistenceClient {
         _ longitude: Double,
         _ timezone: String
     ) async -> Void
+}
+
+// MARK: - Sendable DTO for cross-isolation transfer
+struct UserDTO: Sendable, Equatable {
+    let id: UUID
+    let name: String
+    let birthDate: Date
+    let birthTime: Date?
+    let birthTimeUnknown: Bool
+    let birthCity: String
+    let birthLatitude: Double
+    let birthLongitude: Double
+    let birthTimezone: String
+    let isPremium: Bool
+    let locale: String
+    let onboardingCompleted: Bool
+    let createdAt: Date
 }
 
 extension PersistenceClient: DependencyKey {
@@ -59,7 +76,22 @@ extension PersistenceClient: DependencyKey {
             await MainActor.run {
                 let ctx = ModelContainer.astara.mainContext
                 let descriptor = FetchDescriptor<User>()
-                return (try? ctx.fetch(descriptor))?.first
+                guard let user = (try? ctx.fetch(descriptor))?.first else { return nil }
+                return UserDTO(
+                    id: user.id,
+                    name: user.name,
+                    birthDate: user.birthDate,
+                    birthTime: user.birthTime,
+                    birthTimeUnknown: user.birthTimeUnknown,
+                    birthCity: user.birthCity,
+                    birthLatitude: user.birthLatitude,
+                    birthLongitude: user.birthLongitude,
+                    birthTimezone: user.birthTimezone,
+                    isPremium: user.isPremium,
+                    locale: user.locale,
+                    onboardingCompleted: user.onboardingCompleted,
+                    createdAt: user.createdAt
+                )
             }
         },
 

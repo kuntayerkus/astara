@@ -3,7 +3,9 @@ import ComposableArchitecture
 
 @DependencyClient
 struct CompatibilityEngineClient {
-    var calculate: @Sendable (ZodiacSign, ZodiacSign) async -> Compatibility
+    var calculate: @Sendable (ZodiacSign, ZodiacSign) async -> Compatibility = { sign1, sign2 in
+        Compatibility(sign1: sign1, sign2: sign2, overallScore: 0, loveScore: 0, friendshipScore: 0, workScore: 0, description: "")
+    }
 }
 
 extension CompatibilityEngineClient: DependencyKey {

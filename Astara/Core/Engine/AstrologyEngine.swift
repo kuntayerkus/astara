@@ -6,9 +6,9 @@ import ComposableArchitecture
 @DependencyClient
 struct AstrologyEngineClient {
     /// Validate that a BirthChart from VPS has sensible data
-    var validateChart: @Sendable (BirthChart) -> Bool
+    var validateChart: @Sendable (BirthChart) -> Bool = { _ in false }
     /// Get zodiac sign for a given ecliptic degree (0-360)
-    var signForDegree: @Sendable (Double) -> ZodiacSign
+    var signForDegree: @Sendable (Double) -> ZodiacSign = { _ in .aries }
 }
 
 extension AstrologyEngineClient: DependencyKey {

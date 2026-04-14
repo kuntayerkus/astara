@@ -4,10 +4,10 @@ import ComposableArchitecture
 
 @DependencyClient
 struct NotificationService {
-    var requestPermission: @Sendable () async -> Bool
+    var requestPermission: @Sendable () async -> Bool = { false }
     var scheduleDaily: @Sendable (_ hour: Int, _ minute: Int) async -> Void
     var cancelAll: @Sendable () async -> Void
-    var isAuthorized: @Sendable () async -> Bool
+    var isAuthorized: @Sendable () async -> Bool = { false }
 }
 
 extension NotificationService: DependencyKey {

@@ -23,7 +23,7 @@ enum SubscriptionStatus: Equatable {
 
 @DependencyClient
 struct SubscriptionService {
-    var status: @Sendable () async -> SubscriptionStatus
+    var status: @Sendable () async -> SubscriptionStatus = { .free }
     var purchase: @Sendable (_ product: AstaraProduct) async throws -> SubscriptionStatus
     var restore: @Sendable () async throws -> SubscriptionStatus
 }
