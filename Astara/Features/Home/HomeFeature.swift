@@ -256,7 +256,7 @@ struct HomeFeature {
                     engagement.askCountToday = 0
                 }
                 state.askQuotaRemaining = max(0, state.isPremium ? 99 : 1 - engagement.askCountToday)
-                return .run { _ in
+                return .run { [engagement] _ in
                     await persistenceClient.updateEngagement(engagement)
                 }
 

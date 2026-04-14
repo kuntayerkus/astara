@@ -75,6 +75,9 @@ Astara/
 │   │   ├── Aspect.swift               # Açı modeli
 │   │   ├── DailyHoroscope.swift        # Günlük yorum
 │   │   ├── Compatibility.swift         # Uyum skoru
+│   │   ├── AstaraScore.swift           # Love/Work/Energy/Focus günlük skor
+│   │   ├── FriendDynamic.swift         # Synastry feed kart modeli
+│   │   ├── TimeTravelInsight.swift     # Geçmiş/gelecek tarih içgörüsü
 │   │   ├── Transit.swift              # Transit hareketi
 │   │   └── Retrograde.swift           # Retro takvimi
 │   │
@@ -86,7 +89,9 @@ Astara/
 │   │   ├── TimezoneService.swift       # /api/timezone proxy
 │   │   ├── NotificationService.swift   # Push notification handler
 │   │   ├── CacheService.swift          # Offline data cache
-│   │   └── SubscriptionService.swift   # StoreKit 2 entegrasyonu
+│   │   ├── SubscriptionService.swift   # StoreKit 2 entegrasyonu
+│   │   ├── WeeklyGuidanceService.swift # Week360 + ritual + score üretimi
+│   │   └── AskAstaraService.swift      # Günlük soru-cevap servisi (v1 local)
 │   │
 │   ├── Engine/
 │   │   ├── AstrologyEngine.swift       # Keplerian fallback hesaplamaları
@@ -230,6 +235,9 @@ Astara/
 | İngilizce lokalizasyon | String Catalogs |
 | Arkadaş sistemi (Co-Star tarzı) | Supabase backend |
 | Synastry (iki harita karşılaştırma) | VPS |
+| My Week 360 (7 günlük kişisel akış) | Yerel + transit verisi |
+| Ask Astara (soru-cevap) | Yerel servis + premium quota |
+| Time Travel (geçmiş/gelecek içgörü) | Yerel servis + transit/harita |
 | AI yorumlar (Gemini) multi-language | /api/horoscope |
 | Transit takibi ("bugün seni ne etkiliyor") | VPS + yerel |
 | Provoke edici bildirimler (viral) | AI-generated |
@@ -462,6 +470,9 @@ enum PlanetKey: String, CaseIterable {
 - **Global fiyat:** $7.99/ay veya $59.99/yıl
 - Yükselen burç günlük yorumu
 - AI kişisel yorum (Gemini)
+- My Week 360 (tam haftalık kişisel akış)
+- Ask Astara (sınırsız soru)
+- Time Travel (geçmiş/gelecek tarih içgörüleri)
 - Tam transit takibi
 - Sınırsız uyum testi
 - Synastry (iki harita karşılaştırma)
@@ -753,6 +764,12 @@ Through hardships, to the stars. ✦
 - [x] Push permission stub → gerçek UNUserNotificationCenter
 - [x] HomeFeature error handling + retry UX
 - [x] SwiftData persistence (PersistenceClient, AstaraApp, AppFeature, EditBirthDataView)
+- [x] My Week 360 (Home weekly transit card + guidance service)
+- [x] Ritual + Journal loop (mood note + ritual prompt)
+- [x] Synastry feed (v1 mock friend dynamics + compatibility engine)
+- [x] Ask Astara (günlük free quota + premium limitsiz hook)
+- [x] Time Travel + Astara Score (±30 gün içgörü + 4 metrik skor)
+- [x] Share card 2.0 + transit alert scheduling hook
 - [ ] Unit testler (hedef: 20+)
 - [ ] Lottie: gerçek animasyon ekle veya dependency'yi kaldır
 - [ ] **LAUNCH ÖNCESI:** SubscriptionView ↔ StoreKit 2 (App Store Connect product ID sonrası)
@@ -773,6 +790,12 @@ Through hardships, to the stars. ✦
 
 **Proje şu an test aşamasında.** Kod tamamlandı, Codemagic üzerinden Xcode 16 / Swift 6 derlemeleri yapılıyor. App Store submission için kalan şeyler launch öncesi yapılacak (screenshots, StoreKit ürün bağlantısı, metadata).
 
+**Nisan 2026 ürün genişlemesi (CHANI/Co-Star benchmark sonrası):**
+- Home deneyimi Week360 + Ritual/Journal + Synastry Feed kartlarıyla genişletildi.
+- Ask Astara (1 free/day, premium limitsiz) v1 akışı eklendi.
+- Time Travel (±30 gün) ve Astara Score (Love/Work/Energy/Focus) eklendi.
+- Share metni skora bağlandı; NotificationService'e transit alert hook'u eklendi.
+
 **Codemagic Build Hataları & Swift 6 Optimizasyonları (Nisan 2026):**
 - **XcodeGen (`project.yml`):** `entitlements` key parse hatası çözüldü (path vs property yapısına güncellendi).
 - **String Catalog:** Apple'ın katı JSON format beklentisi 때문에 bozulan `Localizable.xcstrings` düzeltildi (`version` key'i öne alındı, `extractionState` eklendi).
@@ -788,8 +811,13 @@ Through hardships, to the stars. ✦
 
 **Kritik dosyalar (son değişiklikler):**
 - `Astara/Resources/Localizable.xcstrings` — String Catalog (ASLA ELLE EDİTLEME, şema bozulabilir)
-- `Astara/Core/Services/PersistenceClient.swift` — SwiftData `UserDTO` optimizasyonu
+- `Astara/Core/Services/PersistenceClient.swift` — SwiftData `UserDTO` + engagement/ask/journal alanları
 - `Astara/Core/Engine/AstrologyEngine.swift` vd. — `@DependencyClient` default closure fix'leri
+- `Astara/Core/Services/WeeklyGuidanceService.swift` — Week360, ritual prompt, time travel, score üretimi
+- `Astara/Core/Services/AskAstaraService.swift` — Ask Astara cevap üretimi (v1)
+- `Astara/Features/Home/HomeFeature.swift` — Engagement + Week360/Ask/TimeTravel state/action akışları
+- `Astara/Features/Home/HomeView.swift` — Yeni Home kartları + Ask/TimeTravel sheet UI
+- `Astara/Core/Models/User.swift` — askDateKey/askCountToday/journalCount persistence alanları
 - `project.yml` — XcodeGen build config
 ---
 
