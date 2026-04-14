@@ -75,7 +75,27 @@ struct DailyEnergyResponse: Decodable {
 
 struct PlanetPositionsResponse: Decodable {
     let date: String
-    let planets: [VPSPlanet]
+    let planets: [PlanetPositionEntry]
+
+    struct PlanetPositionEntry: Decodable {
+        let key: String
+        let sign: String
+        let degree: Double
+        let minute: Int?
+        let isRetrograde: Bool?
+
+        private enum CodingKeys: String, CodingKey {
+            case key, sign, degree, minute
+            case isRetrograde = "is_retrograde"
+        }
+
+        func toPlanet() -> Planet? {
+            guard let planetKey = PlanetKey(rawValue: key),
+                  let zodiacSign = ZodiacSign(rawValue: sign) else { return nil }
+            return Planet(key: planetKey, sign: zodiacSign, degree: degree,
+                          minute: minute ?? 0, isRetrograde: isRetrograde ?? false)
+        }
+    }
 
     func toPlanets() -> [Planet] {
         planets.compactMap { $0.toPlanet() }
