@@ -24,18 +24,26 @@ struct Retrograde: Codable, Equatable, Identifiable, Sendable {
         self.postRetroDate = postRetroDate
     }
 
-    var isActive: Bool {
+    private func parsedDates() -> (start: Date, end: Date)? {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = TimeZone(identifier: "Europe/Istanbul")
         guard let start = formatter.date(from: startDate),
-              let end = formatter.date(from: endDate) else { return false }
+              let end = formatter.date(from: endDate) else { return nil }
+        return (start, end)
+    }
+
+    var isActive: Bool {
+        guard let (start, end) = parsedDates() else { return false }
         let now = Date()
-        // Include full end day by comparing against start of next day
-        let calendar = Calendar.current
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: end) ?? end
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: end) ?? end
         return now >= start && now < endOfDay
+    }
+
+    var isFuture: Bool {
+        guard let (start, _) = parsedDates() else { return false }
+        return start > Date()
     }
 }
 

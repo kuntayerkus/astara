@@ -682,6 +682,23 @@
         }
       }
     },
+    "upcoming_retrogrades": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaklaşan Retrolar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upcoming Retrogrades"
+          }
+        }
+      }
+    },
     "daily_horoscope": {
       "extractionState": "manual",
       "localizations": {

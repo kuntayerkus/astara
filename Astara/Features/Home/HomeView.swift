@@ -96,10 +96,13 @@ struct HomeView: View {
                             .padding(.horizontal, AstaraSpacing.lg)
                     }
 
-                    // Retro alert
-                    if !store.activeRetrogrades.isEmpty {
-                        RetroAlertBanner(retrogrades: store.activeRetrogrades)
-                            .padding(.horizontal, AstaraSpacing.lg)
+                    // Retro alert — aktif + yaklaşan
+                    if !store.activeRetrogrades.isEmpty || !store.upcomingRetrogrades.isEmpty {
+                        RetroAlertBanner(
+                            activeRetrogrades: store.activeRetrogrades,
+                            upcomingRetrogrades: store.upcomingRetrogrades
+                        )
+                        .padding(.horizontal, AstaraSpacing.lg)
                     }
 
                     // Daily energy card

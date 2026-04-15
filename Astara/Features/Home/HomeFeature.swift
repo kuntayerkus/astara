@@ -8,6 +8,7 @@ struct HomeFeature {
         var dailyHoroscope: DailyHoroscope?
         var elementEnergy: [Element: Int] = [:]
         var activeRetrogrades: [Retrograde] = []
+        var upcomingRetrogrades: [Retrograde] = []
         var planetPositions: [Planet] = []
         var selectedTab: Tab = .home
         var isLoading: Bool = false
@@ -178,7 +179,8 @@ struct HomeFeature {
                 state.isLoading = false
                 state.dailyHoroscope = horoscope
                 state.elementEnergy = energy
-                state.activeRetrogrades = retrogrades
+                state.activeRetrogrades = retrogrades.filter { $0.isActive }
+                state.upcomingRetrogrades = retrogrades.filter { !$0.isActive && $0.isFuture }
                 state.lastUpdated = Date()
                 state.hasNewDailyContent = true
                 let shouldPersistReadTask = state.completedTasks.contains("read_daily_card") == false
