@@ -36,16 +36,25 @@ struct CompatibilityDetailView: View {
                                     descriptionCard
                                     categoryBreakdown
                                 }
-                                .blur(radius: 8)
+                                .blur(radius: 16)
                                 .allowsHitTesting(false)
 
-                                PremiumLockOverlay(
-                                    title: String(localized: "compatibility_premium_title"),
-                                    subtitle: String(localized: "compatibility_premium_body")
-                                ) {
-                                    onGoPremium?()
+                                VStack(spacing: AstaraSpacing.sm) {
+                                    ZStack {
+                                        GlowingRing(color: AstaraColors.gold, lineWidth: 1, glowRadius: 14)
+                                            .frame(width: 56, height: 56)
+                                        Image(systemName: "eye.slash.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundStyle(AstaraColors.gold)
+                                    }
+                                    PremiumLockOverlay(
+                                        title: String(localized: "compatibility_premium_title"),
+                                        subtitle: String(localized: "compatibility_premium_body")
+                                    ) {
+                                        onGoPremium?()
+                                    }
                                 }
-                                .frame(minHeight: 240)
+                                .frame(minHeight: 320)
                             }
                             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
                         }

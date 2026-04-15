@@ -322,6 +322,7 @@ struct HomeFeature {
                     let transits = await weeklyGuidanceService.buildWeekTransits(sign, retros)
                     let ritual = await weeklyGuidanceService.ritualPrompt(retros)
                     var friends: [FriendDynamic] = []
+                    // TODO(v2): Replace mock seeds with real friends from Supabase social graph
                     let friendSeeds: [(String, ZodiacSign)] = [("Deniz", .scorpio), ("Ece", .taurus)]
                     for seed in friendSeeds {
                         let cmp = await compatibilityEngine.calculate(sign, seed.1)
@@ -330,8 +331,8 @@ struct HomeFeature {
                                 friendName: seed.0,
                                 friendSign: seed.1,
                                 compatibility: cmp,
-                                insight: "\(seed.0) ile bugun iletisim tonu sonucu belirler.",
-                                suggestedAction: "Kisa ve net mesaj at."
+                                insight: "\(seed.0) ile bugün iletişim tonu her şeyi belirler.",
+                                suggestedAction: "Kısa ve net mesaj at."
                             )
                         )
                     }
@@ -345,7 +346,7 @@ struct HomeFeature {
                 guard let next = transits.first else { return .none }
                 return .run { _ in
                     await notificationService.scheduleTransitAlert(
-                        "Bugun transit etkisi",
+                        String(localized: "transit_alert_title"),
                         "\(next.planet.turkishName): \(next.description)",
                         10
                     )
@@ -378,7 +379,7 @@ struct HomeFeature {
                 let question = state.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard question.isEmpty == false else { return .none }
                 guard state.isPremium || state.askQuotaRemaining > 0 else {
-                    state.askResponse = "Gunluk ucretsiz soru hakkin bitti. Premium ile limitsiz devam edebilirsin."
+                    state.askResponse = String(localized: "ask_astara_quota_exceeded")
                     return .none
                 }
                 let sign = state.userSunSign
@@ -478,5 +479,10 @@ private func currentEngagement(from state: HomeFeature.State) -> UserEngagementS
 
 private func dailyShareText(from state: HomeFeature.State) -> String {
     let energy = state.dailyHoroscope?.energy ?? 0
-    return "Astara gunluk enerji: %\(energy) | Streak: \(state.streakCount) gun | Focus: \(state.astaraScore.focus)"
+    return String(
+        format: String(localized: "daily_share_text"),
+        "\(energy)",
+        "\(state.streakCount)",
+        state.astaraScore.focus
+    )
 }

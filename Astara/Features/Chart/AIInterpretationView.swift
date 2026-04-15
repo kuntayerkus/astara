@@ -54,12 +54,19 @@ struct AIInterpretationView: View {
                             }
                             .frame(height: 280)
                         } else if isGenerating {
-                            VStack(spacing: AstaraSpacing.sm) {
-                                ForEach(0..<6, id: \.self) { i in
-                                    ShimmerView()
-                                        .frame(height: i == 0 ? 18 : 13)
-                                        .frame(maxWidth: i % 3 == 2 ? 180 : .infinity)
+                            VStack(spacing: AstaraSpacing.md) {
+                                VStack(spacing: AstaraSpacing.sm) {
+                                    ForEach(0..<6, id: \.self) { i in
+                                        ShimmerView()
+                                            .frame(height: i == 0 ? 18 : 13)
+                                            .frame(maxWidth: i % 3 == 2 ? 180 : .infinity)
+                                    }
                                 }
+                                Text(String(localized: "ai_reading_stars"))
+                                    .font(AstaraTypography.bodySmall)
+                                    .foregroundStyle(AstaraColors.gold.opacity(0.7))
+                                    .italic()
+                                    .multilineTextAlignment(.center)
                             }
                             .padding(AstaraSpacing.md)
                             .astaraCard()
@@ -105,7 +112,7 @@ struct AIInterpretationView: View {
 
     private func generateInterpretation() {
         isGenerating = true
-        // Gemini API entegrasyonu v2'de yapılacak
+        // v1: local placeholder. Real Gemini integration ships in v2.
         Task {
             try? await Task.sleep(nanoseconds: 1_600_000_000)
             await MainActor.run {

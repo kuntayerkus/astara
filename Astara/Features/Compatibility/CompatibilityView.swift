@@ -30,7 +30,7 @@ struct CompatibilityView: View {
                         }
                     }
                     .padding(.bottom, AstaraSpacing.xxxl)
-                    .animation(.easeInOut(duration: 0.3), value: store.result)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.65), value: store.result)
                 }
             }
         }

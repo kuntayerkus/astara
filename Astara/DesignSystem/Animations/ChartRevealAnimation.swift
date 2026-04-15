@@ -10,8 +10,16 @@ struct ChartRevealAnimation: View {
     @State private var supernovaOpacity: Double = 0.0
     @State private var particleExpansion: CGFloat = 0.0
     
+    // Reduce particle count on thermally constrained devices (A13 / older)
+    private static let particleCount: Int = {
+        switch ProcessInfo.processInfo.thermalState {
+        case .serious, .critical: return 16
+        default: return 40
+        }
+    }()
+
     // Generate static random positions for particles
-    let particles: [(Double, Double, Double)] = (0..<40).map { _ in
+    let particles: [(Double, Double, Double)] = (0..<ChartRevealAnimation.particleCount).map { _ in
         (Double.random(in: 0...360), Double.random(in: 0.3...1.0), Double.random(in: 20...160))
     }
 

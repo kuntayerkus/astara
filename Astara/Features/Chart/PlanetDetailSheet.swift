@@ -73,14 +73,14 @@ struct PlanetDetailSheet: View {
                         .font(AstaraTypography.bodySmall)
                         .foregroundStyle(AstaraColors.textSecondary)
                         .lineSpacing(4)
-                        .blur(radius: 5)
+                        .blur(radius: 12)
                         .allowsHitTesting(false)
 
                     Button {
                         Haptics.light()
                         onGoPremium?()
                     } label: {
-                        Label(String(localized: "unlock_interpretation"), systemImage: "lock.open.fill")
+                        Label(String(localized: "unlock_interpretation"), systemImage: "eye.slash.fill")
                             .font(AstaraTypography.labelMedium)
                             .foregroundStyle(AstaraColors.backgroundStart)
                             .padding(.horizontal, AstaraSpacing.md)
@@ -93,11 +93,11 @@ struct PlanetDetailSheet: View {
                                 )
                             )
                             .clipShape(Capsule())
-                            .shadow(color: AstaraColors.gold.opacity(0.4), radius: 10)
+                            .shadow(color: AstaraColors.gold.opacity(0.5), radius: 12)
                     }
                     .buttonStyle(AstaraSpringButtonStyle())
                 }
-                .frame(minHeight: 72)
+                .frame(minHeight: 88)
             }
         }
         .padding(AstaraSpacing.md)

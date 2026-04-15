@@ -15,7 +15,7 @@ struct ScoreRingView: View {
                 .trim(from: 0, to: CGFloat(score) / 100)
                 .stroke(scoreColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.easeOut(duration: 0.9), value: score)
+                .animation(.spring(response: 0.8, dampingFraction: 0.5), value: score)
 
             VStack(spacing: 1) {
                 Text("\(score)")

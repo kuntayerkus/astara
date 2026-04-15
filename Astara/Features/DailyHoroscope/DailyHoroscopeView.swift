@@ -54,8 +54,10 @@ struct DailyHoroscopeView: View {
                                     .font(.system(size: 14))
                                 Text(String(localized: "view_archive"))
                                     .font(AstaraTypography.labelMedium)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 11))
                             }
-                            .foregroundStyle(AstaraColors.textTertiary)
+                            .foregroundStyle(AstaraColors.textSecondary)
                             .padding(.vertical, AstaraSpacing.sm)
                         }
                         .padding(.top, AstaraSpacing.sm)
@@ -116,7 +118,7 @@ struct DailyHoroscopeView: View {
         VStack(spacing: AstaraSpacing.md) {
             Image(systemName: "moon.stars")
                 .font(.system(size: 48))
-                .foregroundStyle(AstaraColors.gold.opacity(0.3))
+                .foregroundStyle(AstaraColors.gold.opacity(0.6))
 
             Text(String(localized: "no_horoscope_available"))
                 .font(AstaraTypography.bodyMedium)

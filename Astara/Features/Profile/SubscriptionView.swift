@@ -1,21 +1,26 @@
 import SwiftUI
+import StoreKit
 import ComposableArchitecture
 
 struct SubscriptionView: View {
     @Bindable var store: StoreOf<ProfileFeature>
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPlan: AstaraProduct = .yearlyPremium
+    @State private var featuresRevealed: Bool = false
+    @State private var yearlyDisplayPrice: String?
+    @State private var monthlyDisplayPrice: String?
 
-    private let features: [(icon: String, text: String)] = [
-        ("sun.and.horizon.fill", "Yükselen burç günlük yorumu"),
-        ("sparkles", "AI kişisel yorum (Gemini)"),
-        ("calendar.badge.clock", "My Week 360 ve Time Travel"),
-        ("questionmark.bubble.fill", "Ask Astara limitsiz soru"),
-        ("arrow.triangle.2.circlepath", "Tam transit takibi"),
-        ("heart.fill", "Sınırsız uyum testi"),
-        ("circle.grid.2x2.fill", "Synastry — iki harita"),
-        ("clock.arrow.circlepath", "Geçmiş gün arşivi"),
-        ("square.and.arrow.up", "Özel paylaşım kartları"),
+    // Feature list — all strings localized, brand-voiced
+    private let features: [(icon: String, key: String)] = [
+        ("sun.and.horizon.fill", "premium_feature_rising_daily"),
+        ("sparkles", "premium_feature_ai_interpretation"),
+        ("calendar.badge.clock", "premium_feature_week360"),
+        ("questionmark.bubble.fill", "premium_feature_ask_astara"),
+        ("arrow.triangle.2.circlepath", "premium_feature_transits"),
+        ("heart.fill", "premium_feature_compatibility"),
+        ("circle.grid.2x2.fill", "premium_feature_synastry"),
+        ("clock.arrow.circlepath", "premium_feature_archive"),
+        ("square.and.arrow.up", "premium_feature_share_cards"),
     ]
 
     var body: some View {
@@ -34,67 +39,89 @@ struct SubscriptionView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: AstaraSpacing.lg) {
-                        // Hero
+
+                        // MARK: - Hero
                         VStack(spacing: AstaraSpacing.sm) {
-                            Image(systemName: "star.circle.fill")
-                                .font(.system(size: 56))
-                                .foregroundStyle(AstaraColors.gold)
+                            // Clipped animated chart reveal as hero visual
+                            ChartRevealAnimation()
+                                .frame(width: 160, height: 160)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle()
+                                        .stroke(AstaraColors.gold.opacity(0.25), lineWidth: 1)
+                                )
 
-                            Text("Astara Premium")
-                                .font(AstaraTypography.displayMedium)
-                                .foregroundStyle(AstaraColors.textPrimary)
+                            VStack(spacing: 4) {
+                                Text(String(localized: "premium_hero_title"))
+                                    .font(AstaraTypography.displayMedium)
+                                    .foregroundStyle(AstaraColors.textPrimary)
+                                    .multilineTextAlignment(.center)
 
-                            Text(String(localized: "premium_hero_subtitle"))
-                                .font(AstaraTypography.bodyMedium)
-                                .foregroundStyle(AstaraColors.textSecondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, AstaraSpacing.xl)
+                                Text(String(localized: "premium_hero_hook"))
+                                    .font(AstaraTypography.bodyMedium)
+                                    .foregroundStyle(AstaraColors.gold)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.horizontal, AstaraSpacing.xl)
                         }
 
-                        // Feature list
+                        // MARK: - Feature List (staggered reveal)
                         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-                            ForEach(features, id: \.icon) { feature in
+                            ForEach(Array(features.enumerated()), id: \.offset) { index, feature in
                                 HStack(spacing: AstaraSpacing.md) {
                                     Image(systemName: feature.icon)
                                         .font(.system(size: 16))
                                         .foregroundStyle(AstaraColors.gold)
                                         .frame(width: 24)
 
-                                    Text(feature.text)
+                                    Text(String(localized: String.LocalizationValue(feature.key)))
                                         .font(AstaraTypography.bodyMedium)
                                         .foregroundStyle(AstaraColors.textSecondary)
                                 }
+                                .opacity(featuresRevealed ? 1 : 0)
+                                .offset(x: featuresRevealed ? 0 : -16)
+                                .animation(
+                                    .spring(response: 0.4, dampingFraction: 0.75)
+                                        .delay(Double(index) * 0.05),
+                                    value: featuresRevealed
+                                )
                             }
                         }
                         .padding(AstaraSpacing.lg)
                         .astaraCard()
                         .padding(.horizontal, AstaraSpacing.lg)
 
-                        // Pricing
+                        // MARK: - Pricing
                         VStack(spacing: AstaraSpacing.sm) {
                             pricingOption(
                                 title: String(localized: "yearly_plan"),
-                                price: "₺599.99 / yıl",
-                                badge: String(localized: "best_value"),
+                                price: yearlyDisplayPrice ?? "₺599.99 / yıl",
+                                badge: String(localized: "premium_most_popular"),
                                 isHighlighted: selectedPlan == .yearlyPremium
                             )
                             .onTapGesture {
-                                selectedPlan = .yearlyPremium
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                    selectedPlan = .yearlyPremium
+                                }
+                                Haptics.selection()
                             }
 
                             pricingOption(
                                 title: String(localized: "monthly_plan"),
-                                price: "₺79.99 / ay",
+                                price: monthlyDisplayPrice ?? "₺79.99 / ay",
                                 badge: nil,
                                 isHighlighted: selectedPlan == .monthlyPremium
                             )
                             .onTapGesture {
-                                selectedPlan = .monthlyPremium
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                    selectedPlan = .monthlyPremium
+                                }
+                                Haptics.selection()
                             }
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
 
-                        // CTA
+                        // MARK: - CTA
                         AstaraButton(title: String(localized: "start_premium"), style: .primary) {
                             if selectedPlan == .yearlyPremium {
                                 store.send(.purchaseYearly)
@@ -122,17 +149,17 @@ struct SubscriptionView: View {
                             .padding(.horizontal, AstaraSpacing.lg)
                         }
 
-                        // Restore + legal
+                        // MARK: - Restore + Legal
                         VStack(spacing: AstaraSpacing.xs) {
                             Button(String(localized: "restore_purchases")) {
                                 store.send(.restorePurchases)
                             }
-                                .font(AstaraTypography.caption)
-                                .foregroundStyle(AstaraColors.textTertiary)
-                                .disabled(store.isLoadingSubscription)
+                            .font(AstaraTypography.caption)
+                            .foregroundStyle(AstaraColors.textTertiary)
+                            .disabled(store.isLoadingSubscription)
 
                             Text(String(localized: "subscription_legal"))
-                                .font(.system(size: 10))
+                                .font(AstaraTypography.caption)
                                 .foregroundStyle(AstaraColors.textTertiary.opacity(0.6))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, AstaraSpacing.xl)
@@ -144,9 +171,28 @@ struct SubscriptionView: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.2)) {
+                featuresRevealed = true
+            }
+            Task { await loadDisplayPrices() }
+        }
         .onChange(of: store.showSubscription) { _, isShown in
             if !isShown {
                 dismiss()
+            }
+        }
+    }
+
+    @MainActor
+    private func loadDisplayPrices() async {
+        let ids = [AstaraProduct.yearlyPremium.rawValue, AstaraProduct.monthlyPremium.rawValue]
+        guard let products = try? await Product.products(for: ids) else { return }
+        for product in products {
+            if product.id == AstaraProduct.yearlyPremium.rawValue {
+                yearlyDisplayPrice = product.displayPrice
+            } else if product.id == AstaraProduct.monthlyPremium.rawValue {
+                monthlyDisplayPrice = product.displayPrice
             }
         }
     }
@@ -161,7 +207,7 @@ struct SubscriptionView: View {
 
                     if let badge {
                         Text(badge)
-                            .font(.system(size: 10))
+                            .font(AstaraTypography.caption)
                             .foregroundStyle(.black)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -177,20 +223,26 @@ struct SubscriptionView: View {
 
             Spacer()
 
-            Image(systemName: isHighlighted ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 22))
-                .foregroundStyle(isHighlighted ? AstaraColors.gold : AstaraColors.textTertiary)
+            ZStack {
+                if isHighlighted {
+                    GlowingRing(color: AstaraColors.gold, lineWidth: 1.5, glowRadius: 8)
+                        .frame(width: 28, height: 28)
+                }
+                Image(systemName: isHighlighted ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 22))
+                    .foregroundStyle(isHighlighted ? AstaraColors.gold : AstaraColors.textTertiary)
+            }
         }
         .padding(AstaraSpacing.md)
         .background(isHighlighted ? AstaraColors.gold.opacity(0.08) : AstaraColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
         .overlay(
             RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
-                .stroke(isHighlighted ? AstaraColors.gold.opacity(0.3) : AstaraColors.cardBorder, lineWidth: 1)
+                .stroke(isHighlighted ? AstaraColors.gold.opacity(0.4) : AstaraColors.cardBorder, lineWidth: isHighlighted ? 1.5 : 1)
         )
         .shadow(
-            color: isHighlighted ? AstaraColors.gold.opacity(0.2) : .clear,
-            radius: isHighlighted ? 14 : 0,
+            color: isHighlighted ? AstaraColors.gold.opacity(0.25) : .clear,
+            radius: isHighlighted ? 16 : 0,
             y: isHighlighted ? 6 : 0
         )
     }

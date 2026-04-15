@@ -314,11 +314,21 @@ struct ProfileView: View {
 
     private var appSection: some View {
         VStack(spacing: 0) {
-            settingsRow(icon: "globe", title: String(localized: "language"), value: "Türkçe")
+            settingsRow(
+                icon: "globe",
+                title: String(localized: "language"),
+                value: Locale.current.localizedString(forLanguageCode: "tr") ?? "Türkçe"
+            )
             Divider().background(AstaraColors.cardBorder).padding(.leading, AstaraSpacing.xxl + AstaraSpacing.sm)
             settingsRow(icon: "envelope", title: String(localized: "contact"), value: "")
             Divider().background(AstaraColors.cardBorder).padding(.leading, AstaraSpacing.xxl + AstaraSpacing.sm)
             settingsRow(icon: "doc.text", title: String(localized: "privacy_policy"), value: "")
+            Divider().background(AstaraColors.cardBorder).padding(.leading, AstaraSpacing.xxl + AstaraSpacing.sm)
+            settingsRow(
+                icon: "info.circle",
+                title: String(localized: "app_version"),
+                value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+            )
         }
     }
 

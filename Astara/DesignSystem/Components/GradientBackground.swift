@@ -9,9 +9,10 @@ struct GradientBackground: View {
             startPoint: animate ? .topLeading : .top,
             endPoint: animate ? .bottomTrailing : .bottom
         )
+        .hueRotation(.radians(animate ? 0.04 : -0.04))
         .ignoresSafeArea()
         .onAppear {
-            withAnimation(.easeInOut(duration: 8.0).repeatForever(autoreverses: true)) {
+            withAnimation(.easeInOut(duration: 5.0).repeatForever(autoreverses: true)) {
                 animate.toggle()
             }
         }

@@ -3,6 +3,7 @@ import ComposableArchitecture
 
 struct ChartView: View {
     @Bindable var store: StoreOf<ChartFeature>
+    @State private var appeared = false
 
     var body: some View {
         ZStack {
@@ -24,10 +25,16 @@ struct ChartView: View {
                             Spacer()
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 20)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.05), value: appeared)
 
                         // Big Three header
                         bigThreeHeader(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .opacity(appeared ? 1 : 0)
+                            .offset(y: appeared ? 0 : 24)
+                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.1), value: appeared)
 
                         // Chart wheel
                         ChartWheelView(
@@ -40,14 +47,23 @@ struct ChartView: View {
                             }
                         )
                         .padding(.horizontal, AstaraSpacing.sm)
+                        .opacity(appeared ? 1 : 0)
+                        .scaleEffect(appeared ? 1 : 0.94)
+                        .animation(.spring(response: 0.65, dampingFraction: 0.7).delay(0.15), value: appeared)
 
                         // Element distribution
                         elementDistribution(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .opacity(appeared ? 1 : 0)
+                            .offset(y: appeared ? 0 : 24)
+                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.2), value: appeared)
 
                         // Planet list
                         planetList(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .opacity(appeared ? 1 : 0)
+                            .offset(y: appeared ? 0 : 24)
+                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.25), value: appeared)
 
                         // Action buttons row
                         VStack(spacing: AstaraSpacing.sm) {
@@ -64,9 +80,17 @@ struct ChartView: View {
                             }
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 24)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.3), value: appeared)
                     }
                     .padding(.top, AstaraSpacing.md)
                     .padding(.bottom, AstaraSpacing.xxxl)
+                    .onAppear {
+                        if !appeared {
+                            withAnimation { appeared = true }
+                        }
+                    }
                 }
             } else {
                 emptyState
@@ -200,8 +224,8 @@ struct ChartView: View {
 
     private var separator: some View {
         Rectangle()
-            .fill(AstaraColors.cardBorder)
-            .frame(width: 1, height: 64)
+            .fill(AstaraColors.cardBorder.opacity(0.4))
+            .frame(width: 0.5, height: 56)
     }
 
     // MARK: - Element Distribution
@@ -240,14 +264,20 @@ struct ChartView: View {
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
 
-            LazyVStack(spacing: 1) {
-                ForEach(chart.planets.filter { $0.key.isPlanet }) { planet in
+            LazyVStack(spacing: 0) {
+                ForEach(Array(chart.planets.filter { $0.key.isPlanet }.enumerated()), id: \.offset) { index, planet in
                     Button {
                         store.send(.selectPlanet(planet.key))
                     } label: {
                         planetRow(planet: planet, chart: chart)
                     }
                     .buttonStyle(.plain)
+                    if index < chart.planets.filter({ $0.key.isPlanet }).count - 1 {
+                        Divider()
+                            .background(AstaraColors.cardBorder)
+                            .opacity(0.06)
+                            .padding(.leading, AstaraSpacing.xl + AstaraSpacing.sm)
+                    }
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusSm))

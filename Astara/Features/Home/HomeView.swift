@@ -103,14 +103,29 @@ struct HomeView: View {
                             upcomingRetrogrades: store.upcomingRetrogrades
                         )
                         .padding(.horizontal, AstaraSpacing.lg)
+                        .scrollTransition(.animated) { content, phase in
+                            content
+                                .opacity(phase.isIdentity ? 1 : 0)
+                                .offset(y: phase.isIdentity ? 0 : 16)
+                        }
                     }
 
                     // Daily energy card
                     if let horoscope = store.dailyHoroscope {
                         featuredDailyCard(horoscope: horoscope)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .scrollTransition(.animated) { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .offset(y: phase.isIdentity ? 0 : 16)
+                            }
                         DailyCardView(horoscope: horoscope)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .scrollTransition(.animated) { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .offset(y: phase.isIdentity ? 0 : 16)
+                            }
                     } else if store.isLoading {
                         shimmerCards
                     } else if let errorMessage = store.errorMessage {
@@ -122,12 +137,22 @@ struct HomeView: View {
                     if !store.elementEnergy.isEmpty {
                         elementEnergySection
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .scrollTransition(.animated) { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .offset(y: phase.isIdentity ? 0 : 12)
+                            }
                     }
 
                     // Planet positions
                     if !store.planetPositions.isEmpty {
                         PlanetPositionsView(planets: store.planetPositions)
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .scrollTransition(.animated) { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .offset(y: phase.isIdentity ? 0 : 12)
+                            }
                     } else if store.isLoading {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: AstaraSpacing.sm) {
@@ -190,39 +215,20 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
 
-                    HStack(spacing: AstaraSpacing.sm) {
-                        Button {
-                            Haptics.selection()
+                    VStack(spacing: AstaraSpacing.sm) {
+                        AstaraButton(title: String(localized: "ask_astara_btn"), style: .primary) {
                             store.send(.openAskAstara(true))
-                        } label: {
-                            Text(String(localized: "ask_astara_btn"))
-                                .font(AstaraTypography.labelMedium)
-                                .foregroundStyle(AstaraColors.textSecondary)
-                                .padding(.horizontal, AstaraSpacing.md)
-                                .padding(.vertical, AstaraSpacing.sm)
-                                .background(AstaraColors.cardBackground)
-                                .clipShape(Capsule())
                         }
-                        .buttonStyle(.plain)
 
-                        Button {
-                            Haptics.selection()
+                        AstaraButton(title: String(localized: "time_travel_btn"), style: .secondary) {
                             store.send(.openTimeTravel(true))
                             store.send(.loadTimeTravelInsight)
-                        } label: {
-                            Text(String(localized: "time_travel_btn"))
-                                .font(AstaraTypography.labelMedium)
-                                .foregroundStyle(AstaraColors.textSecondary)
-                                .padding(.horizontal, AstaraSpacing.md)
-                                .padding(.vertical, AstaraSpacing.sm)
-                                .background(AstaraColors.cardBackground)
-                                .clipShape(Capsule())
                         }
-                        .buttonStyle(.plain)
                     }
+                    .padding(.horizontal, AstaraSpacing.lg)
 
                     // Tagline
-                    Text("Ad astra per aspera")
+                    Text(String(localized: "app_tagline"))
                         .font(.custom("CormorantGaramond-Regular", size: 13))
                         .foregroundStyle(AstaraColors.textTertiary.opacity(0.4))
                         .italic()
@@ -319,7 +325,7 @@ struct HomeView: View {
                     .foregroundStyle(AstaraColors.textSecondary)
 
                 HStack(spacing: AstaraSpacing.md) {
-                    Text("ASTARA")
+                    Text(String(localized: "app_name_display"))
                         .font(.custom("CormorantGaramond-Bold", size: 32))
                         .foregroundStyle(AstaraColors.gold)
                         .tracking(6)

@@ -60,7 +60,7 @@ struct HoroscopeCardView: View {
             }
             .padding(AstaraSpacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(AstaraColors.gold.opacity(0.07))
+            .background(AstaraColors.gold.opacity(0.12))
             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusSm))
 
             // Lucky row

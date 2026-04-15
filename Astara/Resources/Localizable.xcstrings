@@ -3367,6 +3367,329 @@
           }
         }
       }
+    },
+    "premium_hero_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gökyüzü sana bir şey söylüyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sky has something to tell you."
+          }
+        }
+      }
+    },
+    "premium_hero_hook": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duyabilmek için Premium lazım."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearing it requires Premium."
+          }
+        }
+      }
+    },
+    "premium_most_popular": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EN POPÜLER"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MOST POPULAR"
+          }
+        }
+      }
+    },
+    "premium_feature_rising_daily": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gün doğmadan bil — yükselen burç yorumun açıldı."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Know before dawn — your rising sign reading unlocked."
+          }
+        }
+      }
+    },
+    "premium_feature_ai_interpretation": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sadece sana özel AI yorumu. Gökyüzü genel konuşmuyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI reading written for you alone. The sky doesn't do generics."
+          }
+        }
+      }
+    },
+    "premium_feature_week360": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Week 360 ve Time Travel — geçmişin ve geleceğin haritası."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Week 360 and Time Travel — map your past and future."
+          }
+        }
+      }
+    },
+    "premium_feature_ask_astara": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask Astara sınırsız — soruların cevapsız kalmasın."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask Astara unlimited — no question left behind."
+          }
+        }
+      }
+    },
+    "premium_feature_transits": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tam transit takibi — sürprizlere hazır ol."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full transit tracking — no cosmic surprise catches you off guard."
+          }
+        }
+      }
+    },
+    "premium_feature_compatibility": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınırsız uyum testi — listendeki herkesi hesapla."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited compatibility — run the numbers on everyone you know."
+          }
+        }
+      }
+    },
+    "premium_feature_synastry": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Synastry — iki harita, bir gerçek."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Synastry — two charts, one brutal truth."
+          }
+        }
+      }
+    },
+    "premium_feature_archive": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçmiş gün arşivi — o günün gerçekten ne zaman başladığını gör."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Past day archive — see exactly when things started going sideways."
+          }
+        }
+      }
+    },
+    "premium_feature_share_cards": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özel paylaşım kartları — Astara imzalı, Instagram'a hazır."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom share cards — Astara-stamped, Instagram-ready."
+          }
+        }
+      }
+    },
+    "ask_astara_quota_exceeded": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugünlük ücretsiz sorun bitti. Gökyüzü sınırsız cevap veriyor — ama ücretsiz değil. Premium dene."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've used your free question for today. The sky answers everything — just not for free. Try Premium."
+          }
+        }
+      }
+    },
+    "ai_reading_stars": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haritanı okuyoruz. Gökyüzü aceleden anlamaz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading your chart. The sky doesn't do rush orders."
+          }
+        }
+      }
+    },
+    "app_name_display": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ASTARA"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ASTARA"
+          }
+        }
+      }
+    },
+    "app_tagline": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad astra per aspera"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad astra per aspera"
+          }
+        }
+      }
+    },
+    "transit_alert_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bugün gökyüzünde hareket var ✦"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something's moving in the sky today ✦"
+          }
+        }
+      }
+    },
+    "daily_share_text": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Astara günlük enerji: %%%@ | Streak: %@ gün | Odak: %@ | astara.app"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Astara daily energy: %%%@ | Streak: %@ days | Focus: %@ | astara.app"
+          }
+        }
+      }
+    },
+    "app_version": {
+      "extractionState": "manual",
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sürüm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
     }
   }
 }
