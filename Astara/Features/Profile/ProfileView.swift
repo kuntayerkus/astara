@@ -83,7 +83,10 @@ struct ProfileView: View {
                     .font(AstaraTypography.displayMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
                     #if DEBUG
-                    .onLongPressGesture(minimumDuration: 2) { showDebugPanel = true }
+                    .highPriorityGesture(
+                        LongPressGesture(minimumDuration: 1.5)
+                            .onEnded { _ in showDebugPanel = true }
+                    )
                     #endif
 
                 if !store.birthCity.isEmpty {
