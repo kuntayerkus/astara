@@ -26,11 +26,16 @@ struct Retrograde: Codable, Equatable, Identifiable, Sendable {
 
     var isActive: Bool {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "Europe/Istanbul")
         guard let start = formatter.date(from: startDate),
               let end = formatter.date(from: endDate) else { return false }
         let now = Date()
-        return now >= start && now <= end
+        // Include full end day by comparing against start of next day
+        let calendar = Calendar.current
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: end) ?? end
+        return now >= start && now < endOfDay
     }
 }
 

@@ -176,7 +176,7 @@ struct HomeView: View {
                     } label: {
                         HStack(spacing: AstaraSpacing.xs) {
                             Image(systemName: "square.and.arrow.up")
-                            Text("Gunluk karti paylas")
+                            Text(String(localized: "share_daily_btn"))
                                 .font(AstaraTypography.labelMedium)
                         }
                         .foregroundStyle(AstaraColors.textSecondary)
@@ -192,7 +192,7 @@ struct HomeView: View {
                             Haptics.selection()
                             store.send(.openAskAstara(true))
                         } label: {
-                            Text("Ask Astara")
+                            Text(String(localized: "ask_astara_btn"))
                                 .font(AstaraTypography.labelMedium)
                                 .foregroundStyle(AstaraColors.textSecondary)
                                 .padding(.horizontal, AstaraSpacing.md)
@@ -207,7 +207,7 @@ struct HomeView: View {
                             store.send(.openTimeTravel(true))
                             store.send(.loadTimeTravelInsight)
                         } label: {
-                            Text("Time Travel")
+                            Text(String(localized: "time_travel_btn"))
                                 .font(AstaraTypography.labelMedium)
                                 .foregroundStyle(AstaraColors.textSecondary)
                                 .padding(.horizontal, AstaraSpacing.md)
@@ -449,13 +449,13 @@ struct HomeView: View {
     private var streakCard: some View {
         HStack {
             VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
-                Text("Streak")
+                Text(String(localized: "streak_title"))
                     .font(AstaraTypography.caption)
                     .foregroundStyle(AstaraColors.textTertiary)
-                Text("\(store.streakCount) gun")
+                Text(String(format: String(localized: "streak_days"), store.streakCount))
                     .font(AstaraTypography.titleMedium)
                     .foregroundStyle(AstaraColors.gold)
-                Text("En iyi: \(store.longestStreak)")
+                Text(String(format: String(localized: "streak_best"), store.longestStreak))
                     .font(AstaraTypography.caption)
                     .foregroundStyle(AstaraColors.textSecondary)
             }
@@ -470,14 +470,14 @@ struct HomeView: View {
 
     private var astaraScoreCard: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("Astara Score")
+            Text(String(localized: "astara_score"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
             HStack(spacing: AstaraSpacing.sm) {
-                scorePill(title: "Love", value: store.astaraScore.love)
-                scorePill(title: "Work", value: store.astaraScore.work)
-                scorePill(title: "Energy", value: store.astaraScore.energy)
-                scorePill(title: "Focus", value: store.astaraScore.focus)
+                scorePill(title: String(localized: "score_love"), value: store.astaraScore.love)
+                scorePill(title: String(localized: "score_work"), value: store.astaraScore.work)
+                scorePill(title: String(localized: "score_energy"), value: store.astaraScore.energy)
+                scorePill(title: String(localized: "score_focus"), value: store.astaraScore.focus)
             }
         }
         .padding(AstaraSpacing.md)
@@ -501,7 +501,7 @@ struct HomeView: View {
 
     private var week360Card: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("My Week 360")
+            Text(String(localized: "week_360_title"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
             if store.weekTransits.isEmpty && store.isLoading {
@@ -572,13 +572,13 @@ struct HomeView: View {
 
     private var ritualJournalCard: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("Ritual + Journal")
+            Text(String(localized: "ritual_journal"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
-            Text(store.ritualPrompt.isEmpty ? "Bugun icin rituel yukleniyor..." : store.ritualPrompt)
+            Text(store.ritualPrompt.isEmpty ? String(localized: "ritual_loading") : store.ritualPrompt)
                 .font(AstaraTypography.bodySmall)
                 .foregroundStyle(AstaraColors.textSecondary)
-            TextField("Kisa not: bugun nasil hissediyorsun?", text: $store.moodNote.sending(\.setMoodNote))
+            TextField(String(localized: "ritual_note_placeholder"), text: $store.moodNote.sending(\.setMoodNote))
                 .textFieldStyle(.plain)
                 .font(AstaraTypography.bodySmall)
                 .foregroundStyle(AstaraColors.textPrimary)
@@ -593,11 +593,11 @@ struct HomeView: View {
 
     private var synastryFeedCard: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("Synastry Feed")
+            Text(String(localized: "synastry_feed"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
             if store.friendDynamics.isEmpty {
-                Text("Arkadas dinamikleri yukleniyor...")
+                Text(String(localized: "friend_loading"))
                     .font(AstaraTypography.bodySmall)
                     .foregroundStyle(AstaraColors.textSecondary)
             } else {
@@ -627,14 +627,14 @@ struct HomeView: View {
 
     private var dailyTasksCard: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("Bugunun gorevleri")
+            Text(String(localized: "daily_tasks"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
-            taskRow(id: "read_daily_card", title: "Gunluk yorumu oku")
-            taskRow(id: "mood_checkin", title: "Mood check-in yap")
-            taskRow(id: "ritual_journal", title: "Rituel notunu yaz")
-            taskRow(id: "ask_astara", title: "Ask Astara sorusu sor")
-            taskRow(id: "share_card", title: "Kart paylas")
+            taskRow(id: "read_daily_card", title: String(localized: "task_read_daily"))
+            taskRow(id: "mood_checkin", title: String(localized: "task_mood_checkin"))
+            taskRow(id: "ritual_journal", title: String(localized: "task_ritual_note"))
+            taskRow(id: "ask_astara", title: String(localized: "task_ask_astara"))
+            taskRow(id: "share_card", title: String(localized: "task_share_card"))
         }
         .padding(AstaraSpacing.md)
         .astaraCard()
@@ -660,7 +660,7 @@ struct HomeView: View {
 
     private var moodCheckinCard: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text("Mood check-in")
+            Text(String(localized: "mood_checkin"))
                 .font(AstaraTypography.labelLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
             HStack(spacing: AstaraSpacing.sm) {
@@ -691,7 +691,7 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity)
                 }
             }
-            AstaraButton(title: "Check-in kaydet", style: .secondary) {
+            AstaraButton(title: String(localized: "checkin_save"), style: .secondary) {
                 store.send(.saveMoodCheckin)
             }
             .disabled(store.todaysMood == nil)
@@ -824,11 +824,11 @@ struct HomeView: View {
 
     private var timeTravelSheet: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.md) {
-            Text("Time Travel")
+            Text(String(localized: "time_travel_btn"))
                 .font(AstaraTypography.titleLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
             DatePicker(
-                "Tarih sec",
+                String(localized: "time_travel_btn"),
                 selection: $store.timeTravelDate.sending(\.setTimeTravelDate),
                 in: Calendar.current.date(byAdding: .day, value: -30, to: Date())!...Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
                 displayedComponents: .date

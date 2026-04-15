@@ -71,9 +71,10 @@ struct ChartWheelView: View {
     // MARK: - Angle Helpers
 
     /// Converts ecliptic longitude to canvas angle.
-    /// ASC sits at 9 o'clock (180°). Chart goes counterclockwise.
+    /// ASC sits at 9 o'clock (180°). Zodiac advances counterclockwise.
+    /// MC lands at 12 o'clock (90°), IC at 6 o'clock (270°), DSC at 3 o'clock (0°).
     private func canvasAngle(for eclipticDeg: Double, ascDeg: Double) -> Double {
-        180.0 + ascDeg - eclipticDeg
+        eclipticDeg - ascDeg + 180.0
     }
 
     private func point(center: CGPoint, radius: CGFloat, angleDeg: Double) -> CGPoint {
@@ -98,8 +99,8 @@ struct ChartWheelView: View {
 
                 // Filled segment
                 var seg = Path()
-                seg.addArc(center: center, radius: outerR, startAngle: .degrees(-startA), endAngle: .degrees(-endA), clockwise: true)
-                seg.addArc(center: center, radius: innerR, startAngle: .degrees(-endA), endAngle: .degrees(-startA), clockwise: false)
+                seg.addArc(center: center, radius: outerR, startAngle: .degrees(-startA), endAngle: .degrees(-endA), clockwise: false)
+                seg.addArc(center: center, radius: innerR, startAngle: .degrees(-endA), endAngle: .degrees(-startA), clockwise: true)
                 seg.closeSubpath()
 
                 let elemColor = elementColor(sign.element)

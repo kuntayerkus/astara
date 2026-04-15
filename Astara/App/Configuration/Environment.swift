@@ -43,6 +43,10 @@ enum APIEnvironment {
         Bundle.main.infoDictionary?["GEONAMES_USERNAME"] as? String ?? ""
     }
 
+    var geminiAPIKey: String {
+        Bundle.main.infoDictionary?["GEMINI_API_KEY"] as? String ?? ""
+    }
+
     static var current: APIEnvironment {
         #if DEBUG
         return .staging

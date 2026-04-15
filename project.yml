@@ -84,6 +84,7 @@ targets:
         VPS_URL: $(VPS_URL)
         VPS_API_KEY: $(VPS_API_KEY)
         GEONAMES_USERNAME: $(GEONAMES_USERNAME)
+        GEMINI_API_KEY: $(GEMINI_API_KEY)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

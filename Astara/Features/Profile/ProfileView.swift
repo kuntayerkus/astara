@@ -3,6 +3,9 @@ import ComposableArchitecture
 
 struct ProfileView: View {
     @Bindable var store: StoreOf<ProfileFeature>
+    #if DEBUG
+    @State private var showDebugPanel = false
+    #endif
 
     var body: some View {
         ZStack {
@@ -48,6 +51,13 @@ struct ProfileView: View {
             }
         }
         .onAppear { store.send(.onAppear) }
+        #if DEBUG
+        .sheet(isPresented: $showDebugPanel) {
+            DebugPanelView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+        #endif
         .sheet(isPresented: Binding(
             get: { store.showSubscription },
             set: { store.send(.setSubscriptionPresented($0)) }
@@ -72,6 +82,9 @@ struct ProfileView: View {
                 Text(store.userName.isEmpty ? String(localized: "profile") : store.userName)
                     .font(AstaraTypography.displayMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
+                    #if DEBUG
+                    .onLongPressGesture(minimumDuration: 2) { showDebugPanel = true }
+                    #endif
 
                 if !store.birthCity.isEmpty {
                     HStack(spacing: 4) {

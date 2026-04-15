@@ -34,13 +34,11 @@ struct CompatibilityFeature {
                 return .send(.calculate)
 
             case .selectSign1(let sign):
-                guard sign != state.sign2 else { return .none }
                 state.sign1 = sign
                 state.result = nil
                 return .send(.calculate)
 
             case .selectSign2(let sign):
-                guard sign != state.sign1 else { return .none }
                 state.sign2 = sign
                 state.result = nil
                 return .send(.calculate)

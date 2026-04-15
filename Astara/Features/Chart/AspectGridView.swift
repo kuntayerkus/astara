@@ -33,7 +33,7 @@ struct AspectGridView: View {
     // MARK: - Grid
 
     private var grid: some View {
-        let cellSize: CGFloat = 44
+        let cellSize: CGFloat = 30
 
         return VStack(spacing: 0) {
             // Header row
@@ -92,15 +92,9 @@ struct AspectGridView: View {
                 Rectangle()
                     .fill(colorForAspect(aspect.type).opacity(0.12))
 
-                VStack(spacing: 0) {
-                    Text(aspect.type.symbol)
-                        .font(.system(size: 12))
-                        .foregroundStyle(colorForAspect(aspect.type))
-
-                    Text(String(format: "%.0f°", aspect.orb))
-                        .font(.system(size: 8))
-                        .foregroundStyle(AstaraColors.textTertiary)
-                }
+                Text(aspect.type.symbol)
+                    .font(.system(size: 11))
+                    .foregroundStyle(colorForAspect(aspect.type))
             }
 
             Rectangle()

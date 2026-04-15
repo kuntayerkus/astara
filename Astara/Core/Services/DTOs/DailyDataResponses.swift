@@ -63,7 +63,25 @@ struct DailyEnergyResponse: Decodable {
     let elements: [String: ElementEntry]
     
     struct ElementEntry: Decodable {
-        let level: Int
+        // `level` can be 0-100 (Int) or 0.0-1.0 (Double) depending on API version.
+        let rawLevel: Double
+
+        private enum CodingKeys: String, CodingKey { case level }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            // Try Int first, then Double (handles both "level": 75 and "level": 0.75)
+            if let intVal = try? container.decode(Int.self, forKey: .level) {
+                rawLevel = Double(intVal)
+            } else {
+                rawLevel = (try? container.decode(Double.self, forKey: .level)) ?? 0
+            }
+        }
+
+        /// Normalised 0-100 integer value.
+        var level: Int {
+            rawLevel <= 1.0 && rawLevel > 0 ? Int(rawLevel * 100) : Int(rawLevel)
+        }
     }
 
     func toElementEnergy() -> [Element: Int] {

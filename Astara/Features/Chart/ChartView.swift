@@ -288,16 +288,6 @@ struct ChartView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             }
 
-            if let house = chart.houseForPlanet(planet.key) {
-                Text("H\(house)")
-                    .font(AstaraTypography.caption)
-                    .foregroundStyle(AstaraColors.textTertiary)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(AstaraColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-            }
-
             Image(systemName: "chevron.right")
                 .font(.system(size: 11))
                 .foregroundStyle(AstaraColors.textTertiary)
