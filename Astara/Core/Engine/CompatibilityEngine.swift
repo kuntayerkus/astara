@@ -81,32 +81,32 @@ private enum CompatibilityCalculator {
         switch elementPair {
         case "fire-fire":
             return score > 70
-                ? "İki ateş burcu — tutkulu ve enerjik. Kıvılcımlar uçuşabilir, ama alevler de yakabilir. Enerjiyi doğru kanalize edin."
-                : "İkisi de güçlü — egolar çarpışabilir. Birbirinize alan tanıyın."
+                ? "İki ateş burcu. Ya dünyayı fethedeceksiniz ya da birbirinizin hayatını cehenneme çevireceksiniz. Ego savaşlarına girdiğinizde yangın söndürücünüzü yanınızda bulundurun."
+                : "İkinizin de egosu bu odaya sığmaz. Evrenin hatası olan bir fırtına. Ya hemen kaçın ya da enkaz altında kalmaya hazırlanın."
 
         case "earth-earth":
-            return "İki toprak burcu — istikrarlı ve güvenilir. Uzun vadeli bağlar için güçlü zemin. Değişime birlikte açık olun."
+            return "İki toprak burcu. Güvenilir, inatçı ve muhtemelen çok sıkıcı. İkiniz de haklı olduğunuzu kanıtlamaktan yorulmayacaksanız evlenebilirsiniz."
 
         case "air-air":
-            return "İki hava burcu — zihinsel uyum üst düzey. Konuşmalarınız bitmez, fikirler uçuşur. Derinliği ihmal etmeyin."
+            return "İki hava burcu. Çok konuşuyorsunuz ama hiçbir şey çözmüyorsunuz. Pratik dünyayla bağlantınızı tamamen kaybedene kadar felsefe yapmaya devam edin."
 
         case "water-water":
-            return "İki su burcu — derin duygusal bağ. Sezgisel anlayış kusursuz. Sınır çizmeyi öğrenin."
+            return "İki su burcu. Tebrikler, birlikte boğulmayı seçtiniz. Sürekli birbirinizin travmalarını tetikleyip bunu \"derin bir bağ\" zannedeceksiniz. Terapistleri zengin edersiniz."
 
         case "fire-air", "air-fire":
-            return "Ateş ve hava — birbirini besleyen güç. Hava, ateşi büyütür; ateş, havaya yön verir. Dinamik ve ilham verici bağ."
+            return "Ateş ve hava. Biri yangın başlatır, diğeri körükler. Eğlenceli bir kaos ama rüzgar tersine döndüğünde herkes yanar."
 
         case "earth-water", "water-earth":
-            return "Toprak ve su — birbirini besleyen denge. Su toprağı besler, toprak suya yön verir. Besleme ve güven ön planda."
+            return "Toprak ve su. Çamur oldunuz. Dünyanın en stabil, en yapışkan ve bırakması en zor bataklığı. Kurtulmak için yıllarınızı harcayabilirsiniz."
 
         case "fire-earth", "earth-fire":
-            return "Ateş ve toprak — hız farkı olabilir. Ateş hızlı, toprak temkinli. Ortak ritim bulunursa sağlam ilerlenir."
+            return "Ateş ve toprak. Biri hız ister, diğeri fren yapar. Sabrınız tükenene kadar birbirinizin sinirlerini yıpratmak için harika bir eşleşme."
 
         case "air-water", "water-air":
-            return "Hava ve su — akıl ile duygu arası denge. Hava analiz eder, su hisseder. Birbirini anlama çabası gerektirir."
+            return "Hava ve su. Mantık ve duygu çarpışması. Biri ağlarken diğeri bunu analiz edip duracak. İletişim kurduğunuzu sanıp sadece monolog yapıyorsunuz."
 
         default:
-            return "\(a.turkishName) ve \(b.turkishName) — farklı enerjiler, ortak yolculuk. Farkları gücünüze çevirin."
+            return "\(a.turkishName) ve \(b.turkishName). Kozmik bir şaka. Neden hala birlikte olduğunuzu yıldızlar da bilmiyor ama acı çekmek ikinizin de seçimi."
         }
     }
 

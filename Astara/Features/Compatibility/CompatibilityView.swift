@@ -56,12 +56,13 @@ struct CompatibilityView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(String(localized: "compatibility"))
-                    .font(AstaraTypography.displayMedium)
-                    .foregroundStyle(AstaraColors.textPrimary)
+                Text(String(localized: "compatibility").uppercased())
+                    .font(AstaraTypography.heroLabel)
+                    .foregroundStyle(AstaraColors.gold)
+                    .tracking(2)
 
                 Text(String(localized: "compatibility_subtitle"))
-                    .font(AstaraTypography.bodySmall)
+                    .font(AstaraTypography.bodyLarge)
                     .foregroundStyle(AstaraColors.textTertiary)
             }
 
@@ -123,10 +124,12 @@ struct CompatibilityView: View {
                     .textCase(.uppercase)
 
                 Text(sign.symbol)
-                    .font(.system(size: 36))
+                    .font(.system(size: 42, weight: .light))
+                    .foregroundStyle(AstaraColors.gold)
+                    .shadow(color: AstaraColors.goldGlow, radius: 2)
 
                 Text(sign.turkishName)
-                    .font(AstaraTypography.labelLarge)
+                    .font(AstaraTypography.heroLabel)
                     .foregroundStyle(AstaraColors.textPrimary)
 
                 Text(sign.element.localizedName)
@@ -135,7 +138,7 @@ struct CompatibilityView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(AstaraSpacing.md)
-            .astaraCard()
+            .microCard()
         }
     }
 
@@ -147,19 +150,20 @@ struct CompatibilityView: View {
             VStack(spacing: AstaraSpacing.sm) {
                 ScoreRingView(score: result.overallScore, label: String(localized: "overall"), size: 120, lineWidth: 8)
 
-                Text(compatibilityLabel(result.overallScore))
-                    .font(AstaraTypography.titleLarge)
+                Text(compatibilityLabel(result.overallScore).uppercased())
+                    .font(AstaraTypography.heroLabel)
                     .foregroundStyle(AstaraColors.gold)
+                    .tracking(2)
             }
             .frame(maxWidth: .infinity)
             .padding(AstaraSpacing.xl)
-            .astaraCard()
+            .chronicleCard()
 
             // Description excerpt
             Text(result.description)
-                .font(AstaraTypography.bodyMedium)
+                .font(AstaraTypography.bodyLarge)
                 .foregroundStyle(AstaraColors.textSecondary)
-                .lineSpacing(5)
+                .lineSpacing(8)
                 .multilineTextAlignment(.center)
                 .padding(AstaraSpacing.lg)
                 .astaraCard()
@@ -197,7 +201,7 @@ struct CompatibilityView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(AstaraSpacing.md)
-        .astaraCard()
+        .microCard()
     }
 
     private func elementColor(_ element: Element) -> Color {

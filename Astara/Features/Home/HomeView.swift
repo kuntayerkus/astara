@@ -3,7 +3,7 @@ import ComposableArchitecture
 
 struct HomeView: View {
     @Bindable var store: StoreOf<HomeFeature>
-    @State private var cardsAppeared = false
+    @State private var appeared = false
 
     var body: some View {
         TabView(selection: $store.selectedTab.sending(\.selectTab)) {
@@ -41,204 +41,81 @@ struct HomeView: View {
         }
         .tint(AstaraColors.gold)
         .preferredColorScheme(.dark)
-        .onAppear {
-            store.send(.onAppear)
-        }
+        .onAppear { store.send(.onAppear) }
     }
 
     // MARK: - Home Tab
 
     private var homeTab: some View {
         ZStack {
-            GradientBackground()
-            StarfieldView(starCount: 55)
-                .opacity(0.18)
+            GradientBackground(ambient: .home)
+            StarfieldView(starCount: 55).opacity(0.15)
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: AstaraSpacing.lg) {
-                    // Header
+                VStack(spacing: 0) {
+                    // ── HEADER ──────────────────────────────────────
                     header
                         .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 20).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.0), value: cardsAppeared)
-                    streakCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.06), value: cardsAppeared)
-                    astaraScoreCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.12), value: cardsAppeared)
-                    week360Card
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.18), value: cardsAppeared)
-                    ritualJournalCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.22), value: cardsAppeared)
-                    synastryFeedCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.26), value: cardsAppeared)
-                    dailyTasksCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.30), value: cardsAppeared)
-                    moodCheckinCard
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .offset(y: cardsAppeared ? 0 : 24).opacity(cardsAppeared ? 1 : 0)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.34), value: cardsAppeared)
+                        .padding(.top, AstaraSpacing.md)
+                        .chapterEntrance(appeared: appeared, delay: 0.0)
 
-                    // Big Three mini-card (if chart exists)
-                    if let chart = store.userChart {
-                        bigThreeBar(chart: chart)
+                    // ── CHAPTER I: TODAY ─────────────────────────────
+                    chapterDivider(number: "I", title: String(localized: "today"))
+                        .chapterEntrance(appeared: appeared, delay: 0.06)
+
+                    chapterToday
+                        .padding(.horizontal, AstaraSpacing.lg)
+                        .chapterEntrance(appeared: appeared, delay: 0.10)
+
+                    // ── CHAPTER II: ASTARA SCORE ─────────────────────
+                    chapterDivider(number: "II", title: String(localized: "astara_score"))
+                        .chapterEntrance(appeared: appeared, delay: 0.16)
+
+                    chapterScore
+                        .chapterEntrance(appeared: appeared, delay: 0.20)
+
+                    // ── CHAPTER III: CELESTIAL WEEK ──────────────────
+                    chapterDivider(number: "III", title: String(localized: "week_360_title"))
+                        .chapterEntrance(appeared: appeared, delay: 0.26)
+
+                    chapterCelestialWeek
+                        .padding(.horizontal, AstaraSpacing.lg)
+                        .chapterEntrance(appeared: appeared, delay: 0.30)
+
+                    // ── CHAPTER IV: YOUR SKY ─────────────────────────
+                    chapterDivider(number: "IV", title: String(localized: "element_energy"))
+                        .chapterEntrance(appeared: appeared, delay: 0.36)
+
+                    chapterYourSky
+                        .padding(.horizontal, AstaraSpacing.lg)
+                        .chapterEntrance(appeared: appeared, delay: 0.40)
+
+                    // ── CHAPTER V: RITUAL & ASK ──────────────────────
+                    chapterDivider(number: "V", title: String(localized: "ritual_journal"))
+                        .chapterEntrance(appeared: appeared, delay: 0.46)
+
+                    chapterRitualAsk
+                        .padding(.horizontal, AstaraSpacing.lg)
+                        .chapterEntrance(appeared: appeared, delay: 0.50)
+
+                    // ── CHAPTER VI: CONNECTIONS (only when data exists)
+                    if !store.friendDynamics.isEmpty {
+                        chapterDivider(number: "VI", title: String(localized: "synastry_feed"))
+                            .chapterEntrance(appeared: appeared, delay: 0.56)
+
+                        chapterConnections
                             .padding(.horizontal, AstaraSpacing.lg)
+                            .chapterEntrance(appeared: appeared, delay: 0.60)
                     }
 
-                    // Retro alert — aktif + yaklaşan
-                    if !store.activeRetrogrades.isEmpty || !store.upcomingRetrogrades.isEmpty {
-                        RetroAlertBanner(
-                            activeRetrogrades: store.activeRetrogrades,
-                            upcomingRetrogrades: store.upcomingRetrogrades
-                        )
-                        .padding(.horizontal, AstaraSpacing.lg)
-                        .scrollTransition(.animated) { content, phase in
-                            content
-                                .opacity(phase.isIdentity ? 1 : 0)
-                                .offset(y: phase.isIdentity ? 0 : 16)
-                        }
-                    }
-
-                    // Daily energy card
-                    if let horoscope = store.dailyHoroscope {
-                        featuredDailyCard(horoscope: horoscope)
-                            .padding(.horizontal, AstaraSpacing.lg)
-                            .scrollTransition(.animated) { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1 : 0)
-                                    .offset(y: phase.isIdentity ? 0 : 16)
-                            }
-                        DailyCardView(horoscope: horoscope)
-                            .padding(.horizontal, AstaraSpacing.lg)
-                            .scrollTransition(.animated) { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1 : 0)
-                                    .offset(y: phase.isIdentity ? 0 : 16)
-                            }
-                    } else if store.isLoading {
-                        shimmerCards
-                    } else if let errorMessage = store.errorMessage {
-                        errorBanner(message: errorMessage)
-                            .padding(.horizontal, AstaraSpacing.lg)
-                    }
-
-                    // Element energy
-                    if !store.elementEnergy.isEmpty {
-                        elementEnergySection
-                            .padding(.horizontal, AstaraSpacing.lg)
-                            .scrollTransition(.animated) { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1 : 0)
-                                    .offset(y: phase.isIdentity ? 0 : 12)
-                            }
-                    }
-
-                    // Planet positions
-                    if !store.planetPositions.isEmpty {
-                        PlanetPositionsView(planets: store.planetPositions)
-                            .padding(.horizontal, AstaraSpacing.lg)
-                            .scrollTransition(.animated) { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1 : 0)
-                                    .offset(y: phase.isIdentity ? 0 : 12)
-                            }
-                    } else if store.isLoading {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: AstaraSpacing.sm) {
-                                ForEach(0..<7, id: \.self) { _ in
-                                    ShimmerView()
-                                        .frame(width: 64, height: 80)
-                                        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
-                                }
-                            }
-                            .padding(.horizontal, AstaraSpacing.lg)
-                        }
-                    }
-
-                    // Last updated
-                    if let lastUpdated = store.lastUpdated {
-                        HStack(spacing: AstaraSpacing.xxs) {
-                            Circle()
-                                .fill(AstaraColors.sage400)
-                                .frame(width: 6, height: 6)
-                            Text("\(String(localized: "last_updated")): \(AstaraDateFormatters.timeOnly.string(from: lastUpdated))")
-                                .font(AstaraTypography.caption)
-                                .foregroundStyle(AstaraColors.textTertiary)
-                        }
-                        .padding(.top, AstaraSpacing.xs)
-                    }
-
-                    Button {
-                        Haptics.selection()
-                        store.send(.retryDailyData)
-                    } label: {
-                        HStack(spacing: AstaraSpacing.xs) {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text(String(localized: "retry"))
-                                .font(AstaraTypography.labelMedium)
-                        }
-                        .foregroundStyle(AstaraColors.textSecondary)
-                        .padding(.horizontal, AstaraSpacing.md)
-                        .padding(.vertical, AstaraSpacing.sm)
-                        .background(AstaraColors.cardBackground)
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, AstaraSpacing.xs)
-
-                    Button {
-                        Haptics.selection()
-                        store.send(.shareDailySummary)
-                    } label: {
-                        HStack(spacing: AstaraSpacing.xs) {
-                            Image(systemName: "square.and.arrow.up")
-                            Text(String(localized: "share_daily_btn"))
-                                .font(AstaraTypography.labelMedium)
-                        }
-                        .foregroundStyle(AstaraColors.textSecondary)
-                        .padding(.horizontal, AstaraSpacing.md)
-                        .padding(.vertical, AstaraSpacing.sm)
-                        .background(AstaraColors.cardBackground)
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-
-                    VStack(spacing: AstaraSpacing.sm) {
-                        AstaraButton(title: String(localized: "ask_astara_btn"), style: .primary) {
-                            store.send(.openAskAstara(true))
-                        }
-
-                        AstaraButton(title: String(localized: "time_travel_btn"), style: .secondary) {
-                            store.send(.openTimeTravel(true))
-                            store.send(.loadTimeTravelInsight)
-                        }
-                    }
-                    .padding(.horizontal, AstaraSpacing.lg)
-
-                    // Tagline
-                    Text(String(localized: "app_tagline"))
-                        .font(.custom("CormorantGaramond-Regular", size: 13))
-                        .foregroundStyle(AstaraColors.textTertiary.opacity(0.4))
-                        .italic()
-                        .padding(.top, AstaraSpacing.sm)
+                    // ── FOOTER ───────────────────────────────────────
+                    footer
+                        .padding(.bottom, AstaraSpacing.xxxl)
+                        .chapterEntrance(appeared: appeared, delay: 0.64)
                 }
-                .padding(.top, AstaraSpacing.md)
-                .padding(.bottom, AstaraSpacing.xxxl)
                 .onAppear {
-                    if !cardsAppeared {
-                        withAnimation { cardsAppeared = true }
+                    if !appeared {
+                        withAnimation { appeared = true }
                     }
                 }
             }
@@ -270,69 +147,25 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Error Banner
-
-    private func errorBanner(message: String) -> some View {
-        VStack(spacing: AstaraSpacing.md) {
-            ZStack {
-                Circle()
-                    .fill(AstaraColors.gold.opacity(0.06))
-                    .frame(width: 72, height: 72)
-                Image(systemName: "moon.stars.fill")
-                    .font(.system(size: 30))
-                    .foregroundStyle(AstaraColors.gold.opacity(0.45))
-            }
-
-            Text(String(localized: "error_stars_unreachable"))
-                .font(AstaraTypography.titleMedium)
-                .foregroundStyle(AstaraColors.textPrimary)
-
-            Text(message)
-                .font(AstaraTypography.bodySmall)
-                .foregroundStyle(AstaraColors.textSecondary)
-                .multilineTextAlignment(.center)
-
-            AstaraButton(title: String(localized: "retry"), style: .secondary) {
-                store.send(.retryDailyData)
-            }
-            .frame(maxWidth: 220)
-        }
-        .padding(AstaraSpacing.xl)
-        .astaraCard()
-    }
-
-    // MARK: - Shimmer
-
-    private var shimmerCards: some View {
-        VStack(spacing: AstaraSpacing.md) {
-            ShimmerView()
-                .frame(height: 180)
-                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
-            ShimmerView()
-                .frame(height: 100)
-                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
-        }
-        .padding(.horizontal, AstaraSpacing.lg)
-    }
-
     // MARK: - Header
 
     private var header: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(greetingText)
-                    .font(AstaraTypography.bodyMedium)
-                    .foregroundStyle(AstaraColors.textSecondary)
+                    .font(AstaraTypography.sectionMark)
+                    .foregroundStyle(AstaraColors.textTertiary)
+                    .tracking(2)
+                    .textCase(.uppercase)
 
-                HStack(spacing: AstaraSpacing.md) {
-                    Text(String(localized: "app_name_display"))
-                        .font(.custom("CormorantGaramond-Bold", size: 32))
+                HStack(spacing: AstaraSpacing.sm) {
+                    Text("ASTARA")
+                        .font(.custom("CormorantGaramond-Bold", size: 34))
                         .foregroundStyle(AstaraColors.gold)
-                        .tracking(6)
-                    
-                    MoonPhaseView(size: 32, showName: false)
+                        .tracking(8)
+                        .shadow(color: AstaraColors.goldGlow.opacity(0.5), radius: 12)
+                    MoonPhaseView(size: 28, showName: false)
                         .offset(y: 2)
-                        .shadow(color: AstaraColors.gold.opacity(0.15), radius: 8)
                 }
 
                 Text(AstaraDateFormatters.displayDate.string(from: Date()))
@@ -342,102 +175,196 @@ struct HomeView: View {
 
             Spacer()
 
-            // Profile avatar
             Button {
                 store.send(.selectTab(.profile))
             } label: {
                 ZStack {
                     Circle()
-                        .fill(AstaraColors.gold.opacity(0.12))
-                        .frame(width: 50, height: 50)
-                        .blur(radius: 6)
+                        .fill(AstaraColors.gold.opacity(0.08))
+                        .frame(width: 48, height: 48)
                     Circle()
-                        .fill(AstaraColors.gold.opacity(0.1))
-                        .frame(width: 46, height: 46)
-                    Circle()
-                        .stroke(AstaraColors.gold.opacity(0.3), lineWidth: 1)
-                        .frame(width: 46, height: 46)
+                        .stroke(
+                            LinearGradient(
+                                colors: [AstaraColors.gold.opacity(0.5), AstaraColors.gold.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                        .frame(width: 48, height: 48)
                     Text(store.userSunSign.symbol)
-                        .font(.system(size: 21))
+                        .font(.system(size: 22))
                 }
             }
         }
+        .padding(.bottom, AstaraSpacing.xs)
     }
 
-    // MARK: - Big Three Bar
+    // MARK: - Chapter I: TODAY
 
-    private func bigThreeBar(chart: BirthChart) -> some View {
-        HStack(spacing: 0) {
-            if let sun = chart.sunSign {
-                bigThreeItem(label: "\u{2609}", title: String(localized: "sun_short"), sign: sun, color: AstaraColors.gold)
-            }
-            if chart.sunSign != nil && chart.moonSign != nil {
-                dividerLine
-            }
-            if let moon = chart.moonSign {
-                bigThreeItem(label: "\u{263D}", title: String(localized: "moon_short"), sign: moon, color: AstaraColors.mist400)
-            }
-            if chart.moonSign != nil && chart.risingSign != nil {
-                dividerLine
-            }
-            if let rising = chart.risingSign {
-                bigThreeItem(label: "ASC", title: String(localized: "rising_short"), sign: rising, color: AstaraColors.goldLight)
+    private var chapterToday: some View {
+        VStack(spacing: AstaraSpacing.md) {
+            if store.isLoading && store.dailyHoroscope == nil {
+                shimmerChronicle
+            } else if let horoscope = store.dailyHoroscope {
+                // Hero daily chronicle card
+                VStack(alignment: .leading, spacing: AstaraSpacing.md) {
+                    // Energy + streak inline
+                    HStack {
+                        HStack(spacing: AstaraSpacing.xs) {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 12))
+                                .foregroundStyle(AstaraColors.ember400)
+                            Text(String(format: String(localized: "streak_days"), store.streakCount))
+                                .font(AstaraTypography.sectionMark)
+                                .foregroundStyle(AstaraColors.textTertiary)
+                                .tracking(1)
+                        }
+                        Spacer()
+                        Text("\(horoscope.energy)%")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 28))
+                            .foregroundStyle(AstaraColors.gold)
+                            .shadow(color: AstaraColors.goldGlow.opacity(0.6), radius: 8)
+                        Text(String(localized: "element_energy").lowercased())
+                            .font(AstaraTypography.sectionMark)
+                            .foregroundStyle(AstaraColors.textTertiary)
+                            .tracking(1)
+                            .padding(.top, 8)
+                    }
+
+                    // Theme — hero typography
+                    Text(horoscope.theme)
+                        .font(AstaraTypography.heroLabel)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [AstaraColors.goldLight, AstaraColors.gold],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .shadow(color: AstaraColors.goldGlow.opacity(0.4), radius: 12)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    // Body text
+                    Text(horoscope.text)
+                        .font(AstaraTypography.bodyMedium)
+                        .foregroundStyle(AstaraColors.textSecondary)
+                        .lineSpacing(5)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    // Action row
+                    HStack(spacing: AstaraSpacing.sm) {
+                        microActionButton(
+                            icon: "square.and.arrow.up",
+                            label: String(localized: "share_daily_btn")
+                        ) { store.send(.shareDailySummary) }
+
+                        microActionButton(
+                            icon: "arrow.clockwise",
+                            label: String(localized: "retry")
+                        ) { store.send(.retryDailyData) }
+                    }
+                }
+                .padding(AstaraSpacing.lg)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .chronicleCard()
+
+                // Big Three inline (if chart exists)
+                if let chart = store.userChart {
+                    bigThreeInline(chart: chart)
+                }
+
+            } else if let errorMessage = store.errorMessage {
+                errorBanner(message: errorMessage)
             }
         }
-        .padding(.vertical, AstaraSpacing.md)
-        .padding(.horizontal, AstaraSpacing.sm)
-        .astaraCard()
     }
 
-    private func bigThreeItem(label: String, title: String, sign: ZodiacSign, color: Color) -> some View {
-        VStack(spacing: AstaraSpacing.xxs) {
-            Text(label)
-                .font(.system(size: 16))
-                .foregroundStyle(color)
-            Text(sign.symbol)
-                .font(.system(size: 22))
-            Text(sign.turkishName)
-                .font(AstaraTypography.caption)
-                .foregroundStyle(AstaraColors.textSecondary)
-            Text(title)
-                .font(.system(size: 9))
-                .foregroundStyle(AstaraColors.textTertiary)
-                .textCase(.uppercase)
-                .tracking(1)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func featuredDailyCard(horoscope: DailyHoroscope) -> some View {
+    private var shimmerChronicle: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.md) {
-            HStack {
-                Label(String(localized: "today"), systemImage: "sparkles")
-                    .font(AstaraTypography.caption)
-                    .foregroundStyle(AstaraColors.goldLight)
-                    .padding(.horizontal, AstaraSpacing.sm)
-                    .padding(.vertical, AstaraSpacing.xxs)
-                    .background(AstaraColors.gold.opacity(0.15))
-                    .clipShape(Capsule())
-                Spacer()
-                Text("\(horoscope.energy)%")
-                    .font(AstaraTypography.labelLarge)
-                    .foregroundStyle(AstaraColors.gold)
-            }
+            ShimmerView().frame(height: 18).frame(maxWidth: 140)
+            ShimmerView().frame(height: 32).frame(maxWidth: 260)
+            ShimmerView().frame(height: 15).frame(maxWidth: .infinity)
+            ShimmerView().frame(height: 15).frame(maxWidth: 200)
+        }
+        .padding(AstaraSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusXl))
+        .background(AstaraColors.cardBackground)
+    }
 
-            Text(horoscope.theme)
-                .font(AstaraTypography.titleMedium)
-                .foregroundStyle(AstaraColors.textPrimary)
+    // MARK: - Chapter II: ASTARA SCORE
+
+    private var chapterScore: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AstaraSpacing.md) {
+                Spacer().frame(width: AstaraSpacing.lg - AstaraSpacing.md)
+
+                scoreChronicle(
+                    title: String(localized: "score_love"),
+                    value: store.astaraScore.love,
+                    color: AstaraColors.water,
+                    icon: "heart.fill"
+                )
+                scoreChronicle(
+                    title: String(localized: "score_work"),
+                    value: store.astaraScore.work,
+                    color: AstaraColors.earth,
+                    icon: "briefcase.fill"
+                )
+                scoreChronicle(
+                    title: String(localized: "score_energy"),
+                    value: store.astaraScore.energy,
+                    color: AstaraColors.ember400,
+                    icon: "bolt.fill"
+                )
+                scoreChronicle(
+                    title: String(localized: "score_focus"),
+                    value: store.astaraScore.focus,
+                    color: AstaraColors.air,
+                    icon: "target"
+                )
+
+                Spacer().frame(width: AstaraSpacing.lg - AstaraSpacing.md)
+            }
+        }
+    }
+
+    private func scoreChronicle(title: String, value: Int, color: Color, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.xs) {
+            Image(systemName: icon)
+                .font(.system(size: 13, weight: .light))
+                .foregroundStyle(color.opacity(0.8))
+
+            Text("\(value)")
+                .font(AstaraTypography.heroNumber)
+                .foregroundStyle(color)
+                .shadow(color: color.opacity(0.3), radius: 10)
                 .lineLimit(1)
 
-            Text(horoscope.text)
-                .font(AstaraTypography.bodyMedium)
-                .foregroundStyle(AstaraColors.textSecondary)
-                .lineLimit(3)
+            Text(title.uppercased())
+                .font(AstaraTypography.sectionMark)
+                .foregroundStyle(AstaraColors.textTertiary)
+                .tracking(2)
         }
-        .padding(AstaraSpacing.md)
+        .padding(.horizontal, AstaraSpacing.lg)
+        .padding(.vertical, AstaraSpacing.md)
+        .frame(width: 130, alignment: .leading)
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [color, color.opacity(0)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 2)
+                .padding(.vertical, 12)
+        }
         .background(
             LinearGradient(
-                colors: [AstaraColors.gold.opacity(0.16), AstaraColors.cardBackground],
+                colors: [AstaraColors.chronicleGradientTop, AstaraColors.backgroundDeep],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -445,118 +372,92 @@ struct HomeView: View {
         .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
         .overlay(
             RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
-                .stroke(AstaraColors.gold.opacity(0.3), lineWidth: 1)
+                .stroke(color.opacity(0.25), lineWidth: 1)
         )
+        .shadow(color: color.opacity(0.08), radius: 12, y: 4)
     }
 
-    private var dividerLine: some View {
-        Rectangle()
-            .fill(AstaraColors.cardBorder)
-            .frame(width: 1, height: 48)
-    }
+    // MARK: - Chapter III: CELESTIAL WEEK
 
-    private var streakCard: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
-                Text(String(localized: "streak_title"))
-                    .font(AstaraTypography.caption)
-                    .foregroundStyle(AstaraColors.textTertiary)
-                Text(String(format: String(localized: "streak_days"), store.streakCount))
-                    .font(AstaraTypography.titleMedium)
-                    .foregroundStyle(AstaraColors.gold)
-                Text(String(format: String(localized: "streak_best"), store.longestStreak))
-                    .font(AstaraTypography.caption)
-                    .foregroundStyle(AstaraColors.textSecondary)
+    private var chapterCelestialWeek: some View {
+        VStack(spacing: AstaraSpacing.md) {
+            // Active retro alert (inline banner)
+            if !store.activeRetrogrades.isEmpty || !store.upcomingRetrogrades.isEmpty {
+                retroInlineBanner
             }
-            Spacer()
-            Image(systemName: "flame.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(AstaraColors.ember400)
-        }
-        .padding(AstaraSpacing.md)
-        .astaraCard()
-    }
 
-    private var astaraScoreCard: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "astara_score"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            HStack(spacing: AstaraSpacing.sm) {
-                scorePill(title: String(localized: "score_love"), value: store.astaraScore.love)
-                scorePill(title: String(localized: "score_work"), value: store.astaraScore.work)
-                scorePill(title: String(localized: "score_energy"), value: store.astaraScore.energy)
-                scorePill(title: String(localized: "score_focus"), value: store.astaraScore.focus)
-            }
-        }
-        .padding(AstaraSpacing.md)
-        .astaraCard()
-    }
-
-    private func scorePill(title: String, value: Int) -> some View {
-        VStack(spacing: AstaraSpacing.xxs) {
-            Text("\(value)")
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.gold)
-            Text(title)
-                .font(AstaraTypography.caption)
-                .foregroundStyle(AstaraColors.textTertiary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, AstaraSpacing.xs)
-        .background(AstaraColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
-    }
-
-    private var week360Card: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "week_360_title"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            if store.weekTransits.isEmpty && store.isLoading {
-                VStack(spacing: AstaraSpacing.sm) {
+            // Week 360 transits
+            VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+                if store.weekTransits.isEmpty && store.isLoading {
                     ForEach(0..<3, id: \.self) { _ in
                         HStack(spacing: AstaraSpacing.sm) {
-                            ShimmerView()
-                                .frame(width: 28, height: 28)
-                                .clipShape(Circle())
+                            ShimmerView().frame(width: 28, height: 28).clipShape(Circle())
                             VStack(alignment: .leading, spacing: 4) {
                                 ShimmerView().frame(height: 13).frame(maxWidth: .infinity)
                                 ShimmerView().frame(height: 11).frame(width: 160)
                             }
                         }
                     }
-                }
-            } else if store.weekTransits.isEmpty {
-                Text(String(localized: "weekly_flow_loading"))
-                    .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textSecondary)
-            } else {
-                ForEach(store.weekTransits.prefix(3)) { transit in
-                    transitRow(transit)
-                }
-
-                if !store.isPremium && store.weekTransits.count > 3 {
-                    ZStack(alignment: .bottom) {
-                        if let extra = store.weekTransits.dropFirst(3).first {
-                            transitRow(extra)
-                                .blur(radius: 6)
-                                .allowsHitTesting(false)
-                        }
-                        PremiumLockOverlay(
-                            title: String(localized: "week360_premium_title"),
-                            subtitle: String(localized: "week360_premium_body")
-                        ) {
-                            store.send(.profile(.setSubscriptionPresented(true)))
-                        }
-                        .frame(height: 140)
+                } else if store.weekTransits.isEmpty {
+                    Text(String(localized: "weekly_flow_loading"))
+                        .font(AstaraTypography.bodySmall)
+                        .foregroundStyle(AstaraColors.textSecondary)
+                } else {
+                    ForEach(store.weekTransits.prefix(3)) { transit in
+                        transitRow(transit)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+
+                    if !store.isPremium && store.weekTransits.count > 3 {
+                        ZStack(alignment: .bottom) {
+                            if let extra = store.weekTransits.dropFirst(3).first {
+                                transitRow(extra).blur(radius: 6).allowsHitTesting(false)
+                            }
+                            PremiumLockOverlay(
+                                title: String(localized: "week360_premium_title"),
+                                subtitle: String(localized: "week360_premium_body")
+                            ) {
+                                store.send(.profile(.setSubscriptionPresented(true)))
+                            }
+                            .frame(height: 140)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                    }
                 }
             }
+            .padding(AstaraSpacing.md)
+            .astaraCard()
         }
-        .padding(AstaraSpacing.md)
-        .astaraCard()
+    }
+
+    private var retroInlineBanner: some View {
+        HStack(spacing: AstaraSpacing.sm) {
+            Circle()
+                .fill(AstaraColors.ember400)
+                .frame(width: 7, height: 7)
+                .shadow(color: AstaraColors.ember400.opacity(0.7), radius: 4)
+
+            if let retro = store.activeRetrogrades.first {
+                Text("\(retro.planet.turkishName) \(String(localized: "retrograde_active"))")
+                    .font(AstaraTypography.labelMedium)
+                    .foregroundStyle(AstaraColors.textPrimary)
+            } else if let upcoming = store.upcomingRetrogrades.first {
+                Text("\(upcoming.planet.turkishName) \(String(localized: "retrograde_upcoming"))")
+                    .font(AstaraTypography.labelMedium)
+                    .foregroundStyle(AstaraColors.textSecondary)
+            }
+            Spacer()
+            Text("\(store.activeRetrogrades.count + store.upcomingRetrogrades.count)")
+                .font(AstaraTypography.caption)
+                .foregroundStyle(AstaraColors.textTertiary)
+        }
+        .padding(.horizontal, AstaraSpacing.md)
+        .padding(.vertical, AstaraSpacing.sm)
+        .background(AstaraColors.ember400.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+        .overlay(
+            RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd)
+                .stroke(AstaraColors.ember400.opacity(0.25), lineWidth: 1)
+        )
     }
 
     private func transitRow(_ transit: Transit) -> some View {
@@ -579,54 +480,247 @@ struct HomeView: View {
         }
     }
 
-    private var ritualJournalCard: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "ritual_journal"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            Text(store.ritualPrompt.isEmpty ? String(localized: "ritual_loading") : store.ritualPrompt)
-                .font(AstaraTypography.bodySmall)
-                .foregroundStyle(AstaraColors.textSecondary)
-            TextField(String(localized: "ritual_note_placeholder"), text: $store.moodNote.sending(\.setMoodNote))
-                .textFieldStyle(.plain)
-                .font(AstaraTypography.bodySmall)
-                .foregroundStyle(AstaraColors.textPrimary)
-                .padding(.horizontal, AstaraSpacing.sm)
-                .padding(.vertical, AstaraSpacing.xs)
-                .background(AstaraColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+    // MARK: - Chapter IV: YOUR SKY
+
+    private var chapterYourSky: some View {
+        VStack(spacing: AstaraSpacing.md) {
+            // Element circles
+            if !store.elementEnergy.isEmpty {
+                HStack(spacing: 0) {
+                    elementCircle(element: .fire, value: store.elementEnergy[.fire] ?? 0, emoji: "🔥")
+                    elementCircle(element: .earth, value: store.elementEnergy[.earth] ?? 0, emoji: "🌿")
+                    elementCircle(element: .air, value: store.elementEnergy[.air] ?? 0, emoji: "💨")
+                    elementCircle(element: .water, value: store.elementEnergy[.water] ?? 0, emoji: "💧")
+                }
+                .padding(.vertical, AstaraSpacing.md)
+                .astaraCard()
+            }
+
+            // Planet positions
+            if !store.planetPositions.isEmpty {
+                PlanetPositionsView(planets: store.planetPositions)
+            } else if store.isLoading {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AstaraSpacing.sm) {
+                        ForEach(0..<7, id: \.self) { _ in
+                            ShimmerView()
+                                .frame(width: 64, height: 80)
+                                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                        }
+                    }
+                    .padding(.horizontal, AstaraSpacing.lg)
+                }
+            }
+
+            // Big Three (if chart present)
+            if let chart = store.userChart {
+                bigThreeInline(chart: chart)
+            }
+
+            // Last updated caption
+            if let lastUpdated = store.lastUpdated {
+                HStack(spacing: AstaraSpacing.xxs) {
+                    Circle().fill(AstaraColors.sage400).frame(width: 5, height: 5)
+                    Text("\(String(localized: "last_updated")): \(AstaraDateFormatters.timeOnly.string(from: lastUpdated))")
+                        .font(AstaraTypography.caption)
+                        .foregroundStyle(AstaraColors.textTertiary)
+                }
+            }
         }
-        .padding(AstaraSpacing.md)
+    }
+
+    private func bigThreeInline(chart: BirthChart) -> some View {
+        HStack(spacing: 0) {
+            if let sun = chart.sunSign {
+                bigThreeItem(label: "\u{2609}", title: String(localized: "sun_short"), sign: sun, color: AstaraColors.gold)
+            }
+            if chart.sunSign != nil && chart.moonSign != nil { thinDivider }
+            if let moon = chart.moonSign {
+                bigThreeItem(label: "\u{263D}", title: String(localized: "moon_short"), sign: moon, color: AstaraColors.starlight)
+            }
+            if chart.moonSign != nil && chart.risingSign != nil { thinDivider }
+            if let rising = chart.risingSign {
+                bigThreeItem(label: "ASC", title: String(localized: "rising_short"), sign: rising, color: AstaraColors.goldLight)
+            }
+        }
+        .padding(.vertical, AstaraSpacing.md)
+        .padding(.horizontal, AstaraSpacing.sm)
         .astaraCard()
     }
 
-    private var synastryFeedCard: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "synastry_feed"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            if store.friendDynamics.isEmpty {
-                Text(String(localized: "friend_loading"))
+    private func bigThreeItem(label: String, title: String, sign: ZodiacSign, color: Color) -> some View {
+        VStack(spacing: AstaraSpacing.xxs) {
+            Text(label).font(.system(size: 14)).foregroundStyle(color)
+            Text(sign.symbol).font(.system(size: 22))
+            Text(sign.turkishName).font(AstaraTypography.caption).foregroundStyle(AstaraColors.textSecondary)
+            Text(title).font(.system(size: 9)).foregroundStyle(AstaraColors.textTertiary).textCase(.uppercase).tracking(1)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var thinDivider: some View {
+        Rectangle()
+            .fill(AstaraColors.cardBorder)
+            .frame(width: 1, height: 44)
+    }
+
+    private func elementCircle(element: Element, value: Int, emoji: String) -> some View {
+        VStack(spacing: AstaraSpacing.xs) {
+            ZStack {
+                Circle().stroke(AstaraColors.cardBorder, lineWidth: 3).frame(width: 52, height: 52)
+                Circle()
+                    .trim(from: 0, to: CGFloat(value) / 100)
+                    .stroke(elementColor(element), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 52, height: 52)
+                    .rotationEffect(.degrees(-90))
+                Text(emoji).font(.system(size: 18))
+            }
+            Text("\(value)%").font(AstaraTypography.caption).foregroundStyle(AstaraColors.textSecondary)
+            Text(element.localizedName).font(.system(size: 10)).foregroundStyle(AstaraColors.textTertiary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func elementColor(_ element: Element) -> Color {
+        switch element {
+        case .fire: AstaraColors.fire
+        case .earth: AstaraColors.earth
+        case .air: AstaraColors.air
+        case .water: AstaraColors.water
+        }
+    }
+
+    // MARK: - Chapter V: RITUAL & ASK
+
+    private var chapterRitualAsk: some View {
+        VStack(spacing: AstaraSpacing.md) {
+            // Ritual chronicle card
+            VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+                Text(store.ritualPrompt.isEmpty ? String(localized: "ritual_loading") : store.ritualPrompt)
+                    .font(AstaraTypography.heroLabel)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AstaraColors.moonCream, AstaraColors.goldLight],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(4)
+
+                TextField(String(localized: "ritual_note_placeholder"), text: $store.moodNote.sending(\.setMoodNote))
+                    .textFieldStyle(.plain)
                     .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textSecondary)
-            } else {
-                ForEach(store.friendDynamics.prefix(2)) { item in
-                    HStack(alignment: .top, spacing: AstaraSpacing.sm) {
-                        Text(item.friendSign.symbol)
-                            .font(.system(size: 18))
-                        VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
-                            Text("\(item.friendName) • %\(item.compatibility.overallScore)")
+                    .foregroundStyle(AstaraColors.textPrimary)
+                    .padding(.horizontal, AstaraSpacing.sm)
+                    .padding(.vertical, AstaraSpacing.xs)
+                    .background(Color.white.opacity(0.06))
+                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd)
+                            .stroke(AstaraColors.gold.opacity(0.2), lineWidth: 1)
+                    )
+            }
+            .padding(AstaraSpacing.lg)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .chronicleCard()
+
+            // Mood + Ask inline row
+            HStack(spacing: AstaraSpacing.sm) {
+                // Mood emoji selector (compact)
+                HStack(spacing: AstaraSpacing.xs) {
+                    ForEach(1...5, id: \.self) { mood in
+                        Button {
+                            Haptics.selection()
+                            store.send(.setMood(mood))
+                        } label: {
+                            Text(moodEmoji(mood))
+                                .font(.system(size: 22))
+                                .scaleEffect(store.todaysMood == mood ? 1.18 : 1.0)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: store.todaysMood)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, AstaraSpacing.sm)
+                .padding(.vertical, AstaraSpacing.xs)
+                .astaraCard()
+
+                Spacer()
+
+                // Ask Astara oracle button
+                Button {
+                    Haptics.selection()
+                    store.send(.openAskAstara(true))
+                } label: {
+                    HStack(spacing: AstaraSpacing.xs) {
+                        OracleSphereView(isThinking: false)
+                            .frame(width: 32, height: 32)
+                            .scaleEffect(0.35)
+                        Text(String(localized: "ask_astara_btn"))
+                            .font(AstaraTypography.labelMedium)
+                            .foregroundStyle(AstaraColors.gold)
+                    }
+                    .padding(.horizontal, AstaraSpacing.md)
+                    .padding(.vertical, AstaraSpacing.sm)
+                    .background(AstaraColors.gold.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                            .stroke(AstaraColors.gold.opacity(0.3), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // Time Travel button
+                Button {
+                    Haptics.selection()
+                    store.send(.openTimeTravel(true))
+                    store.send(.loadTimeTravelInsight)
+                } label: {
+                    Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                        .font(.system(size: 16, weight: .light))
+                        .foregroundStyle(AstaraColors.celestialTeal)
+                        .frame(width: 42, height: 42)
+                        .background(AstaraColors.celestialTeal.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd)
+                                .stroke(AstaraColors.celestialTeal.opacity(0.25), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // MARK: - Chapter VI: CONNECTIONS
+
+    private var chapterConnections: some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+            ForEach(store.friendDynamics.prefix(2)) { item in
+                HStack(alignment: .top, spacing: AstaraSpacing.sm) {
+                    Text(item.friendSign.symbol).font(.system(size: 20))
+                    VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
+                        HStack {
+                            Text(item.friendName)
                                 .font(AstaraTypography.labelMedium)
                                 .foregroundStyle(AstaraColors.textPrimary)
-                            Text(item.insight)
-                                .font(AstaraTypography.caption)
-                                .foregroundStyle(AstaraColors.textSecondary)
-                            Text(item.suggestedAction)
-                                .font(AstaraTypography.caption)
-                                .foregroundStyle(AstaraColors.goldLight)
+                            Spacer()
+                            Text("%\(item.compatibility.overallScore)")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 18))
+                                .foregroundStyle(AstaraColors.gold)
                         }
-                        Spacer()
+                        Text(item.insight)
+                            .font(AstaraTypography.caption)
+                            .foregroundStyle(AstaraColors.textSecondary)
+                        Text(item.suggestedAction)
+                            .font(AstaraTypography.caption)
+                            .foregroundStyle(AstaraColors.goldLight)
                     }
+                }
+                if item.id != store.friendDynamics.prefix(2).last?.id {
+                    Divider().overlay(AstaraColors.cardBorder)
                 }
             }
         }
@@ -634,100 +728,105 @@ struct HomeView: View {
         .astaraCard()
     }
 
-    private var dailyTasksCard: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "daily_tasks"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            taskRow(id: "read_daily_card", title: String(localized: "task_read_daily"))
-            taskRow(id: "mood_checkin", title: String(localized: "task_mood_checkin"))
-            taskRow(id: "ritual_journal", title: String(localized: "task_ritual_note"))
-            taskRow(id: "ask_astara", title: String(localized: "task_ask_astara"))
-            taskRow(id: "share_card", title: String(localized: "task_share_card"))
+    // MARK: - Footer
+
+    private var footer: some View {
+        VStack(spacing: AstaraSpacing.lg) {
+            OrnamentalDivider(glyph: "✦", opacity: 0.25)
+                .padding(.top, AstaraSpacing.xl)
+            Text("Ad astra per aspera")
+                .font(.custom("CormorantGaramond-Italic", size: 15))
+                .foregroundStyle(AstaraColors.textTertiary.opacity(0.5))
+                .italic()
         }
-        .padding(AstaraSpacing.md)
+    }
+
+    // MARK: - Error Banner
+
+    private func errorBanner(message: String) -> some View {
+        VStack(spacing: AstaraSpacing.md) {
+            ZStack {
+                Circle().fill(AstaraColors.gold.opacity(0.06)).frame(width: 72, height: 72)
+                Image(systemName: "moon.stars.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(AstaraColors.gold.opacity(0.45))
+            }
+            Text(String(localized: "error_stars_unreachable"))
+                .font(AstaraTypography.titleMedium)
+                .foregroundStyle(AstaraColors.textPrimary)
+            Text(message)
+                .font(AstaraTypography.bodySmall)
+                .foregroundStyle(AstaraColors.textSecondary)
+                .multilineTextAlignment(.center)
+            AstaraButton(title: String(localized: "retry"), style: .secondary) {
+                store.send(.retryDailyData)
+            }
+            .frame(maxWidth: 220)
+        }
+        .padding(AstaraSpacing.xl)
         .astaraCard()
     }
 
-    private func taskRow(id: String, title: String) -> some View {
-        let done = store.completedTasks.contains(id)
-        return Button {
+    // MARK: - Helpers
+
+    private func chapterDivider(number: String, title: String) -> some View {
+        VStack(spacing: AstaraSpacing.sm) {
+            OrnamentalDivider(opacity: 0.22)
+            ChapterLabel(number: number, title: title)
+        }
+        .padding(.vertical, AstaraSpacing.lg)
+        .padding(.horizontal, AstaraSpacing.lg)
+    }
+
+    private func microActionButton(icon: String, label: String, action: @escaping () -> Void) -> some View {
+        Button {
             Haptics.selection()
-            store.send(.completeTask(id))
+            action()
         } label: {
-            HStack {
-                Image(systemName: done ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(done ? AstaraColors.sage400 : AstaraColors.textTertiary)
-                Text(title)
-                    .font(AstaraTypography.bodySmall)
-                    .foregroundStyle(AstaraColors.textSecondary)
-                Spacer()
+            HStack(spacing: AstaraSpacing.xxs) {
+                Image(systemName: icon).font(.system(size: 11, weight: .semibold))
+                Text(label).font(AstaraTypography.caption)
             }
+            .foregroundStyle(AstaraColors.textTertiary)
+            .padding(.horizontal, AstaraSpacing.sm)
+            .padding(.vertical, 6)
+            .background(Color.white.opacity(0.04))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
 
-    private var moodCheckinCard: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "mood_checkin"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            HStack(spacing: AstaraSpacing.sm) {
-                ForEach(1...5, id: \.self) { mood in
-                    Button {
-                        Haptics.selection()
-                        store.send(.setMood(mood))
-                    } label: {
-                        Text(moodEmoji(mood))
-                            .font(.system(size: 28))
-                            .padding(10)
-                            .background(
-                                store.todaysMood == mood
-                                    ? AstaraColors.gold.opacity(0.25)
-                                    : Color.white.opacity(0.04)
-                            )
-                            .clipShape(Circle())
-                            .overlay(
-                                Circle().stroke(
-                                    store.todaysMood == mood ? AstaraColors.gold : Color.clear,
-                                    lineWidth: 1.5
-                                )
-                            )
-                            .scaleEffect(store.todaysMood == mood ? 1.15 : 1.0)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: store.todaysMood)
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity)
-                }
-            }
-            AstaraButton(title: String(localized: "checkin_save"), style: .secondary) {
-                store.send(.saveMoodCheckin)
-            }
-            .disabled(store.todaysMood == nil)
-        }
-        .padding(AstaraSpacing.md)
-        .astaraCard()
-    }
-
     private func moodEmoji(_ value: Int) -> String {
         switch value {
-        case 1: return "😞"
-        case 2: return "😕"
-        case 3: return "😐"
-        case 4: return "🙂"
-        default: return "😄"
+        case 1: "😞"
+        case 2: "😕"
+        case 3: "😐"
+        case 4: "🙂"
+        default: "😄"
         }
     }
+
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12: return String(localized: "good_morning")
+        case 12..<18: return String(localized: "good_afternoon")
+        case 18..<22: return String(localized: "good_evening")
+        default: return String(localized: "good_night")
+        }
+    }
+
+    // MARK: - Share Card (screenshot-ready)
 
     private func dailyShareCard(caption: String) -> some View {
         ZStack {
-            GradientBackground()
-            StarfieldView(starCount: 40)
-                .opacity(0.2)
+            GradientBackground(ambient: .home)
+            StarfieldView(starCount: 40).opacity(0.2)
             VStack(spacing: AstaraSpacing.lg) {
                 Text("ASTARA")
                     .font(.custom("CormorantGaramond-Bold", size: 48))
                     .foregroundStyle(AstaraColors.gold)
+                    .tracking(8)
                 Text(caption)
                     .font(AstaraTypography.titleMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
@@ -741,35 +840,31 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Ask Astara Sheet
+
     private var askAstaraSheet: some View {
         ZStack {
-            GradientBackground()
-            StarfieldView() // Magical background feel
+            GradientBackground(ambient: .home)
+            StarfieldView()
 
             VStack(spacing: AstaraSpacing.xl) {
                 Text(String(localized: "ask_astara"))
-                    .font(AstaraTypography.titleLarge)
+                    .font(AstaraTypography.displayMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
                     .padding(.top, AstaraSpacing.xl)
 
                 if store.askQuotaRemaining == 0 && !store.isPremium {
-                    // Premium teaser
                     VStack(spacing: AstaraSpacing.lg) {
-                        OracleSphereView(isThinking: false)
-                            .opacity(0.5)
-                            .grayscale(0.8)
-                        
+                        OracleSphereView(isThinking: false).opacity(0.5).grayscale(0.8)
                         Text(String(localized: "ask_quota_exhausted_title"))
                             .font(AstaraTypography.titleMedium)
                             .foregroundStyle(AstaraColors.textPrimary)
                             .multilineTextAlignment(.center)
-                        
                         Text(String(localized: "ask_quota_exhausted_body"))
                             .font(AstaraTypography.bodySmall)
                             .foregroundStyle(AstaraColors.textSecondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, AstaraSpacing.md)
-                        
                         AstaraButton(title: String(localized: "go_premium"), style: .primary) {
                             store.send(.openAskAstara(false))
                             store.send(.profile(.setSubscriptionPresented(true)))
@@ -779,15 +874,15 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity)
                     Spacer()
                 } else {
-                    Text(store.isPremium ? String(localized: "ask_quota_unlimited") : "\(String(localized: "ask_quota_remaining")): \(store.askQuotaRemaining)")
+                    Text(store.isPremium
+                         ? String(localized: "ask_quota_unlimited")
+                         : "\(String(localized: "ask_quota_remaining")): \(store.askQuotaRemaining)")
                         .font(AstaraTypography.caption)
                         .foregroundStyle(store.isPremium ? AstaraColors.gold : AstaraColors.textTertiary)
-                    
+
                     Spacer()
-                    
-                    // The Magical Oracle Sphere
                     OracleSphereView(isThinking: store.isAskingAstara)
-                    
+
                     if let response = store.askResponse {
                         ScrollView(showsIndicators: false) {
                             Text(response)
@@ -802,27 +897,26 @@ struct HomeView: View {
                     } else {
                         Spacer()
                     }
-                    
                     Spacer()
-                    
+
                     VStack(spacing: AstaraSpacing.sm) {
-                        TextField(String(localized: "ask_placeholder"), text: $store.askQuestionText.sending(\.setAskQuestionText))
+                        TextField(String(localized: "ask_placeholder"),
+                                  text: $store.askQuestionText.sending(\.setAskQuestionText))
                             .textFieldStyle(.plain)
                             .font(AstaraTypography.bodyMedium)
                             .foregroundStyle(AstaraColors.textPrimary)
                             .padding(AstaraSpacing.md)
                             .background(AstaraColors.cardBackground)
                             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
-                            .overlay(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg).stroke(AstaraColors.cardBorder, lineWidth: 1))
+                            .overlay(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                                .stroke(AstaraColors.cardBorder, lineWidth: 1))
                             .disabled(store.isAskingAstara)
-                        
                         AstaraButton(
                             title: String(localized: "ask_button"),
                             style: .primary,
-                            isDisabled: store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.isAskingAstara
-                        ) {
-                            store.send(.submitAskQuestion)
-                        }
+                            isDisabled: store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                     || store.isAskingAstara
+                        ) { store.send(.submitAskQuestion) }
                     }
                     .padding(.horizontal, AstaraSpacing.lg)
                     .padding(.bottom, AstaraSpacing.lg)
@@ -830,6 +924,8 @@ struct HomeView: View {
             }
         }
     }
+
+    // MARK: - Time Travel Sheet
 
     private var timeTravelSheet: some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.md) {
@@ -839,7 +935,8 @@ struct HomeView: View {
             DatePicker(
                 String(localized: "time_travel_btn"),
                 selection: $store.timeTravelDate.sending(\.setTimeTravelDate),
-                in: Calendar.current.date(byAdding: .day, value: -30, to: Date())!...Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
+                in: Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+                    ...Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
@@ -871,88 +968,17 @@ struct HomeView: View {
             Spacer()
         }
         .padding(AstaraSpacing.lg)
-        .astaraBackground()
-    }
-
-    // MARK: - Element Energy
-
-    private var elementEnergySection: some View {
-        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            HStack {
-                Text(String(localized: "element_energy"))
-                    .font(AstaraTypography.labelLarge)
-                    .foregroundStyle(AstaraColors.textPrimary)
-                Spacer()
-                Text(String(localized: "today"))
-                    .font(AstaraTypography.caption)
-                    .foregroundStyle(AstaraColors.textTertiary)
-            }
-
-            HStack(spacing: AstaraSpacing.sm) {
-                elementCircle(element: .fire, value: store.elementEnergy[.fire] ?? 0, emoji: "🔥")
-                elementCircle(element: .earth, value: store.elementEnergy[.earth] ?? 0, emoji: "🌿")
-                elementCircle(element: .air, value: store.elementEnergy[.air] ?? 0, emoji: "💨")
-                elementCircle(element: .water, value: store.elementEnergy[.water] ?? 0, emoji: "💧")
-            }
-        }
-        .padding(AstaraSpacing.md)
-        .astaraCard()
-    }
-
-    private func elementCircle(element: Element, value: Int, emoji: String) -> some View {
-        VStack(spacing: AstaraSpacing.xs) {
-            ZStack {
-                Circle()
-                    .stroke(AstaraColors.cardBorder, lineWidth: 3)
-                    .frame(width: 52, height: 52)
-
-                Circle()
-                    .trim(from: 0, to: CGFloat(value) / 100)
-                    .stroke(elementColor(element), style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .frame(width: 52, height: 52)
-                    .rotationEffect(.degrees(-90))
-
-                Text(emoji)
-                    .font(.system(size: 18))
-            }
-
-            Text("\(value)%")
-                .font(AstaraTypography.caption)
-                .foregroundStyle(AstaraColors.textSecondary)
-
-            Text(element.localizedName)
-                .font(.system(size: 10))
-                .foregroundStyle(AstaraColors.textTertiary)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func elementColor(_ element: Element) -> Color {
-        switch element {
-        case .fire: AstaraColors.fire
-        case .earth: AstaraColors.earth
-        case .air: AstaraColors.air
-        case .water: AstaraColors.water
-        }
-    }
-
-    // MARK: - Greeting
-
-    private var greetingText: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 5..<12: return String(localized: "good_morning")
-        case 12..<18: return String(localized: "good_afternoon")
-        case 18..<22: return String(localized: "good_evening")
-        default: return String(localized: "good_night")
-        }
+        .astaraBackground(ambient: .home)
     }
 }
 
-#Preview {
-    HomeView(
-        store: Store(initialState: HomeFeature.State()) {
-            HomeFeature()
-        }
-    )
+// MARK: - Chapter entrance animation
+
+private extension View {
+    func chapterEntrance(appeared: Bool, delay: Double) -> some View {
+        self
+            .scaleEffect(appeared ? 1.0 : 0.96)
+            .opacity(appeared ? 1.0 : 0.0)
+            .animation(.easeOut(duration: 0.50).delay(delay), value: appeared)
+    }
 }

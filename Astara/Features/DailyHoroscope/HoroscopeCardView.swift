@@ -15,18 +15,18 @@ struct HoroscopeCardView: View {
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(horoscope.sign.turkishName)
-                                .font(AstaraTypography.titleLarge)
+                                .font(AstaraTypography.heroDisplay)
                                 .foregroundStyle(AstaraColors.textPrimary)
 
                             Text(horoscope.theme.uppercased())
-                                .font(AstaraTypography.caption)
+                                .font(AstaraTypography.sectionMark)
                                 .foregroundStyle(AstaraColors.gold)
                                 .tracking(2)
                         }
                     }
 
                     Text(horoscope.date)
-                        .font(AstaraTypography.caption)
+                        .font(AstaraTypography.bodySmall)
                         .foregroundStyle(AstaraColors.textTertiary)
                 }
 
@@ -44,7 +44,7 @@ struct HoroscopeCardView: View {
             Text(horoscope.text)
                 .font(AstaraTypography.bodyLarge)
                 .foregroundStyle(AstaraColors.textSecondary)
-                .lineSpacing(6)
+                .lineSpacing(8)
 
             // Tip box
             HStack(alignment: .top, spacing: AstaraSpacing.sm) {
@@ -73,7 +73,7 @@ struct HoroscopeCardView: View {
             }
         }
         .padding(AstaraSpacing.lg)
-        .astaraCard()
+        .chronicleCard()
     }
 
     // MARK: - Energy Gauge
@@ -90,13 +90,14 @@ struct HoroscopeCardView: View {
                 .frame(width: 64, height: 64)
                 .rotationEffect(.degrees(-90))
 
-            VStack(spacing: 0) {
+            VStack(spacing: -4) {
                 Text("\(horoscope.energy)")
-                    .font(AstaraTypography.labelLarge)
+                    .font(AstaraTypography.heroNumber)
                     .foregroundStyle(AstaraColors.textPrimary)
-                Text(String(localized: "energy"))
-                    .font(.system(size: 8))
+                Text(String(localized: "energy").uppercased())
+                    .font(.system(size: 8, weight: .bold))
                     .foregroundStyle(AstaraColors.textTertiary)
+                    .tracking(1)
             }
         }
         .onAppear {

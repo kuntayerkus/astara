@@ -23,6 +23,7 @@ struct ChartWheelView: View {
                 // 1: Outer border circle
                 Circle()
                     .stroke(AstaraColors.gold.opacity(0.4), lineWidth: 1.5)
+                    .shadow(color: AstaraColors.goldGlow, radius: 8)
                     .frame(width: outerR * 2, height: outerR * 2)
                     .position(center)
 
@@ -47,14 +48,18 @@ struct ChartWheelView: View {
                 // 6: Aspect web (inside the inner circle)
                 aspectLines(center: center, radius: aspectR, ascDeg: ascDeg)
 
-                // 7: Center glow
+                // 7: Center aura
                 RadialGradient(
-                    colors: [AstaraColors.gold.opacity(0.08), .clear],
+                    colors: [
+                        AstaraColors.goldGlow.opacity(0.25),
+                        AstaraColors.amethyst.opacity(0.1),
+                        .clear
+                    ],
                     center: .center,
                     startRadius: 0,
-                    endRadius: houseInnerR * 0.4
+                    endRadius: houseInnerR * 0.7
                 )
-                .frame(width: houseInnerR * 0.8, height: houseInnerR * 0.8)
+                .frame(width: houseInnerR, height: houseInnerR)
                 .position(center)
 
                 // 8: Planet glyphs (between zodiac inner and house inner)
@@ -104,8 +109,10 @@ struct ChartWheelView: View {
                 seg.closeSubpath()
 
                 let elemColor = elementColor(sign.element)
-                ctx.fill(seg, with: .color(elemColor.opacity(0.12)))
-                ctx.stroke(seg, with: .color(AstaraColors.gold.opacity(0.2)), lineWidth: 0.5)
+                
+                // Antik pusula hissi için element renklerini çok kıstık, altını öne çıkardık
+                ctx.fill(seg, with: .color(elemColor.opacity(0.04)))
+                ctx.stroke(seg, with: .color(AstaraColors.gold.opacity(0.35)), lineWidth: 0.8)
 
                 // 5° tick marks inside the zodiac ring
                 for tick in stride(from: startEcl, to: endEcl, by: 5) {
@@ -130,8 +137,9 @@ struct ChartWheelView: View {
                 let pt = point(center: center, radius: symR, angleDeg: a)
 
                 Text(sign.symbol)
-                    .font(.system(size: size * 0.032))
-                    .foregroundStyle(elementColor(sign.element).opacity(0.9))
+                    .font(.system(size: size * 0.038, weight: .light))
+                    .foregroundStyle(AstaraColors.gold.opacity(0.85)) // Altın yansıma
+                    .shadow(color: AstaraColors.goldGlow, radius: 2)
                     .position(pt)
             }
         }
@@ -152,19 +160,11 @@ struct ChartWheelView: View {
 
                 let isAngular = house.number == 1 || house.number == 4 || house.number == 7 || house.number == 10
                 let lw: CGFloat = isAngular ? 1.5 : 0.5
-                let opacity: Double = isAngular ? 0.55 : 0.2
+                let opacity: Double = isAngular ? 0.6 : 0.2
                 ctx.stroke(line, with: .color(AstaraColors.gold.opacity(opacity)), lineWidth: lw)
 
-                // Degree label at cusp (just inside zodiac ring)
-                if isAngular {
-                    let signDeg = Int(house.degree) % 30
-                    let labelR = outerR + 1
-                    let labelPt = point(center: center, radius: labelR, angleDeg: a)
-                    let text = Text("\(signDeg)°")
-                        .font(.system(size: size * 0.018, weight: .medium))
-                        .foregroundColor(AstaraColors.gold.opacity(0.6))
-                    ctx.draw(ctx.resolve(text), at: labelPt)
-                }
+                // Derece etiketleri (veri tablosu görünümü yaratmaması için) kaldırıldı.
+                // Sadece mistik çizgiler kaldı.
             }
         }
         .frame(width: size, height: size)
@@ -181,8 +181,9 @@ struct ChartWheelView: View {
             let pt = point(center: center, radius: radius, angleDeg: a)
 
             Text(house.romanNumeral)
-                .font(.system(size: size * 0.022, weight: .light))
-                .foregroundStyle(AstaraColors.textTertiary.opacity(0.6))
+                .font(AstaraTypography.labelLarge) // Daha şık, editöryal Roman rakamları
+                .foregroundStyle(AstaraColors.gold.opacity(0.5))
+                .shadow(color: AstaraColors.goldGlow, radius: 1)
                 .position(pt)
         }
     }
@@ -246,13 +247,11 @@ struct ChartWheelView: View {
                 } label: {
                     VStack(spacing: 0) {
                         Text(entry.planet.key.symbol)
-                            .font(.system(size: size * 0.036, weight: .medium))
+                            .font(.system(size: size * 0.038, weight: .light))
                             .foregroundStyle(planetColor(entry.planet))
-
-                        // Degree below glyph
-                        Text(shortDegree(entry.planet))
-                            .font(.system(size: size * 0.016))
-                            .foregroundStyle(AstaraColors.textTertiary.opacity(0.7))
+                            .shadow(color: planetColor(entry.planet).opacity(0.5), radius: 3)
+                        
+                        // Veri tablosu görünümünü engellemek için planet dereceleri (shortDegree) listeden okunacak şekilde çemberden kaldırıldı.
                     }
                 }
                 .buttonStyle(.plain)
@@ -354,7 +353,7 @@ struct ChartWheelView: View {
 
 #Preview {
     ZStack {
-        GradientBackground()
+        GradientBackground(ambient: .chart)
         ChartWheelView(chart: .preview)
             .padding(16)
     }

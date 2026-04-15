@@ -3,11 +3,10 @@ import ComposableArchitecture
 
 struct ChartView: View {
     @Bindable var store: StoreOf<ChartFeature>
-    @State private var appeared = false
 
     var body: some View {
         ZStack {
-            GradientBackground()
+            GradientBackground(ambient: .chart)
 
             if let chart = store.chart {
                 ScrollView(showsIndicators: false) {
@@ -15,28 +14,26 @@ struct ChartView: View {
                         // Header
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(String(localized: "natal_chart"))
-                                    .font(AstaraTypography.displayMedium)
-                                    .foregroundStyle(AstaraColors.textPrimary)
+                                Text(String(localized: "natal_chart").uppercased())
+                                    .font(AstaraTypography.heroLabel)
+                                    .foregroundStyle(AstaraColors.gold)
+                                    .tracking(2)
                                 Text(String(localized: "birth_chart_subtitle"))
-                                    .font(AstaraTypography.caption)
+                                    .font(AstaraTypography.bodyLarge)
                                     .foregroundStyle(AstaraColors.textTertiary)
                             }
                             Spacer()
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 20)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.05), value: appeared)
 
                         // Big Three header
                         bigThreeHeader(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
-                            .opacity(appeared ? 1 : 0)
-                            .offset(y: appeared ? 0 : 24)
-                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.1), value: appeared)
 
-                        // Chart wheel
+                        OrnamentalDivider(opacity: 0.1)
+                            .padding(.vertical, AstaraSpacing.sm)
+
+                        // Chart wheel (Hero)
                         ChartWheelView(
                             chart: chart,
                             onPlanetTap: { key in
@@ -47,23 +44,11 @@ struct ChartView: View {
                             }
                         )
                         .padding(.horizontal, AstaraSpacing.sm)
-                        .opacity(appeared ? 1 : 0)
-                        .scaleEffect(appeared ? 1 : 0.94)
-                        .animation(.spring(response: 0.65, dampingFraction: 0.7).delay(0.15), value: appeared)
 
-                        // Element distribution
-                        elementDistribution(chart: chart)
-                            .padding(.horizontal, AstaraSpacing.lg)
-                            .opacity(appeared ? 1 : 0)
-                            .offset(y: appeared ? 0 : 24)
-                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.2), value: appeared)
-
-                        // Planet list
+                        OrnamentalDividerTitle(title: String(localized: "planets"), opacity: 0.4)
+                            .padding(.top, AstaraSpacing.md)
                         planetList(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
-                            .opacity(appeared ? 1 : 0)
-                            .offset(y: appeared ? 0 : 24)
-                            .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.25), value: appeared)
 
                         // Action buttons row
                         VStack(spacing: AstaraSpacing.sm) {
@@ -80,17 +65,9 @@ struct ChartView: View {
                             }
                         }
                         .padding(.horizontal, AstaraSpacing.lg)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 24)
-                        .animation(.spring(response: 0.55, dampingFraction: 0.72).delay(0.3), value: appeared)
                     }
                     .padding(.top, AstaraSpacing.md)
                     .padding(.bottom, AstaraSpacing.xxxl)
-                    .onAppear {
-                        if !appeared {
-                            withAnimation { appeared = true }
-                        }
-                    }
                 }
             } else {
                 emptyState
@@ -197,8 +174,8 @@ struct ChartView: View {
                 )
             }
         }
-        .padding(.vertical, AstaraSpacing.md)
-        .astaraCard()
+        .padding(.vertical, AstaraSpacing.lg)
+        .chronicleCard()
     }
 
     private func bigThreeItem(symbol: String, label: String, sign: ZodiacSign, degree: String, color: Color) -> some View {
@@ -207,25 +184,26 @@ struct ChartView: View {
                 .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(color)
             Text(sign.symbol)
-                .font(.system(size: 24))
+                .font(.system(size: 28, weight: .light))
+                .shadow(color: color.opacity(0.3), radius: 2)
             Text(sign.turkishName)
-                .font(AstaraTypography.labelMedium)
+                .font(AstaraTypography.heroLabel)
                 .foregroundStyle(AstaraColors.textPrimary)
             Text(degree)
-                .font(AstaraTypography.caption)
+                .font(AstaraTypography.bodySmall)
                 .foregroundStyle(AstaraColors.textTertiary)
             Text(label.uppercased())
-                .font(.system(size: 9, weight: .medium))
+                .font(AstaraTypography.sectionMark)
                 .foregroundStyle(color.opacity(0.7))
-                .tracking(1)
+                .tracking(2)
         }
         .frame(maxWidth: .infinity)
     }
 
     private var separator: some View {
         Rectangle()
-            .fill(AstaraColors.cardBorder.opacity(0.4))
-            .frame(width: 0.5, height: 56)
+            .fill(AstaraColors.cardBorder)
+            .frame(width: 1, height: 64)
     }
 
     // MARK: - Element Distribution
@@ -260,24 +238,16 @@ struct ChartView: View {
 
     private func planetList(chart: BirthChart) -> some View {
         VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
-            Text(String(localized: "planets"))
-                .font(AstaraTypography.labelLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
+            // "O" harfiyle data listesi (Veri tablolarını listeye bıraktık)
 
-            LazyVStack(spacing: 0) {
-                ForEach(Array(chart.planets.filter { $0.key.isPlanet }.enumerated()), id: \.offset) { index, planet in
+            LazyVStack(spacing: 1) {
+                ForEach(chart.planets.filter { $0.key.isPlanet }) { planet in
                     Button {
                         store.send(.selectPlanet(planet.key))
                     } label: {
                         planetRow(planet: planet, chart: chart)
                     }
                     .buttonStyle(.plain)
-                    if index < chart.planets.filter({ $0.key.isPlanet }).count - 1 {
-                        Divider()
-                            .background(AstaraColors.cardBorder)
-                            .opacity(0.06)
-                            .padding(.leading, AstaraSpacing.xl + AstaraSpacing.sm)
-                    }
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusSm))

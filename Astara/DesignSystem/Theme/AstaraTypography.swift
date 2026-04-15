@@ -15,4 +15,16 @@ enum AstaraTypography {
     static let labelLarge = Font.custom("PlusJakartaSans-SemiBold", size: 15, relativeTo: .callout)
     static let labelMedium = Font.custom("PlusJakartaSans-SemiBold", size: 13, relativeTo: .footnote)
     static let caption = Font.custom("PlusJakartaSans-Regular", size: 11, relativeTo: .caption)
+
+    // MARK: - Hero Display (Editorial — large commanding moments)
+    /// Full-screen theme headline: daily insight, chapter titles
+    static let heroDisplay = Font.custom("CormorantGaramond-Bold", size: 56, relativeTo: .largeTitle)
+    /// Oversized numeral: Astara Score, energy percentage
+    static let heroNumber  = Font.custom("CormorantGaramond-Light", size: 72, relativeTo: .largeTitle)
+    /// Italic pull-quote / daily theme line
+    static let heroLabel   = Font.custom("CormorantGaramond-Italic", size: 22, relativeTo: .title2)
+
+    // MARK: - Ornamental
+    /// Micro uppercase section marker (tracking 2+)
+    static let sectionMark = Font.custom("PlusJakartaSans-Regular", size: 10, relativeTo: .caption2)
 }

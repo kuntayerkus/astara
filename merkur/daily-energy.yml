@@ -1,0 +1,52 @@
+name: Günlük Kozmik Veri Güncelleme
+
+on:
+  schedule:
+    # Her gün 03:00 UTC (= 06:00 TR saati, Türkiye UTC+3 sabit)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    # GitHub UI'dan manuel tetikleme imkânı
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  update-daily-data:
+    name: VPS + Gemini → günlük veriler → deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repoyu çek
+        uses: actions/checkout@v4
+
+      - name: Node.js 24 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Günlük enerji ve gezegen konumları üret
+        continue-on-error: true
+        env:
+          VPS_URL: ${{ secrets.VPS_URL }}
+          VPS_SECRET: ${{ secrets.VPS_SECRET }}
+        run: node scripts/generate-daily-energy.js
+
+      - name: Günlük burç yorumları üret
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/generate-daily-horoscope.js
+
+      - name: JSON değiştiyse commit at
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/daily-energy.json data/planet-positions.json data/daily-horoscope.json
+          git diff --staged --quiet \
+            && echo "⏭️  Veri değişmedi, commit atlanıyor." \
+            || git commit -m "chore: günlük veriler güncellendi $(date -u +%Y-%m-%d)"
+
+      - name: Değişikliği push et (Vercel otomatik deploy eder)
+        run: git push

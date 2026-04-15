@@ -6,13 +6,13 @@ struct DailyHoroscopeView: View {
 
     var body: some View {
         ZStack {
-            GradientBackground()
+            GradientBackground(ambient: .daily)
 
             VStack(spacing: 0) {
                 // Navigation header
                 header
                     .padding(.horizontal, AstaraSpacing.lg)
-                    .padding(.top, AstaraSpacing.md)
+                    .padding(.top, AstaraSpacing.xl)
                     .padding(.bottom, AstaraSpacing.sm)
 
                 // Sign selector carousel
@@ -33,6 +33,24 @@ struct DailyHoroscopeView: View {
                             HoroscopeCardView(horoscope: horoscope)
                                 .padding(.horizontal, AstaraSpacing.lg)
                                 .transition(.opacity.combined(with: .move(edge: .bottom)))
+                                
+                            // Social Hook
+                            ShareLink(
+                                item: Image(uiImage: StoryCardExportView(horoscope: horoscope).snapshot()),
+                                preview: SharePreview("Cosmic Roast", image: Image(uiImage: StoryCardExportView(horoscope: horoscope).snapshot()))
+                            ) {
+                                HStack(spacing: AstaraSpacing.xs) {
+                                    Image(systemName: "square.and.arrow.up")
+                                    Text("Efsaneyi Çarpıt: Paylaş") // "Expose Yourself: Share"
+                                        .font(AstaraTypography.labelLarge)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .foregroundStyle(AstaraColors.textPrimary)
+                                .astaraLiquidGlass(style: .deep, cornerRadius: AstaraSpacing.cornerRadiusMd)
+                            }
+                            .padding(.horizontal, AstaraSpacing.lg)
+                            
                         } else {
                             emptyState
                         }
@@ -90,12 +108,13 @@ struct DailyHoroscopeView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(String(localized: "daily_horoscope"))
-                    .font(AstaraTypography.displayMedium)
-                    .foregroundStyle(AstaraColors.textPrimary)
+                Text(String(localized: "daily_horoscope").uppercased())
+                    .font(AstaraTypography.heroLabel)
+                    .foregroundStyle(AstaraColors.gold)
+                    .tracking(2)
 
                 Text(todayFormatted)
-                    .font(AstaraTypography.bodySmall)
+                    .font(AstaraTypography.bodyLarge)
                     .foregroundStyle(AstaraColors.textTertiary)
             }
 

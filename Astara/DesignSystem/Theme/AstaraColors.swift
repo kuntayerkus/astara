@@ -35,6 +35,23 @@ enum AstaraColors {
     static let textTertiary = Color.white.opacity(0.4)
     static let cardBackground = Color.white.opacity(0.05)
     static let cardBorder = Color.white.opacity(0.08)
+
+    // MARK: - Deep Backgrounds (richer, darker foundation)
+    static let backgroundDeep = Color(hex: "#080610")   // Deepest base layer
+    static let backgroundMid  = Color(hex: "#110D1C")   // Mid atmosphere layer
+    static let backgroundWarm = Color(hex: "#1A1028")   // Daily tab warm variant
+
+    // MARK: - Premium Accents
+    static let amethyst      = Color(hex: "#4A2D8A")    // Section header / nebula glow
+    static let starlight     = Color(hex: "#C8D4E8")    // Silver-white secondary accent
+    static let moonCream     = Color(hex: "#F0EAD6")    // Pull-quote warmth
+    static let celestialTeal = Color(hex: "#1B6B8A")    // Transit & alert accent
+    static let goldGlow      = Color(hex: "#C9A96E")    // Same as gold — use .opacity(0.25) for radial glow
+
+    // MARK: - Chronicle Card
+    static let chronicleBorder = Color(hex: "#C9A96E").opacity(0.45)
+    static let chronicleGradientTop = Color(hex: "#1E1435")
+    static let chronicleGradientBottom = Color(hex: "#080610")
 }
 
 // MARK: - Color Hex Extension
