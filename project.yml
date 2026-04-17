@@ -162,6 +162,7 @@ targets:
     info:
       path: AstaraWidget/Info.plist
       properties:
+        CFBundleDisplayName: Astara
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
         UIAppFonts:
