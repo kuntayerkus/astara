@@ -16,10 +16,10 @@ struct QRScannerView: UIViewControllerRepresentable {
 
     /// Called once, on the main thread, with the first decoded URL that
     /// resolves to an `astara://` deep link.
-    var onScan: @Sendable (URL) -> Void
+    var onScan: (URL) -> Void
 
     /// Called if the user rejects camera access or the hardware is unavailable.
-    var onUnavailable: (@Sendable () -> Void)? = nil
+    var onUnavailable: (() -> Void)? = nil
 
     func makeCoordinator() -> Coordinator {
         Coordinator(onScan: onScan, onUnavailable: onUnavailable)
@@ -33,12 +33,13 @@ struct QRScannerView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: QRScannerViewController, context: Context) {}
 
+    @MainActor
     final class Coordinator: NSObject, QRScannerDelegate {
-        let onScan: @Sendable (URL) -> Void
-        let onUnavailable: (@Sendable () -> Void)?
+        let onScan: (URL) -> Void
+        let onUnavailable: (() -> Void)?
         private var didFire = false
 
-        init(onScan: @escaping @Sendable (URL) -> Void, onUnavailable: (@Sendable () -> Void)?) {
+        init(onScan: @escaping (URL) -> Void, onUnavailable: (() -> Void)?) {
             self.onScan = onScan
             self.onUnavailable = onUnavailable
         }
@@ -57,6 +58,7 @@ struct QRScannerView: UIViewControllerRepresentable {
 
 // MARK: - UIKit Scanner VC
 
+@MainActor
 protocol QRScannerDelegate: AnyObject {
     func scannerDidRead(_ value: String)
     func scannerUnavailable()
