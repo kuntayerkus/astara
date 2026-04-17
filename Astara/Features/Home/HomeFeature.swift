@@ -414,11 +414,12 @@ struct HomeFeature {
                 }
                 let sign = state.userSunSign
                 let horoscope = state.dailyHoroscope
+                let chart = state.userChart
                 let locale = AppLocale.current.rawValue
                 state.askResponse = nil
                 state.isAskingAstara = true
                 return .run { send in
-                    let answer = await askAstaraService.ask(question, sign, horoscope, locale)
+                    let answer = await askAstaraService.ask(question, sign, horoscope, chart, locale)
                     await send(.askAnswered(answer))
                 }
 

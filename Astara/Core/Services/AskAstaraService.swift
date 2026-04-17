@@ -17,8 +17,9 @@ struct AskAstaraService {
         _ question: String,
         _ sign: ZodiacSign,
         _ horoscope: DailyHoroscope?,
+        _ chart: BirthChart?,
         _ locale: String
-    ) async -> String = { _, _, _, _ in "" }
+    ) async -> String = { _, _, _, _, _ in "" }
 }
 
 extension AskAstaraService: DependencyKey {
@@ -26,7 +27,7 @@ extension AskAstaraService: DependencyKey {
         @Dependency(\.geminiService) var geminiService
 
         return AskAstaraService(
-            ask: { question, sign, horoscope, locale in
+            ask: { question, sign, horoscope, chart, locale in
                 let sanitized = PromptSanitizer.sanitizeUserInput(question)
                 guard !sanitized.isEmpty, PromptSanitizer.validateSign(sign) else {
                     return Self.mockResponse(question: question, sign: sign, horoscope: horoscope, locale: locale)
@@ -36,6 +37,7 @@ extension AskAstaraService: DependencyKey {
                     question: sanitized,
                     sign: sign,
                     horoscope: horoscope,
+                    chart: chart,
                     locale: locale
                 )
 
@@ -58,7 +60,7 @@ extension AskAstaraService: DependencyKey {
     }()
 
     static let previewValue = AskAstaraService(
-        ask: { _, _, _, _ in "Preview cevabı." }
+        ask: { _, _, _, _, _ in "Preview cevabı." }
     )
 }
 
@@ -70,17 +72,19 @@ private extension AskAstaraService {
         question: String,
         sign: ZodiacSign,
         horoscope: DailyHoroscope?,
+        chart: BirthChart?,
         locale: String
     ) -> String {
         let energy = horoscope?.energy ?? 50
         let theme = horoscope?.theme ?? "denge"
         let tip = horoscope?.tip ?? ""
+        let chartBlock = chart.map { chartContext($0, locale: locale) } ?? ""
 
         switch locale.prefix(2) {
         case "en":
-            return englishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip)
+            return englishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip, chartBlock: chartBlock)
         default:
-            return turkishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip)
+            return turkishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip, chartBlock: chartBlock)
         }
     }
 
@@ -89,22 +93,23 @@ private extension AskAstaraService {
         sign: ZodiacSign,
         energy: Int,
         theme: String,
-        tip: String
+        tip: String,
+        chartBlock: String
     ) -> String {
         """
         Sen Astara adlı bir astroloji uygulamasının yapay zeka asistanısın. \
         Samimi, biraz ironik ama kırıcı olmayan bir tonda cevap ver — sanki iyi bir arkadaşın astroloji biliyor.
 
-        Kullanıcı bilgileri:
+        Kullanıcının doğum haritası ve bugünkü durumu:
         - Güneş burcu: \(sign.turkishName)
         - Bugünkü enerji seviyesi: %\(energy)
         - Günün teması: \(theme)
         - Bugünkü ipucu: \(tip)
-
+        \(chartBlock.isEmpty ? "" : "\n\(chartBlock)")
         Kullanıcının sorusu: \(question)
 
         Türkçe, en fazla 3 cümle, doğrudan ve samimi bir şekilde cevap ver. \
-        Astroloji bilgisini somut bir tavsiyeyle birleştir. \
+        Harita bilgilerini kullanarak kişiye özel yorum yap; genel geçer klişelerden kaçın. \
         "Astara olarak" veya "Ben bir yapay zekayım" gibi ifadeler kullanma.
         """
     }
@@ -114,24 +119,66 @@ private extension AskAstaraService {
         sign: ZodiacSign,
         energy: Int,
         theme: String,
-        tip: String
+        tip: String,
+        chartBlock: String
     ) -> String {
         """
         You are the AI assistant of an astrology app called Astara. \
         Reply in a warm, slightly witty tone — like a friend who happens to know astrology.
 
-        User context:
+        User's birth chart and today's context:
         - Sun sign: \(sign.rawValue.capitalized)
         - Today's energy: \(energy)%
         - Today's theme: \(theme)
         - Today's tip: \(tip)
-
+        \(chartBlock.isEmpty ? "" : "\n\(chartBlock)")
         User question: \(question)
 
         In English, 3 sentences max, direct and personal. \
-        Blend astrology insight with a concrete suggestion. \
+        Draw on the chart data for a specific, non-generic interpretation. \
         Never say "as Astara" or "as an AI".
         """
+    }
+
+    // MARK: - Chart Context Serializer
+
+    static func chartContext(_ chart: BirthChart, locale: String) -> String {
+        let isEnglish = locale.hasPrefix("en")
+
+        let planetLines = chart.planets
+            .map { p -> String in
+                let name = isEnglish ? p.key.rawValue.capitalized : p.key.turkishName
+                let sign = isEnglish ? p.sign.rawValue.capitalized : p.sign.turkishName
+                let retro = p.isRetrograde ? " ℞" : ""
+                return "  \(name): \(sign) \(p.formattedDegree)\(retro)"
+            }
+            .joined(separator: "\n")
+
+        let topAspects = chart.aspects
+            .sorted { $0.orb < $1.orb }
+            .prefix(5)
+            .map { a -> String in
+                let p1 = isEnglish ? a.planet1.rawValue.capitalized : a.planet1.turkishName
+                let p2 = isEnglish ? a.planet2.rawValue.capitalized : a.planet2.turkishName
+                return "  \(p1) \(a.type.symbol) \(p2) (\(String(format: "%.1f", a.orb))°)"
+            }
+            .joined(separator: "\n")
+
+        if isEnglish {
+            return """
+            Natal chart:
+            \(planetLines)
+            Key aspects:
+            \(topAspects.isEmpty ? "  (none)" : topAspects)
+            """
+        } else {
+            return """
+            Natal harita:
+            \(planetLines)
+            Öne çıkan açılar:
+            \(topAspects.isEmpty ? "  (yok)" : topAspects)
+            """
+        }
     }
 }
 
