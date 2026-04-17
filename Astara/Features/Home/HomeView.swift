@@ -352,7 +352,7 @@ struct HomeView: View {
         }
         .padding(.horizontal, AstaraSpacing.lg)
         .padding(.vertical, AstaraSpacing.md)
-        .frame(width: 130, alignment: .leading)
+        .frame(width: 148, alignment: .leading)
         .overlay(alignment: .leading) {
             Rectangle()
                 .fill(
@@ -378,6 +378,9 @@ struct HomeView: View {
                 .stroke(color.opacity(0.25), lineWidth: 1)
         )
         .shadow(color: color.opacity(0.08), radius: 12, y: 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(String(format: String(localized: "score_accessibility_value", defaultValue: "%d / 100"), value))
     }
 
     // MARK: - Chapter III: CELESTIAL WEEK
@@ -440,11 +443,11 @@ struct HomeView: View {
                 .shadow(color: AstaraColors.ember400.opacity(0.7), radius: 4)
 
             if let retro = store.activeRetrogrades.first {
-                Text("\(retro.planet.turkishName) \(String(localized: "retrograde_active"))")
+                Text("\(retro.planet.turkishName) \(String(localized: "retrograde_active", defaultValue: "retrosu aktif"))")
                     .font(AstaraTypography.labelMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
             } else if let upcoming = store.upcomingRetrogrades.first {
-                Text("\(upcoming.planet.turkishName) \(String(localized: "retrograde_upcoming"))")
+                Text("\(upcoming.planet.turkishName) \(String(localized: "retrograde_upcoming", defaultValue: "retrosu yaklaşıyor"))")
                     .font(AstaraTypography.labelMedium)
                     .foregroundStyle(AstaraColors.textSecondary)
             }
@@ -646,7 +649,7 @@ struct HomeView: View {
                     }
                 }
                 .padding(.horizontal, AstaraSpacing.sm)
-                .padding(.vertical, AstaraSpacing.xs)
+                .padding(.vertical, AstaraSpacing.sm)
                 .astaraCard()
 
                 Spacer()
@@ -684,7 +687,7 @@ struct HomeView: View {
                     Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                         .font(.system(size: 16, weight: .light))
                         .foregroundStyle(AstaraColors.celestialTeal)
-                        .frame(width: 42, height: 42)
+                        .frame(width: 44, height: 44)
                         .background(AstaraColors.celestialTeal.opacity(0.08))
                         .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
                         .overlay(
@@ -721,6 +724,15 @@ struct HomeView: View {
                             .font(AstaraTypography.caption)
                             .foregroundStyle(AstaraColors.goldLight)
                     }
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11))
+                        .foregroundStyle(AstaraColors.textTertiary)
+                        .padding(.top, 2)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    Haptics.selection()
+                    store.send(.selectTab(.compatibility))
                 }
                 if item.id != store.friendDynamics.prefix(2).last?.id {
                     Divider().overlay(AstaraColors.cardBorder)

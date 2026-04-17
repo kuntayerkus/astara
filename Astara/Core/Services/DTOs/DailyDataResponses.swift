@@ -85,12 +85,16 @@ struct DailyEnergyResponse: Decodable {
     }
 
     func toElementEnergy() -> [Element: Int] {
-        [
+        let raw: [Element: Int] = [
             .fire: elements["fire"]?.level ?? 0,
             .earth: elements["earth"]?.level ?? 0,
             .air: elements["air"]?.level ?? 0,
             .water: elements["water"]?.level ?? 0
         ]
+        let total = raw.values.reduce(0, +)
+        // Normalize so values are proportional and the display ring (0-100%) is meaningful.
+        guard total > 100 else { return raw }
+        return raw.mapValues { Int(Double($0) * 100 / Double(total)) }
     }
 }
 

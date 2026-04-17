@@ -115,11 +115,11 @@ private func templateRitual(retrogrades: [Retrograde], locale: String) -> String
     if let retro = retrogrades.first(where: \.isActive) {
         return isEnglish
             ? "\(retro.planet.rawValue.capitalized) is retrograde. Try 10 minutes of silence + 3 lines of journaling."
-            : "\(retro.planet.turkishName) retrosu aktif. 10 dakika sessizlik + 3 satir journaling yap."
+            : "\(retro.planet.turkishName) retrosu aktif. 10 dakika sessizlik + 3 satır journaling yap."
     }
     return isEnglish
         ? "Intention ritual: 3 breaths, 1 intention written down, 1 small step chosen."
-        : "Bugun niyet ritueli: 3 nefes al, 1 niyet yaz, 1 kucuk adim sec."
+        : "Bugün niyet ritüeli: 3 nefes al, 1 niyet yaz, 1 küçük adım seç."
 }
 
 private func templateInsight(date: Date, sign: ZodiacSign, locale: String) -> TimeTravelInsight {
@@ -129,11 +129,11 @@ private func templateInsight(date: Date, sign: ZodiacSign, locale: String) -> Ti
     if days < 0 {
         return TimeTravelInsight(
             date: date,
-            title: isEnglish ? "Past echo" : "Gecmis etkisi",
+            title: isEnglish ? "Past echo" : "Geçmiş etkisi",
             summary: isEnglish
                 ? "\(sign.rawValue.capitalized) energy carried a closure theme — boundaries and order were loud."
-                : "\(sign.turkishName) enerjinde kapanis temasi. O donemde sinirlar ve duzen vurgusu yuksek.",
-            action: isEnglish ? "Write 3 lessons you took from it." : "Neyi ogrendigini 3 madde yaz."
+                : "\(sign.turkishName) enerjinde kapanış teması. O dönemde sınırlar ve düzen vurgusu yüksek.",
+            action: isEnglish ? "Write 3 lessons you took from it." : "Neler öğrendiğini 3 madde yaz."
         )
     }
     return TimeTravelInsight(
@@ -141,8 +141,8 @@ private func templateInsight(date: Date, sign: ZodiacSign, locale: String) -> Ti
         title: isEnglish ? "Future signal" : "Gelecek sinyali",
         summary: isEnglish
             ? "Accelerating stretch for \(sign.rawValue.capitalized). Communication and decisions lead."
-            : "\(sign.turkishName) icin hizlanan bir donem. Iletisim ve karar alma baskin.",
-        action: isEnglish ? "Lock your priority now — pick one goal." : "Onceligini simdiden netlestir, tek hedef sec."
+            : "\(sign.turkishName) için hızlanan bir dönem. İletişim ve karar alma baskın.",
+        action: isEnglish ? "Lock your priority now — pick one goal." : "Önceliğini şimdiden netleştir, tek hedef seç."
     )
 }
 
@@ -222,13 +222,13 @@ private func planetForOffset(_ offset: Int, activePlanets: Set<PlanetKey>) -> Pl
 private func dayDescription(for offset: Int, sign: ZodiacSign, target: ZodiacSign, planet: PlanetKey) -> String {
     switch offset {
     case 0:
-        return "\(planet.turkishName) etkisiyle bugun odak: net karar. \(sign.turkishName) enerjini dagitma."
+        return "\(planet.turkishName) etkisiyle bugün odak: net karar. \(sign.turkishName) enerjini dağıtma."
     case 1...2:
-        return "\(target.turkishName) vurgusu artiyor. Iletisimde niyetini acik kur."
+        return "\(target.turkishName) vurgusu artıyor. İletişimde niyetini açık kur."
     case 3...4:
-        return "Tempon yukseliyor. Kisa plan + tek oncelik en iyi sonuc verir."
+        return "Tempon yükseliyor. Kısa plan + tek öncelik en iyi sonuç verir."
     default:
-        return "Hafta kapanisinda duzen kur. Fazlaliklari birak, enerjini koru."
+        return "Hafta kapanışında düzen kur. Fazlalıkları bırak, enerjini koru."
     }
 }
 

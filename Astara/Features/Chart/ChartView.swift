@@ -14,11 +14,11 @@ struct ChartView: View {
                         // Header
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(String(localized: "natal_chart").uppercased())
+                                Text(String(localized: "natal_chart", defaultValue: "Natal Harita").uppercased())
                                     .font(AstaraTypography.heroLabel)
                                     .foregroundStyle(AstaraColors.gold)
                                     .tracking(2)
-                                Text(String(localized: "birth_chart_subtitle"))
+                                Text(String(localized: "birth_chart_subtitle", defaultValue: "Doğum haritanı keşfet"))
                                     .font(AstaraTypography.bodyLarge)
                                     .foregroundStyle(AstaraColors.textTertiary)
                             }
@@ -50,14 +50,14 @@ struct ChartView: View {
                         planetList(chart: chart)
                             .padding(.horizontal, AstaraSpacing.lg)
 
-                        // Action buttons row
+                        // Action buttons: primary full-width, then secondary row
                         VStack(spacing: AstaraSpacing.sm) {
-                            AstaraButton(title: String(localized: "view_aspects"), style: .secondary) {
-                                store.send(.toggleAspectGrid)
+                            AstaraButton(title: String(localized: "ai_chart_reading"), style: .primary) {
+                                store.send(.toggleAIInterpretation)
                             }
                             HStack(spacing: AstaraSpacing.sm) {
-                                AstaraButton(title: String(localized: "ai_chart_reading"), style: .primary) {
-                                    store.send(.toggleAIInterpretation)
+                                AstaraButton(title: String(localized: "view_aspects"), style: .secondary) {
+                                    store.send(.toggleAspectGrid)
                                 }
                                 AstaraButton(title: String(localized: "share_chart"), style: .secondary) {
                                     store.send(.toggleChartShare)

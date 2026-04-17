@@ -10,6 +10,7 @@ struct ZodiacIcon: View {
             .font(.system(size: size * 0.7))
             .foregroundStyle(color)
             .frame(width: size, height: size)
+            .accessibilityLabel(sign.turkishName)
     }
 }
 

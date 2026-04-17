@@ -6,24 +6,35 @@ struct SignSelectorView: View {
     let onSelect: (ZodiacSign) -> Void
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AstaraSpacing.sm) {
-                    ForEach(ZodiacSign.allCases) { sign in
-                        signChip(sign)
-                            .id(sign)
+        ZStack(alignment: .trailing) {
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AstaraSpacing.sm) {
+                        ForEach(ZodiacSign.allCases) { sign in
+                            signChip(sign)
+                                .id(sign)
+                        }
+                    }
+                    .padding(.horizontal, AstaraSpacing.lg)
+                }
+                .onAppear {
+                    proxy.scrollTo(selectedSign, anchor: .center)
+                }
+                .onChange(of: selectedSign) { _, newSign in
+                    withAnimation {
+                        proxy.scrollTo(newSign, anchor: .center)
                     }
                 }
-                .padding(.horizontal, AstaraSpacing.lg)
             }
-            .onAppear {
-                proxy.scrollTo(selectedSign, anchor: .center)
-            }
-            .onChange(of: selectedSign) { _, newSign in
-                withAnimation {
-                    proxy.scrollTo(newSign, anchor: .center)
-                }
-            }
+
+            // Trailing fade hints at horizontal scrollability
+            LinearGradient(
+                colors: [.clear, AstaraColors.backgroundDeep],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: 44)
+            .allowsHitTesting(false)
         }
     }
 
