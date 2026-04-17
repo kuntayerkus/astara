@@ -49,6 +49,7 @@ struct HomeFeature {
         var daily: DailyHoroscopeFeature.State = .init()
         var compatibility: CompatibilityFeature.State = .init()
         var profile: ProfileFeature.State = .init()
+        var friends: FriendsFeature.State = .init()
     }
 
     enum Tab: String, CaseIterable, Equatable {
@@ -111,6 +112,7 @@ struct HomeFeature {
         case daily(DailyHoroscopeFeature.Action)
         case compatibility(CompatibilityFeature.Action)
         case profile(ProfileFeature.Action)
+        case friends(FriendsFeature.Action)
     }
 
     @Dependency(\.horoscopeService) var horoscopeService
@@ -135,6 +137,10 @@ struct HomeFeature {
 
         Scope(state: \.profile, action: \.profile) {
             ProfileFeature()
+        }
+
+        Scope(state: \.friends, action: \.friends) {
+            FriendsFeature()
         }
 
         Reduce { state, action in
@@ -467,6 +473,9 @@ struct HomeFeature {
                 return .none
 
             case .profile:
+                return .none
+
+            case .friends:
                 return .none
             }
         }

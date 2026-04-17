@@ -3,9 +3,14 @@ import ComposableArchitecture
 
 struct ProfileView: View {
     @Bindable var store: StoreOf<ProfileFeature>
+    /// Optional — passed by HomeView so the "Arkadaşlar" link can push the
+    /// Friends feature. Older call-sites (previews, tests) can omit it.
+    var friendsStore: StoreOf<FriendsFeature>? = nil
     #if DEBUG
     @State private var showDebugPanel = false
     #endif
+    @State private var showFriends = false
+    @State private var showClaimHandle = false
 
     var body: some View {
         ZStack {
@@ -29,6 +34,13 @@ struct ProfileView: View {
                     // Birth data section
                     section(title: String(localized: "birth_data")) {
                         birthDataRow
+                    }
+
+                    // Social section (v2 — Friend System)
+                    if friendsStore != nil {
+                        section(title: "Sosyal") {
+                            socialSection
+                        }
                     }
 
                     // Notifications section
@@ -71,6 +83,58 @@ struct ProfileView: View {
             EditBirthDataView(
                 onSave: { store.send(.birthDataSaved) }
             )
+        }
+        .sheet(isPresented: $showFriends) {
+            if let friendsStore {
+                NavigationStack {
+                    FriendsListView(store: friendsStore)
+                }
+            }
+        }
+        .sheet(isPresented: $showClaimHandle) {
+            NavigationStack {
+                ClaimHandleView()
+            }
+        }
+    }
+
+    private var socialSection: some View {
+        VStack(spacing: AstaraSpacing.sm) {
+            Button {
+                showFriends = true
+            } label: {
+                HStack {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(AstaraColors.gold)
+                    Text("Arkadaşlar")
+                        .font(AstaraTypography.bodyLarge)
+                        .foregroundStyle(AstaraColors.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(AstaraColors.textTertiary)
+                }
+                .padding()
+                .modifier(AstaraCardModifier())
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                showClaimHandle = true
+            } label: {
+                HStack {
+                    Image(systemName: "at")
+                        .foregroundStyle(AstaraColors.gold)
+                    Text("Kullanıcı Adı")
+                        .font(AstaraTypography.bodyLarge)
+                        .foregroundStyle(AstaraColors.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(AstaraColors.textTertiary)
+                }
+                .padding()
+                .modifier(AstaraCardModifier())
+            }
+            .buttonStyle(.plain)
         }
     }
 

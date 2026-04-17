@@ -79,7 +79,7 @@ private struct PremiumMediumContent: View {
                 if let retro = entry.snapshot.retroBanner, !retro.isEmpty {
                     InfoRow(
                         label: WidgetStrings.retroLabel(locale: locale),
-                        body: retro,
+                        content: retro,
                         accent: AstaraColors.ember400
                     )
                 }
@@ -87,7 +87,7 @@ private struct PremiumMediumContent: View {
                 if let tip = entry.snapshot.tip, !tip.isEmpty {
                     InfoRow(
                         label: WidgetStrings.ritualLabel(locale: locale),
-                        body: tip,
+                        content: tip,
                         accent: AstaraColors.gold
                     )
                 }
@@ -105,7 +105,7 @@ private struct PremiumMediumContent: View {
 
 private struct InfoRow: View {
     let label: String
-    let body: String
+    let content: String
     let accent: Color
 
     var body: some View {
@@ -114,7 +114,7 @@ private struct InfoRow: View {
                 .font(AstaraTypography.sectionMark)
                 .tracking(1.2)
                 .foregroundStyle(accent)
-            Text(body)
+            Text(content)
                 .font(AstaraTypography.bodySmall)
                 .foregroundStyle(AstaraColors.textPrimary)
                 .lineLimit(3)

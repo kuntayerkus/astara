@@ -40,6 +40,8 @@ enum AppConstants {
         static let chartPath = "chart"
         static let dailyPath = "daily"
         static let compatibilityPath = "compatibility"
+        static let friendPath = "friend"
+        static let qrPath = "qr"
     }
 
     // MARK: - Notifications

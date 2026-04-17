@@ -8,6 +8,11 @@ struct AppFeature {
         var destination: Destination = .onboarding
         var onboarding: OnboardingFeature.State = .init()
         var home: HomeFeature.State = .init()
+        /// Set when a `astara://friend/{handle}` deep link arrives. The Home tab's
+        /// Friends feature reads & clears this to present the profile sheet.
+        var pendingFriendHandle: String?
+        /// Set when `astara://qr` is opened — surfaces the QR scanner sheet.
+        var pendingQRScan: Bool = false
     }
 
     enum Destination: Equatable {
@@ -83,11 +88,21 @@ struct AppFeature {
                 return .none
 
             case .handleDeepLink(let url):
-                guard let tab = Self.mapDeepLinkToTab(url) else {
-                    return .none
+                switch Self.resolveDeepLink(url) {
+                case .tab(let tab):
+                    state.destination = .home
+                    state.home.selectedTab = tab
+                case .friendProfile(let handle):
+                    state.destination = .home
+                    state.pendingFriendHandle = handle
+                    return .send(.home(.friends(.resolveHandle(handle))))
+                case .qrScanner:
+                    state.destination = .home
+                    state.pendingQRScan = true
+                    return .send(.home(.friends(.showQRScanner(true))))
+                case .none:
+                    break
                 }
-                state.destination = .home
-                state.home.selectedTab = tab
                 return .none
 
             case .syncDeviceToken(let token):
@@ -138,23 +153,44 @@ struct AppFeature {
 }
 
 extension AppFeature {
-    static func mapDeepLinkToTab(_ url: URL) -> HomeFeature.Tab? {
-        let slug: String
-        if let host = url.host, !host.isEmpty {
-            slug = host.lowercased()
-        } else {
-            slug = url.pathComponents.dropFirst().first?.lowercased() ?? ""
-        }
+    enum DeepLinkDestination: Equatable {
+        case tab(HomeFeature.Tab)
+        case friendProfile(handle: String)
+        case qrScanner
+    }
 
-        switch slug {
+    static func resolveDeepLink(_ url: URL) -> DeepLinkDestination? {
+        guard url.scheme?.lowercased() == AppConstants.DeepLink.scheme else { return nil }
+
+        var segments: [String] = []
+        if let host = url.host, !host.isEmpty {
+            segments.append(host.lowercased())
+        }
+        segments.append(contentsOf: url.pathComponents.filter { $0 != "/" }.map { $0.lowercased() })
+
+        guard let first = segments.first else { return nil }
+
+        switch first {
         case AppConstants.DeepLink.chartPath:
-            return .chart
+            return .tab(.chart)
         case AppConstants.DeepLink.dailyPath:
-            return .daily
+            return .tab(.daily)
         case AppConstants.DeepLink.compatibilityPath:
-            return .compatibility
+            return .tab(.compatibility)
+        case AppConstants.DeepLink.friendPath:
+            guard segments.count >= 2,
+                  AstaraSupabase.isHandleValid(segments[1]) else { return nil }
+            return .friendProfile(handle: segments[1])
+        case AppConstants.DeepLink.qrPath:
+            return .qrScanner
         default:
             return nil
         }
+    }
+
+    /// Legacy helper — kept for any call site still expecting a tab.
+    static func mapDeepLinkToTab(_ url: URL) -> HomeFeature.Tab? {
+        if case .tab(let tab) = resolveDeepLink(url) { return tab }
+        return nil
     }
 }

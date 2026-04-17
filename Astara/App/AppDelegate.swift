@@ -84,6 +84,15 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
             switch type {
             case "daily_energy":
                 path = AppConstants.DeepLink.dailyPath
+            case "friend_accepted", "friend_request":
+                // Payload may include the friend's handle so we can jump straight
+                // to their profile sheet. Fall back to the friends tab if missing.
+                if let handle = userInfo["handle"] as? String,
+                   AstaraSupabase.isHandleValid(handle) {
+                    path = "\(AppConstants.DeepLink.friendPath)/\(handle)"
+                } else {
+                    path = AppConstants.DeepLink.friendPath
+                }
             default:
                 path = AppConstants.DeepLink.chartPath
             }

@@ -33,7 +33,10 @@ struct HomeView: View {
                     Label(HomeFeature.Tab.compatibility.title, systemImage: HomeFeature.Tab.compatibility.icon)
                 }
 
-            ProfileView(store: store.scope(state: \.profile, action: \.profile))
+            ProfileView(
+                store: store.scope(state: \.profile, action: \.profile),
+                friendsStore: store.scope(state: \.friends, action: \.friends)
+            )
                 .tag(HomeFeature.Tab.profile)
                 .tabItem {
                     Label(HomeFeature.Tab.profile.title, systemImage: HomeFeature.Tab.profile.icon)
