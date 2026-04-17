@@ -931,6 +931,10 @@ struct HomeView: View {
     // MARK: - Time Travel Sheet
 
     private var timeTravelSheet: some View {
+        let now = Date()
+        let minDate = Calendar.current.date(byAdding: .day, value: -30, to: now) ?? now
+        let maxDate = Calendar.current.date(byAdding: .day, value: 30, to: now) ?? now
+
         VStack(alignment: .leading, spacing: AstaraSpacing.md) {
             Text(String(localized: "time_travel_btn"))
                 .font(AstaraTypography.titleLarge)
@@ -938,8 +942,7 @@ struct HomeView: View {
             DatePicker(
                 String(localized: "time_travel_btn"),
                 selection: $store.timeTravelDate.sending(\.setTimeTravelDate),
-                in: Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-                    ...Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
+                in: minDate...maxDate,
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
