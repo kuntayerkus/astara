@@ -5,6 +5,7 @@
 **Hedef kitle:** Gen-Z / Y kuşağı (18-35), kadın ağırlıklı, önce Türkiye → sonra global
 **Ton:** Hafif ironik, samimi, "arkadaşınla sohbet" enerjisi — Co-Star'ın soğukluğu ile CHANI'nin sıcaklığı arasında
 **Diller:** Türkçe (v1), İngilizce (v2), İspanyolca/Portekizce (v3)
+**Son güncelleme:** 2026-04-15
 
 ---
 
@@ -40,172 +41,159 @@
 | **Mimari** | TCA (The Composable Architecture) | Testable, modüler state yönetimi |
 | **Networking** | Swift Concurrency (async/await) + URLSession | Native, lightweight |
 | **Persistence** | SwiftData + KeychainAccess | Yerel veri + güvenli token saklama |
-| **Push** | APNs + Firebase Cloud Messaging | Viral bildirim stratejisi |
-| **Analytics** | PostHog (privacy-first) | GDPR/KVKK uyumlu |
+| **Push** | APNs + UNUserNotificationCenter | Yerel + remote bildirim akışı |
+| **Analytics** | Planlanan: PostHog | GDPR/KVKK uyumlu analytics roadmap |
 | **Payments** | StoreKit 2 | Abonelik yönetimi |
 | **Charts** | SwiftUI Canvas + Custom Drawing | Natal chart wheel rendering |
 | **Auth** | Sign in with Apple + Email/OTP | Global uyumluluk |
-| **Backend (v1)** | Mevcut Vercel API + swiss.grio.works VPS | Var olan altyapıyı kullan |
+| **Backend (v1)** | merkurmagduru.com + swiss.grio.works VPS | Var olan altyapıyı kullan |
 | **Backend (v2)** | Supabase (PostgreSQL + Auth + Realtime) | Sosyal özellikler + global scale |
-| **CI/CD** | Xcode Cloud + Fastlane | App Store dağıtım |
+| **CI/CD** | Codemagic + XcodeGen | Build, test, lint, TestFlight dağıtım |
 | **Min iOS** | 17.0 | SwiftData, Observable macro, WidgetKit interactivity |
 | **Lokalizasyon** | String Catalogs (.xcstrings) | Multi-language ready from day 1 |
 
 ---
 
-## Proje Yapısı
+## Proje Yapısı (Repo Gerçeği — 2026-04-15)
 
 ```
 Astara/
 ├── App/
 │   ├── AstaraApp.swift                 # @main entry point
-│   ├── AppDelegate.swift               # Push notification registration
+│   ├── AppDelegate.swift               # APNs registration + device token sync
+│   ├── AppFeature.swift                # Root tab + deep link routing
 │   └── Configuration/
 │       ├── Environment.swift           # API keys, base URLs (xcconfig based)
 │       ├── AppConstants.swift          # Sabit değerler
-│       └── Localization.swift          # Dil yönetimi (TR/EN/ES)
+│       ├── Localization.swift          # Dil yönetimi (TR/EN/ES)
+│       ├── Debug.xcconfig(.example)
+│       └── Release.xcconfig(.example)
 │
 ├── Core/
 │   ├── Models/
-│   │   ├── User.swift                  # Kullanıcı profili (doğum bilgileri)
-│   │   ├── BirthChart.swift            # Natal harita modeli
-│   │   ├── Planet.swift                # Gezegen pozisyonu
-│   │   ├── ZodiacSign.swift            # 12 burç enum (localized)
-│   │   ├── House.swift                 # Ev sistemi
-│   │   ├── Aspect.swift               # Açı modeli
-│   │   ├── DailyHoroscope.swift        # Günlük yorum
-│   │   ├── Compatibility.swift         # Uyum skoru
-│   │   ├── AstaraScore.swift           # Love/Work/Energy/Focus günlük skor
-│   │   ├── FriendDynamic.swift         # Synastry feed kart modeli
-│   │   ├── TimeTravelInsight.swift     # Geçmiş/gelecek tarih içgörüsü
-│   │   ├── Transit.swift              # Transit hareketi
-│   │   └── Retrograde.swift           # Retro takvimi
-│   │
+│   │   ├── User.swift
+│   │   ├── BirthChart.swift
+│   │   ├── Planet.swift
+│   │   ├── ZodiacSign.swift
+│   │   ├── House.swift
+│   │   ├── Aspect.swift
+│   │   ├── DailyHoroscope.swift
+│   │   ├── Compatibility.swift
+│   │   ├── AstaraScore.swift
+│   │   ├── FriendDynamic.swift
+│   │   ├── TimeTravelInsight.swift
+│   │   ├── Transit.swift
+│   │   └── Retrograde.swift
 │   ├── Services/
-│   │   ├── APIClient.swift             # Base HTTP client (async/await)
-│   │   ├── ChartService.swift          # /api/harita proxy
-│   │   ├── HoroscopeService.swift      # /api/horoscope proxy
-│   │   ├── GeoService.swift            # /api/geo proxy
-│   │   ├── TimezoneService.swift       # /api/timezone proxy
-│   │   ├── NotificationService.swift   # Push notification handler
-│   │   ├── CacheService.swift          # Offline data cache
-│   │   ├── SubscriptionService.swift   # StoreKit 2 entegrasyonu
-│   │   ├── WeeklyGuidanceService.swift # Week360 + ritual + score üretimi
-│   │   └── AskAstaraService.swift      # Günlük soru-cevap servisi (v1 local)
-│   │
+│   │   ├── APIClient.swift
+│   │   ├── ChartService.swift
+│   │   ├── HoroscopeService.swift
+│   │   ├── GeoService.swift
+│   │   ├── NotificationService.swift
+│   │   ├── CacheService.swift
+│   │   ├── SubscriptionService.swift
+│   │   ├── WeeklyGuidanceService.swift
+│   │   ├── AskAstaraService.swift
+│   │   ├── PersistenceClient.swift
+│   │   └── DTOs/
 │   ├── Engine/
-│   │   ├── AstrologyEngine.swift       # Keplerian fallback hesaplamaları
-│   │   ├── CompatibilityEngine.swift   # Element bazlı uyum skoru
-│   │   ├── AspectCalculator.swift      # Açı hesaplama
-│   │   └── HouseCalculator.swift       # Ev sistemi (Placidus)
-│   │
+│   │   ├── AstrologyEngine.swift
+│   │   ├── CompatibilityEngine.swift
+│   │   ├── AspectCalculator.swift
+│   │   └── HouseCalculator.swift
 │   └── Utilities/
 │       ├── DateFormatters.swift
-│       ├── IANATimezone.swift           # Timezone handling (ASLA UTC çevirme)
+│       ├── IANATimezone.swift
 │       ├── Haptics.swift
-│       └── ShareManager.swift          # Screenshot-friendly paylaşım
+│       └── ShareManager.swift
 │
 ├── Features/
 │   ├── Onboarding/
-│   │   ├── OnboardingView.swift        # "Ad astra per aspera" intro
-│   │   ├── BirthDataInputView.swift    # Doğum verisi toplama
-│   │   ├── CitySearchView.swift        # Şehir arama (GeoNames)
-│   │   └── ChartRevealView.swift       # İlk harita gösterimi (animasyonlu)
-│   │
+│   │   ├── SplashView.swift
+│   │   ├── IntroSlidesView.swift
+│   │   ├── OnboardingFeature.swift
+│   │   ├── OnboardingView.swift
+│   │   ├── BirthDataInputView.swift
+│   │   ├── CitySearchView.swift
+│   │   └── ChartRevealView.swift
 │   ├── Home/
-│   │   ├── HomeView.swift              # Ana sayfa (daily hub)
-│   │   ├── DailyCardView.swift         # Günlük kart (energy, theme, tip)
-│   │   ├── PlanetPositionsView.swift   # Gökyüzü widget
-│   │   ├── ElementEnergyView.swift     # Ateş/Toprak/Hava/Su barları
-│   │   └── RetroAlertBanner.swift      # Aktif retro uyarısı
-│   │
+│   │   ├── HomeFeature.swift
+│   │   ├── HomeView.swift
+│   │   ├── DailyCardView.swift
+│   │   ├── PlanetPositionsView.swift
+│   │   └── RetroAlertBanner.swift
 │   ├── Chart/
-│   │   ├── ChartView.swift             # Natal harita ana ekran
-│   │   ├── ChartWheelView.swift        # SwiftUI Canvas çizim
-│   │   ├── PlanetDetailSheet.swift     # Gezegen detay bottom sheet
-│   │   ├── HouseDetailSheet.swift      # Ev detay
-│   │   ├── AspectGridView.swift        # Açı tablosu
-│   │   ├── AIInterpretationView.swift  # Gemini AI yorum
-│   │   └── ChartShareView.swift        # Paylaşım kartı (screenshot-ready)
-│   │
+│   │   ├── ChartFeature.swift
+│   │   ├── ChartView.swift
+│   │   ├── ChartWheelView.swift
+│   │   ├── PlanetDetailSheet.swift
+│   │   ├── HouseDetailSheet.swift
+│   │   ├── AspectGridView.swift
+│   │   ├── AIInterpretationView.swift
+│   │   └── ChartShareView.swift
 │   ├── DailyHoroscope/
-│   │   ├── DailyHoroscopeView.swift    # Günlük yorum ana ekran
-│   │   ├── SignSelectorView.swift      # Burç seçici (carousel)
-│   │   ├── HoroscopeCardView.swift     # Yorum kartı (energy, text, tip)
-│   │   └── ArchiveView.swift           # Geçmiş günler
-│   │
+│   │   ├── DailyHoroscopeFeature.swift
+│   │   ├── DailyHoroscopeView.swift
+│   │   ├── SignSelectorView.swift
+│   │   ├── HoroscopeCardView.swift
+│   │   ├── ArchiveView.swift
+│   │   └── StoryCardExportView.swift
 │   ├── Compatibility/
-│   │   ├── CompatibilityView.swift     # Uyum ana ekran
-│   │   ├── SignPairSelector.swift      # İki burç seçimi
-│   │   ├── ScoreRingView.swift         # Circular progress (0-100%)
-│   │   └── CompatibilityDetailView.swift # Detaylı analiz
-│   │
-│   ├── Transits/
-│   │   ├── TransitsView.swift          # Transit hareketi listesi
-│   │   ├── RetroCalendarView.swift     # Retro takvimi
-│   │   └── TransitImpactView.swift     # "Bu seni nasıl etkiler?"
-│   │
-│   ├── Social/
-│   │   ├── FriendsListView.swift       # Arkadaş listesi
-│   │   ├── AddFriendView.swift         # Arkadaş ekleme (QR + handle)
-│   │   ├── FriendChartView.swift       # Arkadaş haritası
-│   │   ├── SynastryView.swift          # İki harita karşılaştırma
-│   │   └── ShareCardView.swift         # Sosyal medya paylaşım kartı
-│   │
-│   ├── Explore/
-│   │   ├── ExploreView.swift           # Keşfet/Blog
-│   │   ├── ArticleView.swift           # Blog yazısı detay
-│   │   ├── QuizView.swift              # Astroloji quiz
-│   │   └── LearnView.swift             # "Astroloji 101" eğitim
-│   │
+│   │   ├── CompatibilityFeature.swift
+│   │   ├── CompatibilityView.swift
+│   │   ├── ScoreRingView.swift
+│   │   └── CompatibilityDetailView.swift
 │   ├── Profile/
-│   │   ├── ProfileView.swift           # Profil & ayarlar
-│   │   ├── EditBirthDataView.swift     # Doğum verisini düzenle
-│   │   ├── NotificationSettingsView.swift # Bildirim tercihleri
-│   │   └── SubscriptionView.swift      # Astara Premium
-│   │
-│   └── Widgets/
-│       ├── DailyWidget.swift           # Home screen widget (günlük enerji)
-│       ├── MoonPhaseWidget.swift       # Ay fazı widget
-│       └── RetroWidget.swift           # Aktif retro uyarı widget
+│   │   ├── ProfileFeature.swift
+│   │   ├── ProfileView.swift
+│   │   ├── EditBirthDataView.swift
+│   │   ├── SubscriptionView.swift
+│   │   └── DebugPanelView.swift
 │
 ├── DesignSystem/
 │   ├── Theme/
-│   │   ├── AstaraColors.swift          # Renk paleti
-│   │   ├── AstaraTypography.swift      # Font sistemi
-│   │   ├── AstaraSpacing.swift         # 4pt grid system
-│   │   └── AstaraShadows.swift         # Glow efektleri
-│   │
+│   │   ├── AstaraColors.swift
+│   │   ├── AstaraTypography.swift
+│   │   ├── AstaraSpacing.swift
+│   │   └── AstaraShadows.swift
 │   ├── Components/
-│   │   ├── AstaraButton.swift          # Primary/Secondary/Ghost button
-│   │   ├── AstaraCard.swift            # Glassmorphism kart
-│   │   ├── AstaraTextField.swift       # Custom input
-│   │   ├── ZodiacIcon.swift            # 12 burç ikonları
-│   │   ├── PlanetIcon.swift            # Gezegen sembolleri
-│   │   ├── GlowingRing.swift           # Animasyonlu halka
-│   │   ├── ShimmerView.swift           # Loading skeleton
-│   │   ├── ToastView.swift             # Bildirim toast
-│   │   └── GradientBackground.swift    # Ana arka plan gradient
-│   │
+│   │   ├── AstaraButton.swift
+│   │   ├── AstaraCard.swift
+│   │   ├── AstaraGlassModifier.swift
+│   │   ├── AstaraTextField.swift
+│   │   ├── GradientBackground.swift
+│   │   ├── MeshGradientBackground.swift
+│   │   ├── NoiseTextureView.swift
+│   │   ├── CosmicDustView.swift
+│   │   ├── GlowingRing.swift
+│   │   ├── MoonPhaseView.swift
+│   │   ├── OrnamentalDivider.swift
+│   │   ├── PlanetIcon.swift
+│   │   ├── ZodiacIcon.swift
+│   │   ├── PremiumLockOverlay.swift
+│   │   ├── ShimmerView.swift
+│   │   └── ToastView.swift
 │   └── Animations/
-│       ├── ChartRevealAnimation.swift  # Harita açılış animasyonu
-│       ├── StarfieldView.swift         # Yıldız alanı parallax
-│       └── PulseAnimation.swift        # Nabız efekti
+│       ├── ChartRevealAnimation.swift
+│       ├── StarfieldView.swift
+│       ├── PulseAnimation.swift
+│       ├── OracleSphereView.swift
+│       └── SynastryOrbitView.swift
 │
 ├── Resources/
-│   ├── Assets.xcassets/                # Renk setleri, ikonlar, görseller
-│   ├── Fonts/                          # Cormorant Garamond + Plus Jakarta Sans
-│   ├── Localizable.xcstrings           # Türkçe + İngilizce + İspanyolca
-│   └── Lottie/                         # Animasyon dosyaları
+│   ├── Assets.xcassets/
+│   ├── Fonts/
+│   ├── Localizable.xcstrings
+│   └── Lottie/
 │
 └── Tests/
-    ├── UnitTests/
-    │   ├── AstrologyEngineTests.swift
-    │   ├── CompatibilityEngineTests.swift
-    │   └── APIClientTests.swift
-    └── UITests/
-        ├── OnboardingUITests.swift
-        └── ChartFlowUITests.swift
+    └── AstaraTests.swift               # 10 adet unit test (Nisan 2026)
+
+Repo Root:
+├── project.yml                         # XcodeGen config
+├── codemagic.yaml                      # CI/CD workflows
+├── Package.swift                       # SPM dependencies
+└── merkur/                             # Legacy data/runtime scripts
 ```
 
 ---
@@ -484,9 +472,8 @@ enum PlanetKey: String, CaseIterable {
 ### StoreKit 2 Ürünleri
 ```swift
 enum AstaraProduct: String {
-    case monthlyPremium = "com.astara.premium.monthly"
-    case yearlyPremium = "com.astara.premium.yearly"
-    case lifetimePremium = "com.astara.premium.lifetime"
+    case monthlyPremium = "com.getastara.app.premium.monthly"
+    case yearlyPremium  = "com.getastara.app.premium.yearly"
 }
 ```
 
@@ -754,13 +741,14 @@ Through hardships, to the stars. ✦
 - [x] Retro takvimi
 - [x] Gezegen pozisyonları ekranı
 - [x] Push notification (APNs — NotificationService)
-- [x] SubscriptionService (StoreKit 2 iskelet — UI bağlantısı launch öncesi)
+- [x] SubscriptionService + SubscriptionView/ProfileFeature satın alma/restore akışı
 
 ### Sprint 7-8: Polish (🔄 Aktif — Test Aşaması)
 - [x] Astara.entitlements (aps-environment = production)
 - [x] PrivacyInfo.xcprivacy (UserDefaults + coarse location)
 - [x] .gitattributes (CRLF → LF)
 - [x] Release.xcconfig CI secret injection (codemagic.yaml)
+- [x] Codemagic workflow'ları (testflight-deploy, build-and-test, swiftlint)
 - [x] Push permission stub → gerçek UNUserNotificationCenter
 - [x] HomeFeature error handling + retry UX
 - [x] SwiftData persistence (PersistenceClient, AstaraApp, AppFeature, EditBirthDataView)
@@ -770,11 +758,10 @@ Through hardships, to the stars. ✦
 - [x] Ask Astara (günlük free quota + premium limitsiz hook)
 - [x] Time Travel + Astara Score (±30 gün içgörü + 4 metrik skor)
 - [x] Share card 2.0 + transit alert scheduling hook
-- [ ] Unit testler (hedef: 20+)
+- [ ] Unit testler (mevcut: 10, hedef: 20+)
 - [ ] Lottie: gerçek animasyon ekle veya dependency'yi kaldır
-- [ ] **LAUNCH ÖNCESI:** SubscriptionView ↔ StoreKit 2 (App Store Connect product ID sonrası)
+- [ ] **LAUNCH ÖNCESI:** App Store Connect'te `com.getastara.app.premium.*` ürünlerini aktive et
 - [ ] **LAUNCH ÖNCESI:** App Store metadata, screenshots (6.7"), privacy policy URL
-- [ ] **LAUNCH ÖNCESI:** App Store distribution CI workflow (codemagic.yaml)
 - [ ] TestFlight beta → App Store Review submit
 
 ### Sprint 9-10: English & Growth
@@ -786,15 +773,17 @@ Through hardships, to the stars. ✦
 
 ---
 
-## Mevcut Durum Özeti (2026-04-14)
+## Mevcut Durum Özeti (2026-04-15)
 
-**Proje şu an test aşamasında.** Kod tamamlandı, Codemagic üzerinden Xcode 16 / Swift 6 derlemeleri yapılıyor. App Store submission için kalan şeyler launch öncesi yapılacak (screenshots, StoreKit ürün bağlantısı, metadata).
+**Proje şu an test aşamasında.** Kod tabanı stabil; Codemagic tarafında `testflight-deploy`, `build-and-test` ve `swiftlint` workflow'ları aktif. App Store submission için kalan ana işler launch öncesi metadata/screenshot, StoreKit ürün aktivasyonu ve TestFlight geri bildirim turu.
 
-**Nisan 2026 ürün genişlemesi (CHANI/Co-Star benchmark sonrası):**
+**Nisan 2026 ürün genişlemesi (repo doğrulandı):**
 - Home deneyimi Week360 + Ritual/Journal + Synastry Feed kartlarıyla genişletildi.
 - Ask Astara (1 free/day, premium limitsiz) v1 akışı eklendi.
 - Time Travel (±30 gün) ve Astara Score (Love/Work/Energy/Focus) eklendi.
-- Share metni skora bağlandı; NotificationService'e transit alert hook'u eklendi.
+- Share metni skora bağlandı; `NotificationService` içine transit alert scheduling hook'u eklendi.
+- StoreKit 2 satın alma/restore akışı `ProfileFeature` + `SubscriptionView` içinde bağlı.
+- Test paketi şu an `Tests/AstaraTests.swift` içinde 10 unit test içeriyor.
 
 **Codemagic Build Hataları & Swift 6 Optimizasyonları (Nisan 2026):**
 - **XcodeGen (`project.yml`):** `entitlements` key parse hatası çözüldü (path vs property yapısına güncellendi).
@@ -807,17 +796,25 @@ Through hardships, to the stars. ✦
 - TCA mimarisi (Swift 6 concurrency kurallarına uygun)
 - 140 lokalizasyon key (TR + EN, Apple String Catalog)
 - SwiftData persistence (PersistenceClient + ModelContainer.astara)
-- CI/CD: Codemagic (TestFlight deploy, SwiftLint)
+- CI/CD: Codemagic (TestFlight deploy + build/test + SwiftLint)
 
 **Kritik dosyalar (son değişiklikler):**
 - `Astara/Resources/Localizable.xcstrings` — String Catalog (ASLA ELLE EDİTLEME, şema bozulabilir)
 - `Astara/Core/Services/PersistenceClient.swift` — SwiftData `UserDTO` + engagement/ask/journal alanları
 - `Astara/Core/Engine/AstrologyEngine.swift` vd. — `@DependencyClient` default closure fix'leri
-- `Astara/Core/Services/WeeklyGuidanceService.swift` — Week360, ritual prompt, time travel, score üretimi
-- `Astara/Core/Services/AskAstaraService.swift` — Ask Astara cevap üretimi (v1)
-- `Astara/Features/Home/HomeFeature.swift` — Engagement + Week360/Ask/TimeTravel state/action akışları
+- `Astara/Core/Services/GeminiService.swift` — Ortak Gemini client (key validation + cache + parse)
+- `Astara/Core/Services/ChartInterpretationService.swift` — AI natal chart reading (premium)
+- `Astara/Core/Services/WeeklyGuidanceService.swift` — Week360 + ritual/time-travel AI-mode (template fallback)
+- `Astara/Core/Services/AskAstaraService.swift` — Gemini-delegated, locale-aware, SHA256 cache key
+- `Astara/Core/Utilities/PromptSanitizer.swift` — Prompt injection guardrails (wiki Merkur-Prompt-Strategy)
+- `Astara/Core/Services/CacheService.swift` — `aiResponse` + `chartInterpretation` policies
+- `Astara/Features/Chart/AIInterpretationView.swift` — Gerçek Gemini chart yorumu (stub kaldırıldı)
+- `Astara/Features/Home/HomeFeature.swift` — Engagement + Week360/Ask/TimeTravel state/action akışları (locale propagation)
 - `Astara/Features/Home/HomeView.swift` — Yeni Home kartları + Ask/TimeTravel sheet UI
+- `Astara/Features/Profile/ProfileFeature.swift` — Subscription check/purchase/restore akışı
+- `Astara/Core/Services/SubscriptionService.swift` — StoreKit 2 product/purchase/restore servis katmanı
 - `Astara/Core/Models/User.swift` — askDateKey/askCountToday/journalCount persistence alanları
+- `codemagic.yaml` — TestFlight, build/test ve SwiftLint pipeline tanımları; Gemini key sed injection (Nisan 2026)
 - `project.yml` — XcodeGen build config
 ---
 

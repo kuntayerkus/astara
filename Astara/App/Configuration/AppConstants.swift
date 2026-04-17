@@ -6,6 +6,11 @@ enum AppConstants {
     static let appName = "Astara"
     static let tagline = "Ad astra per aspera"
 
+    /// App Group identifier shared between the host app and the widget extension.
+    /// Both targets must have `com.apple.security.application-groups` capability
+    /// enabled with this identifier in their entitlements.
+    static let appGroup = "group.com.getastara.app"
+
     // MARK: - Cache TTLs (seconds)
     enum CacheTTL {
         static let dailyHoroscope: TimeInterval = 6 * 3600       // 6 hours
@@ -16,6 +21,9 @@ enum AppConstants {
         static let geoSearch: TimeInterval = 24 * 3600           // 24 hours
         static let timezone: TimeInterval = 7 * 86400            // 7 days
         static let blogArticles: TimeInterval = 3 * 86400        // 3 days
+        static let aiResponse: TimeInterval = 6 * 3600           // 6 hours (Ask Astara / time travel)
+        static let chartInterpretation: TimeInterval = .infinity // Chart never changes
+        static let synastry: TimeInterval = .infinity            // Synastry invalidated manually when birth data changes
     }
 
     // MARK: - Rate Limits

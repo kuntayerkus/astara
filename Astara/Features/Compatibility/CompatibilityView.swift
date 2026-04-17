@@ -28,6 +28,10 @@ struct CompatibilityView: View {
                             resultCard(result)
                                 .transition(.opacity.combined(with: .scale(scale: 0.97)))
                         }
+
+                        // Real partner synastry section
+                        PartnerListView(store: store)
+                            .padding(.top, AstaraSpacing.md)
                     }
                     .padding(.bottom, AstaraSpacing.xxxl)
                     .animation(.spring(response: 0.5, dampingFraction: 0.65), value: store.result)

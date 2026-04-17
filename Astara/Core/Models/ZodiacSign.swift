@@ -88,6 +88,36 @@ enum ZodiacSign: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
+// MARK: - Approximate Sign From Date
+
+extension ZodiacSign {
+    /// Rough tropical sign lookup from a gregorian date. Ignores year and
+    /// timezone — intended **only** for sign-only fallback scoring when no
+    /// full chart is available (e.g. partner whose birth time is unknown).
+    /// For authoritative astrology always use the VPS-computed chart.
+    static func forDate(_ date: Date) -> ZodiacSign {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC") ?? .current
+        let comps = cal.dateComponents([.month, .day], from: date)
+        let m = comps.month ?? 1
+        let d = comps.day ?? 1
+        switch (m, d) {
+        case (3, 21...), (4, ...19): return .aries
+        case (4, 20...), (5, ...20): return .taurus
+        case (5, 21...), (6, ...20): return .gemini
+        case (6, 21...), (7, ...22): return .cancer
+        case (7, 23...), (8, ...22): return .leo
+        case (8, 23...), (9, ...22): return .virgo
+        case (9, 23...), (10, ...22): return .libra
+        case (10, 23...), (11, ...21): return .scorpio
+        case (11, 22...), (12, ...21): return .sagittarius
+        case (12, 22...), (1, ...19): return .capricorn
+        case (1, 20...), (2, ...18): return .aquarius
+        default: return .pisces
+        }
+    }
+}
+
 // MARK: - Element
 
 enum Element: String, Codable, CaseIterable, Sendable {

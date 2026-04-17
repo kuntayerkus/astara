@@ -72,8 +72,10 @@ struct AppFeature {
             case .userChartLoaded(let chart):
                 state.home.userChart = chart
                 state.home.chart = ChartFeature.State(chart: chart)
+                state.home.compatibility.userChart = chart
                 if let sunSign = chart.sunSign {
                     state.home.userSunSign = sunSign
+                    state.home.compatibility.sign1 = sunSign
                 }
                 return .none
 
@@ -102,8 +104,10 @@ struct AppFeature {
                 if let chart = state.onboarding.chart {
                     state.home.userChart = chart
                     state.home.chart = ChartFeature.State(chart: chart)
+                    state.home.compatibility.userChart = chart
                     if let sunSign = chart.sunSign {
                         state.home.userSunSign = sunSign
+                        state.home.compatibility.sign1 = sunSign
                     }
                 }
                 state.destination = .home

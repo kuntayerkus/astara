@@ -1,5 +1,8 @@
 import Foundation
 import ComposableArchitecture
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 @Reducer
 struct HomeFeature {
@@ -83,6 +86,7 @@ struct HomeFeature {
         case planetPositionsLoaded([Planet])
         case loadEngagement
         case engagementLoaded(UserEngagementState, Bool)
+        case userIdLoaded(UUID)
         case completeTask(String)
         case setMood(Int)
         case setMoodNote(String)
@@ -190,6 +194,9 @@ struct HomeFeature {
                 // Sync user's sign into child features
                 state.daily.selectedSign = state.userSunSign
                 state.compatibility.sign1 = state.userSunSign
+                // Refresh the home-screen widget snapshot with the freshly
+                // loaded daily context. Cheap file write + WidgetKit reload.
+                persistWidgetSnapshot(from: state)
                 if shouldPersistReadTask {
                     return .merge(
                         .run { [engagement = currentEngagement(from: state)] _ in
@@ -226,9 +233,14 @@ struct HomeFeature {
             case .loadEngagement:
                 return .run { send in
                     if let user = await persistenceClient.loadUser() {
+                        await send(.userIdLoaded(user.id))
                         await send(.engagementLoaded(user.engagement, user.isPremium))
                     }
                 }
+
+            case .userIdLoaded(let id):
+                state.compatibility.userId = id
+                return .none
 
             case .engagementLoaded(var engagement, let isPremium):
                 let today = dayKey(for: Date())
@@ -266,6 +278,9 @@ struct HomeFeature {
                     engagement.askCountToday = 0
                 }
                 state.askQuotaRemaining = max(0, state.isPremium ? 99 : 1 - engagement.askCountToday)
+                // Premium flag just changed — re-emit the widget snapshot so
+                // the medium/large tiers flip between paywall and real content.
+                persistWidgetSnapshot(from: state)
                 return .run { [engagement] _ in
                     await persistenceClient.updateEngagement(engagement)
                 }
@@ -318,20 +333,25 @@ struct HomeFeature {
             case .loadWeek360Data:
                 let sign = state.userSunSign
                 let retros = state.activeRetrogrades
+                let locale = AppLocale.current.rawValue
                 return .run { send in
                     let transits = await weeklyGuidanceService.buildWeekTransits(sign, retros)
-                    let ritual = await weeklyGuidanceService.ritualPrompt(retros)
+                    let ritual = await weeklyGuidanceService.ritualPrompt(retros, locale)
+
+                    // Real partners stored via Feature 3 synastry flow. Falls
+                    // back to an empty list — Home card renders a "Add your
+                    // first partner" hint when no partners exist.
+                    let partners = await persistenceClient.listPartners()
                     var friends: [FriendDynamic] = []
-                    // TODO(v2): Replace mock seeds with real friends from Supabase social graph
-                    let friendSeeds: [(String, ZodiacSign)] = [("Deniz", .scorpio), ("Ece", .taurus)]
-                    for seed in friendSeeds {
-                        let cmp = await compatibilityEngine.calculate(sign, seed.1)
+                    for partner in partners.prefix(3) {
+                        let partnerSign = partner.approximateSunSign
+                        let cmp = await compatibilityEngine.calculate(sign, partnerSign)
                         friends.append(
                             FriendDynamic(
-                                friendName: seed.0,
-                                friendSign: seed.1,
+                                friendName: partner.name,
+                                friendSign: partnerSign,
                                 compatibility: cmp,
-                                insight: "\(seed.0) ile bugün iletişim tonu her şeyi belirler.",
+                                insight: "\(partner.name) ile bugün iletişim tonu sonucu belirler.",
                                 suggestedAction: "Kısa ve net mesaj at."
                             )
                         )
@@ -346,7 +366,7 @@ struct HomeFeature {
                 guard let next = transits.first else { return .none }
                 return .run { _ in
                     await notificationService.scheduleTransitAlert(
-                        String(localized: "transit_alert_title"),
+                        "Bugun transit etkisi",
                         "\(next.planet.turkishName): \(next.description)",
                         10
                     )
@@ -376,18 +396,23 @@ struct HomeFeature {
                 return .none
 
             case .submitAskQuestion:
-                let question = state.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmed = state.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines)
+                // First-pass sanitize at the call site so the empty-check below
+                // catches questions that were *only* injection tokens. The service
+                // re-sanitizes (defense in depth) before hitting the prompt builder.
+                let question = PromptSanitizer.sanitizeUserInput(trimmed)
                 guard question.isEmpty == false else { return .none }
                 guard state.isPremium || state.askQuotaRemaining > 0 else {
-                    state.askResponse = String(localized: "ask_astara_quota_exceeded")
+                    state.askResponse = "Gunluk ucretsiz soru hakkin bitti. Premium ile limitsiz devam edebilirsin."
                     return .none
                 }
                 let sign = state.userSunSign
                 let horoscope = state.dailyHoroscope
+                let locale = AppLocale.current.rawValue
                 state.askResponse = nil
                 state.isAskingAstara = true
                 return .run { send in
-                    let answer = await askAstaraService.ask(question, sign, horoscope)
+                    let answer = await askAstaraService.ask(question, sign, horoscope, locale)
                     await send(.askAnswered(answer))
                 }
 
@@ -413,8 +438,9 @@ struct HomeFeature {
             case .loadTimeTravelInsight:
                 let date = state.timeTravelDate
                 let sign = state.userSunSign
+                let locale = AppLocale.current.rawValue
                 return .run { send in
-                    let insight = await weeklyGuidanceService.timeTravelInsight(date, sign)
+                    let insight = await weeklyGuidanceService.timeTravelInsight(date, sign, locale)
                     await send(.timeTravelInsightLoaded(insight))
                 }
 
@@ -479,10 +505,60 @@ private func currentEngagement(from state: HomeFeature.State) -> UserEngagementS
 
 private func dailyShareText(from state: HomeFeature.State) -> String {
     let energy = state.dailyHoroscope?.energy ?? 0
-    return String(
-        format: String(localized: "daily_share_text"),
-        "\(energy)",
-        "\(state.streakCount)",
-        state.astaraScore.focus
+    return "Astara gunluk enerji: %\(energy) | Streak: \(state.streakCount) gun | Focus: \(state.astaraScore.focus)"
+}
+
+// MARK: - Widget snapshot bridge
+
+/// Builds a ``WidgetSnapshot`` from the current Home state and writes it to the
+/// App Group-backed store, then asks WidgetKit to refresh timelines. Silent
+/// no-op if there's no daily horoscope yet (e.g. before first load).
+private func persistWidgetSnapshot(from state: HomeFeature.State) {
+    guard let horoscope = state.dailyHoroscope else { return }
+
+    let retroBanner = state.activeRetrogrades
+        .first
+        .map { "\($0.planet.turkishName) retrosu aktif" }
+
+    let snapshot = WidgetSnapshot(
+        sunSignRawValue: state.userSunSign.rawValue,
+        energy: horoscope.energy,
+        theme: horoscope.theme,
+        luckyColorHex: luckyColorHex(for: horoscope.luckyColor, sign: state.userSunSign),
+        tip: horoscope.tip,
+        retroBanner: retroBanner,
+        isPremium: state.isPremium,
+        localePrefix: AppLocale.current.rawValue,
+        updatedAt: Date()
     )
+
+    WidgetSnapshotStore.write(snapshot)
+    #if canImport(WidgetKit)
+    WidgetCenter.shared.reloadAllTimelines()
+    #endif
+}
+
+/// Best-effort Turkish color-name → hex mapping. Falls back to Astara gold so
+/// the widget always has *something* to render as the lucky dot.
+private func luckyColorHex(for name: String?, sign: ZodiacSign) -> String {
+    guard let name = name?.lowercased().trimmingCharacters(in: .whitespaces), !name.isEmpty else {
+        return "#C9A96E"
+    }
+    let table: [String: String] = [
+        "mor": "#8B5CF6", "purple": "#8B5CF6",
+        "kirmizi": "#EF4444", "kırmızı": "#EF4444", "red": "#EF4444",
+        "mavi": "#38BDF8", "blue": "#38BDF8",
+        "yesil": "#16A34A", "yeşil": "#16A34A", "green": "#16A34A",
+        "sari": "#FACC15", "sarı": "#FACC15", "yellow": "#FACC15",
+        "turuncu": "#FB923C", "orange": "#FB923C",
+        "pembe": "#F472B6", "pink": "#F472B6",
+        "beyaz": "#F8FAFC", "white": "#F8FAFC",
+        "siyah": "#1F2937", "black": "#1F2937",
+        "altin": "#C9A96E", "altın": "#C9A96E", "gold": "#C9A96E",
+        "gumus": "#C8D4E8", "gümüş": "#C8D4E8", "silver": "#C8D4E8",
+        "lacivert": "#1E3A8A", "navy": "#1E3A8A",
+        "bordo": "#9F1239", "maroon": "#9F1239",
+        "turkuaz": "#14B8A6", "teal": "#14B8A6"
+    ]
+    return table[name] ?? "#C9A96E"
 }

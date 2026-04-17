@@ -35,6 +35,10 @@ final class User {
     var askCountToday: Int
     var journalCount: Int
 
+    // v2 — Supabase Friend System
+    var handle: String?
+    var supabaseUserId: UUID?
+
     init(
         id: UUID = UUID(),
         name: String = "",
@@ -58,7 +62,9 @@ final class User {
         lastShareDate: Date? = nil,
         askDateKey: String = "",
         askCountToday: Int = 0,
-        journalCount: Int = 0
+        journalCount: Int = 0,
+        handle: String? = nil,
+        supabaseUserId: UUID? = nil
     ) {
         self.id = id
         self.name = name
@@ -83,5 +89,7 @@ final class User {
         self.askDateKey = askDateKey
         self.askCountToday = askCountToday
         self.journalCount = journalCount
+        self.handle = handle
+        self.supabaseUserId = supabaseUserId
     }
 }

@@ -1,44 +1,97 @@
 import Foundation
+import CryptoKit
 import ComposableArchitecture
 
+// MARK: - Service
+
+/// Ask Astara — the user-facing "ask me anything" chat.
+///
+/// This service owns prompt construction (locale-aware), delegates the actual
+/// LLM call to ``GeminiService``, and falls back to a deterministic mock
+/// response when the key is missing or the network fails. Caching is keyed on
+/// sign + question hash + today so re-asking the same question on the same day
+/// doesn't burn API budget.
 @DependencyClient
 struct AskAstaraService {
-    var ask: @Sendable (_ question: String, _ sign: ZodiacSign, _ horoscope: DailyHoroscope?) async -> String = { _, _, _ in "" }
+    var ask: @Sendable (
+        _ question: String,
+        _ sign: ZodiacSign,
+        _ horoscope: DailyHoroscope?,
+        _ locale: String
+    ) async -> String = { _, _, _, _ in "" }
 }
 
 extension AskAstaraService: DependencyKey {
-    static let liveValue = AskAstaraService(
-        ask: { question, sign, horoscope in
-            let apiKey = APIEnvironment.current.geminiAPIKey
-            guard !apiKey.isEmpty, apiKey != "REPLACE_WITH_REAL_GEMINI_KEY" else {
-                return Self.mockResponse(question: question, sign: sign, horoscope: horoscope)
-            }
+    static let liveValue: AskAstaraService = {
+        @Dependency(\.geminiService) var geminiService
 
-            let prompt = Self.buildPrompt(question: question, sign: sign, horoscope: horoscope)
+        return AskAstaraService(
+            ask: { question, sign, horoscope, locale in
+                let sanitized = PromptSanitizer.sanitizeUserInput(question)
+                guard !sanitized.isEmpty, PromptSanitizer.validateSign(sign) else {
+                    return Self.mockResponse(question: question, sign: sign, horoscope: horoscope, locale: locale)
+                }
 
-            do {
-                return try await Self.callGemini(prompt: prompt, apiKey: apiKey)
-            } catch {
-                return Self.mockResponse(question: question, sign: sign, horoscope: horoscope)
+                let prompt = Self.buildPrompt(
+                    question: sanitized,
+                    sign: sign,
+                    horoscope: horoscope,
+                    locale: locale
+                )
+
+                let cacheKey = Self.cacheKey(sign: sign, question: sanitized, locale: locale)
+                let config = GeminiConfig(
+                    maxOutputTokens: 200,
+                    temperature: 0.8,
+                    cacheKey: cacheKey,
+                    cachePolicy: .aiResponse,
+                    locale: locale
+                )
+
+                do {
+                    return try await geminiService.generate(prompt, config)
+                } catch {
+                    return Self.mockResponse(question: question, sign: sign, horoscope: horoscope, locale: locale)
+                }
             }
-        }
-    )
+        )
+    }()
 
     static let previewValue = AskAstaraService(
-        ask: { _, _, _ in "Preview cevabı." }
+        ask: { _, _, _, _ in "Preview cevabı." }
     )
 }
 
-// MARK: - Private Helpers
+// MARK: - Prompt Builder
 
 private extension AskAstaraService {
 
-    static func buildPrompt(question: String, sign: ZodiacSign, horoscope: DailyHoroscope?) -> String {
+    static func buildPrompt(
+        question: String,
+        sign: ZodiacSign,
+        horoscope: DailyHoroscope?,
+        locale: String
+    ) -> String {
         let energy = horoscope?.energy ?? 50
         let theme = horoscope?.theme ?? "denge"
         let tip = horoscope?.tip ?? ""
 
-        return """
+        switch locale.prefix(2) {
+        case "en":
+            return englishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip)
+        default:
+            return turkishPrompt(question: question, sign: sign, energy: energy, theme: theme, tip: tip)
+        }
+    }
+
+    static func turkishPrompt(
+        question: String,
+        sign: ZodiacSign,
+        energy: Int,
+        theme: String,
+        tip: String
+    ) -> String {
+        """
         Sen Astara adlı bir astroloji uygulamasının yapay zeka asistanısın. \
         Samimi, biraz ironik ama kırıcı olmayan bir tonda cevap ver — sanki iyi bir arkadaşın astroloji biliyor.
 
@@ -56,53 +109,80 @@ private extension AskAstaraService {
         """
     }
 
-    static func callGemini(prompt: String, apiKey: String) async throws -> String {
-        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=\(apiKey)"
-        guard let url = URL(string: urlString) else {
-            throw URLError(.badURL)
-        }
+    static func englishPrompt(
+        question: String,
+        sign: ZodiacSign,
+        energy: Int,
+        theme: String,
+        tip: String
+    ) -> String {
+        """
+        You are the AI assistant of an astrology app called Astara. \
+        Reply in a warm, slightly witty tone — like a friend who happens to know astrology.
 
-        let body: [String: Any] = [
-            "contents": [
-                ["parts": [["text": prompt]]]
-            ],
-            "generationConfig": [
-                "maxOutputTokens": 200,
-                "temperature": 0.8
-            ]
-        ]
+        User context:
+        - Sun sign: \(sign.rawValue.capitalized)
+        - Today's energy: \(energy)%
+        - Today's theme: \(theme)
+        - Today's tip: \(tip)
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Astara-iOS/1.0", forHTTPHeaderField: "User-Agent")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        request.timeoutInterval = 15
+        User question: \(question)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        In English, 3 sentences max, direct and personal. \
+        Blend astrology insight with a concrete suggestion. \
+        Never say "as Astara" or "as an AI".
+        """
+    }
+}
 
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200..<300).contains(httpResponse.statusCode) else {
-            throw URLError(.badServerResponse)
-        }
+// MARK: - Cache Key
 
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let candidates = json["candidates"] as? [[String: Any]],
-              let first = candidates.first,
-              let content = first["content"] as? [String: Any],
-              let parts = content["parts"] as? [[String: Any]],
-              let text = parts.first?["text"] as? String,
-              !text.isEmpty else {
-            throw URLError(.cannotParseResponse)
-        }
+private extension AskAstaraService {
 
-        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    /// Stable per-day cache key so the same question on the same day returns
+    /// the cached answer instead of burning another Gemini call.
+    static func cacheKey(sign: ZodiacSign, question: String, locale: String) -> String {
+        let todayKey = Self.todayKey()
+        let digest = SHA256.hash(data: Data(question.utf8))
+        let hex = digest.prefix(8).map { String(format: "%02x", $0) }.joined()
+        return "ask_\(sign.rawValue)_\(locale.prefix(2))_\(todayKey)_\(hex)"
     }
 
-    static func mockResponse(question: String, sign: ZodiacSign, horoscope: DailyHoroscope?) -> String {
+    static func todayKey() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+}
+
+// MARK: - Mock Fallback
+
+private extension AskAstaraService {
+
+    static func mockResponse(
+        question: String,
+        sign: ZodiacSign,
+        horoscope: DailyHoroscope?,
+        locale: String
+    ) -> String {
         let energy = horoscope?.energy ?? 50
         let theme = horoscope?.theme ?? "denge"
         let q = question.lowercased()
+
+        if locale.hasPrefix("en") {
+            if q.contains("love") || q.contains("relationship") || q.contains("date") {
+                return "For \(sign.rawValue.capitalized), the relational tempo is high today. Holding the \(theme) thread keeps communication clean."
+            }
+            if q.contains("work") || q.contains("career") || q.contains("money") {
+                return "Work-wise: clarity first, speed after — energy is at \(energy)%. Pick one critical task and land it."
+            }
+            if q.contains("today") || q.contains("should i") {
+                return "Best move for \(sign.rawValue.capitalized) today: clear scattered loose ends and make one decisive call."
+            }
+            return "Good question. Your \(sign.rawValue.capitalized) energy is anchored in \(theme) today — focus on what matters, not what's loud."
+        }
 
         if q.contains("aşk") || q.contains("ilişki") || q.contains("sev") {
             return "\(sign.turkishName) için bugün ilişkilerde tempo yüksek. \(theme) temasını korursan iletişim daha temiz akar."
@@ -116,6 +196,8 @@ private extension AskAstaraService {
         return "Soru güzel. \(sign.turkishName) enerjinde bugün ana tema \(theme). Fazla değil, doğru olana odaklan."
     }
 }
+
+// MARK: - Dependency Registration
 
 extension DependencyValues {
     var askAstaraService: AskAstaraService {

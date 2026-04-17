@@ -47,6 +47,24 @@ enum APIEnvironment {
         Bundle.main.infoDictionary?["GEMINI_API_KEY"] as? String ?? ""
     }
 
+    var supabaseURL: URL? {
+        guard let raw = Bundle.main.infoDictionary?["SUPABASE_URL"] as? String,
+              !raw.contains("REPLACE_WITH") && !raw.contains("YOUR_PROJECT_REF"),
+              let url = URL(string: raw) else {
+            return nil
+        }
+        return url
+    }
+
+    var supabaseAnonKey: String? {
+        guard let key = Bundle.main.infoDictionary?["SUPABASE_ANON_KEY"] as? String,
+              !key.isEmpty,
+              !key.contains("REPLACE_WITH") && !key.contains("YOUR_SUPABASE") else {
+            return nil
+        }
+        return key
+    }
+
     static var current: APIEnvironment {
         #if DEBUG
         return .staging

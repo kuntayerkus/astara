@@ -48,8 +48,13 @@ workflows:
           cp Astara/App/Configuration/Debug.xcconfig.example \
              Astara/App/Configuration/Debug.xcconfig
           # Inject real secrets from Codemagic environment group (astara_credentials)
-          sed -e "s/REPLACE_WITH_REAL_KEY/${VPS_API_KEY}/" \
-              -e "s/REPLACE_WITH_REAL_USERNAME/${GEONAMES_USERNAME}/" \
+          # NOTE: astara_credentials must define VPS_API_KEY, GEONAMES_USERNAME,
+          # GEMINI_API_KEY, SUPABASE_URL, SUPABASE_ANON_KEY
+          sed -e "s|REPLACE_WITH_REAL_KEY|${VPS_API_KEY}|" \
+              -e "s|REPLACE_WITH_REAL_USERNAME|${GEONAMES_USERNAME}|" \
+              -e "s|REPLACE_WITH_REAL_GEMINI_KEY|${GEMINI_API_KEY}|" \
+              -e "s|REPLACE_WITH_REAL_SUPABASE_URL|${SUPABASE_URL}|" \
+              -e "s|REPLACE_WITH_REAL_SUPABASE_ANON_KEY|${SUPABASE_ANON_KEY}|" \
               Astara/App/Configuration/Release.xcconfig.example \
               > Astara/App/Configuration/Release.xcconfig
 
@@ -73,7 +78,7 @@ workflows:
           keychain initialize
           keychain add-certificates
 
-          # Profili base64 env var'dan decode et ve kur
+          # --- Host app provisioning profile ---
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode \
             > /tmp/profile.mobileprovision
@@ -81,10 +86,31 @@ workflows:
             > /tmp/decoded_profile.plist
           UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
             /tmp/decoded_profile.plist)
-          echo "Profile UUID: $UUID"
+          echo "App profile UUID: $UUID"
           cp /tmp/profile.mobileprovision \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
           echo "PROFILE_UUID=$UUID" >> $CM_ENV
+
+          # --- Widget extension provisioning profile ---
+          # astara_credentials group must define WIDGET_PROVISIONING_PROFILE_BASE64
+          # (base64-encoded com.getastara.app.widget distribution profile).
+          if [ -n "$WIDGET_PROVISIONING_PROFILE_BASE64" ]; then
+            echo "$WIDGET_PROVISIONING_PROFILE_BASE64" | base64 --decode \
+              > /tmp/widget_profile.mobileprovision
+            security cms -D -i /tmp/widget_profile.mobileprovision \
+              > /tmp/decoded_widget_profile.plist
+            WIDGET_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
+              /tmp/decoded_widget_profile.plist)
+            echo "Widget profile UUID: $WIDGET_UUID"
+            cp /tmp/widget_profile.mobileprovision \
+              "$HOME/Library/MobileDevice/Provisioning Profiles/$WIDGET_UUID.mobileprovision"
+            echo "WIDGET_PROFILE_UUID=$WIDGET_UUID" >> $CM_ENV
+          else
+            echo "ERROR: WIDGET_PROVISIONING_PROFILE_BASE64 is not set."
+            echo "Add the widget extension's App Store provisioning profile to"
+            echo "the astara_credentials group as a base64-encoded env var."
+            exit 1
+          fi
 
       - name: Set build version
         script: |
@@ -135,6 +161,8 @@ workflows:
             <dict>
               <key>com.getastara.app</key>
               <string>$PROFILE_UUID</string>
+              <key>com.getastara.app.widget</key>
+              <string>$WIDGET_PROFILE_UUID</string>
             </dict>
           </dict>
           </plist>

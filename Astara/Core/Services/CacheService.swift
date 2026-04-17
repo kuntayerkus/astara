@@ -12,6 +12,9 @@ enum CachePolicy: String, Codable {
     case geoSearch
     case timezone
     case blogArticles
+    case aiResponse           // Ask Astara, time travel, ritual prompts
+    case chartInterpretation  // AI chart readings (never expires per-user)
+    case synastry             // Synastry comparison between user and a partner
 
     var ttl: TimeInterval {
         switch self {
@@ -23,6 +26,9 @@ enum CachePolicy: String, Codable {
         case .geoSearch: AppConstants.CacheTTL.geoSearch
         case .timezone: AppConstants.CacheTTL.timezone
         case .blogArticles: AppConstants.CacheTTL.blogArticles
+        case .aiResponse: AppConstants.CacheTTL.aiResponse
+        case .chartInterpretation: AppConstants.CacheTTL.chartInterpretation
+        case .synastry: AppConstants.CacheTTL.synastry
         }
     }
 }
@@ -48,6 +54,17 @@ struct CacheService {
 extension CacheService: DependencyKey {
     static let liveValue: CacheService = {
         let cacheDirectory: URL = {
+            // Prefer the App Group container so the widget extension can read
+            // cached daily horoscope / energy snapshots without hitting the
+            // network. Fall back to the app sandbox if the App Group isn't
+            // provisioned yet (e.g. local dev builds without the entitlement).
+            if let appGroupURL = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: AppConstants.appGroup
+            ) {
+                let cacheDir = appGroupURL.appendingPathComponent("AstaraCache", isDirectory: true)
+                try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
+                return cacheDir
+            }
             let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
             let cacheDir = paths[0].appendingPathComponent("AstaraCache", isDirectory: true)
             try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
