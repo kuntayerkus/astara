@@ -75,7 +75,6 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
         INFOPLIST_KEY_UIStatusBarStyle: UIStatusBarStyleLightContent
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Astara needs your location to find your birth city."
-        INFOPLIST_KEY_NSCameraUsageDescription: "Astara uses your camera to scan QR codes and add friends."
       configs:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
@@ -90,6 +89,8 @@ targets:
       properties:
         ITSAppUsesNonExemptEncryption: false
         CFBundleIconName: AppIcon
+        NSCameraUsageDescription: "Astara uses your camera to scan QR codes and add friends."
+        NSLocationWhenInUseUsageDescription: "Astara needs your location to find your birth city."
         API_BASE_URL: $(API_BASE_URL)
         VPS_URL: $(VPS_URL)
         VPS_API_KEY: $(VPS_API_KEY)
