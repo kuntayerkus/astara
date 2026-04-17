@@ -16,10 +16,10 @@ struct QRScannerView: UIViewControllerRepresentable {
 
     /// Called once, on the main thread, with the first decoded URL that
     /// resolves to an `astara://` deep link.
-    var onScan: (URL) -> Void
+    var onScan: @Sendable (URL) -> Void
 
     /// Called if the user rejects camera access or the hardware is unavailable.
-    var onUnavailable: (() -> Void)? = nil
+    var onUnavailable: (@Sendable () -> Void)? = nil
 
     func makeCoordinator() -> Coordinator {
         Coordinator(onScan: onScan, onUnavailable: onUnavailable)
@@ -34,11 +34,11 @@ struct QRScannerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: QRScannerViewController, context: Context) {}
 
     final class Coordinator: NSObject, QRScannerDelegate {
-        let onScan: (URL) -> Void
-        let onUnavailable: (() -> Void)?
+        let onScan: @Sendable (URL) -> Void
+        let onUnavailable: (@Sendable () -> Void)?
         private var didFire = false
 
-        init(onScan: @escaping (URL) -> Void, onUnavailable: (() -> Void)?) {
+        init(onScan: @escaping @Sendable (URL) -> Void, onUnavailable: (@Sendable () -> Void)?) {
             self.onScan = onScan
             self.onUnavailable = onUnavailable
         }
@@ -46,11 +46,11 @@ struct QRScannerView: UIViewControllerRepresentable {
         func scannerDidRead(_ value: String) {
             guard !didFire, let url = URL(string: value), url.scheme?.lowercased() == "astara" else { return }
             didFire = true
-            DispatchQueue.main.async { [onScan] in onScan(url) }
+            onScan(url)
         }
 
         func scannerUnavailable() {
-            DispatchQueue.main.async { [onUnavailable] in onUnavailable?() }
+            onUnavailable?()
         }
     }
 }
