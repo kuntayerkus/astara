@@ -49,6 +49,45 @@ struct CornerOrnament: View {
     }
 }
 
+/// Ornamental divider with a centred text label: ── ✦ PLANETS ✦ ──
+struct OrnamentalDividerTitle: View {
+    var title: String
+    var color: Color = AstaraColors.gold
+    var opacity: Double = 0.30
+
+    var body: some View {
+        HStack(spacing: 8) {
+            line
+            HStack(spacing: 4) {
+                Text("✦")
+                    .font(.system(size: 8))
+                    .foregroundStyle(color.opacity(opacity * 1.4))
+                Text(title.uppercased())
+                    .font(AstaraTypography.sectionMark)
+                    .foregroundStyle(color.opacity(opacity * 1.4))
+                    .tracking(2)
+                Text("✦")
+                    .font(.system(size: 8))
+                    .foregroundStyle(color.opacity(opacity * 1.4))
+            }
+            line
+        }
+        .padding(.horizontal, AstaraSpacing.xl)
+    }
+
+    private var line: some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    colors: [color.opacity(0), color.opacity(opacity), color.opacity(0)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(height: 0.5)
+    }
+}
+
 /// Inline chapter section label: "✦ I · TODAY" style header.
 struct ChapterLabel: View {
     var number: String

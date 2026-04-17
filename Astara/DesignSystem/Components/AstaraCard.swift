@@ -30,7 +30,7 @@ struct AstaraCardModifier: ViewModifier {
                 ._onButtonGesture { pressing in
                     if tappable {
                         isPressed = pressing
-                        if pressing { Haptics.impact(.rigid) } // Brutal/crisp tap
+                        if pressing { Haptics.heavy() }
                     }
                 } perform: {}
         } else {
@@ -45,7 +45,7 @@ struct AstaraCardModifier: ViewModifier {
                 ._onButtonGesture { pressing in
                     if tappable {
                         isPressed = pressing
-                        if pressing { Haptics.impact(.rigid) }
+                        if pressing { Haptics.heavy() }
                     }
                 } perform: {}
         }

@@ -194,7 +194,7 @@ extension AstaraSupabase: DependencyKey {
         let env = APIEnvironment.current
         guard let url = env.supabaseURL, let key = env.supabaseAnonKey else {
             // Return the default (all-throwing) instance — isConfigured == false.
-            return AstaraSupabase(isConfigured: { false })
+            return AstaraSupabase()
         }
 
         #if canImport(Supabase)
@@ -442,7 +442,7 @@ extension DependencyValues {
 // MARK: - Date helpers (date-only, UTC)
 
 extension ISO8601DateFormatter {
-    static let astaraDateOnly: ISO8601DateFormatter = {
+    nonisolated(unsafe) static let astaraDateOnly: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withFullDate]
         f.timeZone = TimeZone(identifier: "UTC")

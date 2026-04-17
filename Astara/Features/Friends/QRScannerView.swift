@@ -121,7 +121,7 @@ final class QRScannerViewController: UIViewController {
     }
 }
 
-extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
+extension QRScannerViewController: @preconcurrency AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(
         _ output: AVCaptureMetadataOutput,
         didOutput metadataObjects: [AVMetadataObject],

@@ -935,7 +935,7 @@ struct HomeView: View {
         let minDate = Calendar.current.date(byAdding: .day, value: -30, to: now) ?? now
         let maxDate = Calendar.current.date(byAdding: .day, value: 30, to: now) ?? now
 
-        VStack(alignment: .leading, spacing: AstaraSpacing.md) {
+        return VStack(alignment: .leading, spacing: AstaraSpacing.md) {
             Text(String(localized: "time_travel_btn"))
                 .font(AstaraTypography.titleLarge)
                 .foregroundStyle(AstaraColors.textPrimary)
