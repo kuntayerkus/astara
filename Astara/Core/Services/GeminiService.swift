@@ -66,7 +66,9 @@ extension GeminiService: DependencyKey {
         return GeminiService(
             generate: { prompt, config in
                 let apiKey = APIEnvironment.current.geminiAPIKey
-                guard !apiKey.isEmpty, apiKey != "REPLACE_WITH_REAL_GEMINI_KEY" else {
+                guard !apiKey.isEmpty,
+                      !apiKey.hasPrefix("YOUR_"),
+                      !apiKey.contains("REPLACE_WITH") else {
                     throw GeminiError.keyMissing
                 }
 
@@ -107,7 +109,7 @@ private extension GeminiService {
         apiKey: String,
         config: GeminiConfig
     ) async throws -> String {
-        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=\(apiKey)"
+        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=\(apiKey)"
         guard let url = URL(string: urlString) else {
             throw GeminiError.badURL
         }
