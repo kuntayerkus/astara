@@ -409,7 +409,7 @@ struct HomeFeature {
                 let question = PromptSanitizer.sanitizeUserInput(trimmed)
                 guard question.isEmpty == false else { return .none }
                 guard state.isPremium || state.askQuotaRemaining > 0 else {
-                    state.askResponse = "Gunluk ucretsiz soru hakkin bitti. Premium ile limitsiz devam edebilirsin."
+                    state.askResponse = String(localized: "ask_astara_quota_exceeded")
                     return .none
                 }
                 let sign = state.userSunSign

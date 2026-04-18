@@ -137,16 +137,18 @@ struct HomeView: View {
             set: { store.send(.openAskAstara($0)) }
         )) {
             askAstaraSheet
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+                .presentationBackground(AstaraColors.backgroundDeep)
         }
         .sheet(isPresented: Binding(
             get: { store.showTimeTravel },
             set: { store.send(.openTimeTravel($0)) }
         )) {
             timeTravelSheet
-                .presentationDetents([.medium])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+                .presentationBackground(AstaraColors.backgroundDeep)
         }
     }
 
@@ -860,84 +862,298 @@ struct HomeView: View {
     private var askAstaraSheet: some View {
         ZStack {
             GradientBackground(ambient: .home)
-            StarfieldView()
+            StarfieldView(starCount: 40).opacity(0.25)
 
-            VStack(spacing: AstaraSpacing.xl) {
+            if store.askQuotaRemaining == 0 && !store.isPremium {
+                askQuotaExhaustedView
+            } else {
+                askAstaraContent
+            }
+        }
+    }
+
+    private var askSheetHeader: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
                 Text(String(localized: "ask_astara"))
                     .font(AstaraTypography.displayMedium)
                     .foregroundStyle(AstaraColors.textPrimary)
-                    .padding(.top, AstaraSpacing.xl)
+                Text(String(localized: "ask_astara_subtitle"))
+                    .font(AstaraTypography.caption)
+                    .foregroundStyle(AstaraColors.textTertiary)
+                    .lineLimit(2)
+            }
+            Spacer()
+            Button {
+                store.send(.openAskAstara(false))
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(AstaraColors.textSecondary)
+                    .frame(width: 32, height: 32)
+                    .background(Color.white.opacity(0.06))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(String(localized: "close_button"))
+        }
+    }
 
-                if store.askQuotaRemaining == 0 && !store.isPremium {
-                    VStack(spacing: AstaraSpacing.lg) {
-                        OracleSphereView(isThinking: false).opacity(0.5).grayscale(0.8)
-                        Text(String(localized: "ask_quota_exhausted_title"))
-                            .font(AstaraTypography.titleMedium)
-                            .foregroundStyle(AstaraColors.textPrimary)
-                            .multilineTextAlignment(.center)
-                        Text(String(localized: "ask_quota_exhausted_body"))
-                            .font(AstaraTypography.bodySmall)
-                            .foregroundStyle(AstaraColors.textSecondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, AstaraSpacing.md)
-                        AstaraButton(title: String(localized: "go_premium"), style: .primary) {
-                            store.send(.openAskAstara(false))
-                            store.send(.profile(.setSubscriptionPresented(true)))
-                        }
-                        .padding(.horizontal, AstaraSpacing.lg)
-                    }
-                    .frame(maxWidth: .infinity)
-                    Spacer()
-                } else {
-                    Text(store.isPremium
-                         ? String(localized: "ask_quota_unlimited")
-                         : "\(String(localized: "ask_quota_remaining")): \(store.askQuotaRemaining)")
-                        .font(AstaraTypography.caption)
-                        .foregroundStyle(store.isPremium ? AstaraColors.gold : AstaraColors.textTertiary)
+    private var askQuotaPill: some View {
+        HStack(spacing: AstaraSpacing.xxs) {
+            Image(systemName: store.isPremium ? "sparkles" : "sparkle")
+                .font(.system(size: 10, weight: .medium))
+            Text(store.isPremium
+                 ? String(localized: "ask_quota_unlimited")
+                 : "\(store.askQuotaRemaining) · \(String(localized: "ask_quota_remaining"))")
+                .font(AstaraTypography.caption)
+        }
+        .foregroundStyle(store.isPremium ? AstaraColors.gold : AstaraColors.textSecondary)
+        .padding(.horizontal, AstaraSpacing.sm)
+        .padding(.vertical, 6)
+        .background(
+            Capsule().fill(
+                (store.isPremium ? AstaraColors.gold : AstaraColors.textSecondary)
+                    .opacity(0.08)
+            )
+        )
+        .overlay(
+            Capsule().stroke(
+                (store.isPremium ? AstaraColors.gold : AstaraColors.cardBorder)
+                    .opacity(0.35),
+                lineWidth: 1
+            )
+        )
+    }
 
-                    Spacer()
+    private var askAstaraContent: some View {
+        VStack(spacing: 0) {
+            askSheetHeader
+                .padding(.horizontal, AstaraSpacing.lg)
+                .padding(.top, AstaraSpacing.md)
+
+            HStack { askQuotaPill; Spacer() }
+                .padding(.horizontal, AstaraSpacing.lg)
+                .padding(.top, AstaraSpacing.sm)
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: AstaraSpacing.lg) {
                     OracleSphereView(isThinking: store.isAskingAstara)
+                        .frame(height: 180)
+                        .padding(.top, AstaraSpacing.md)
 
-                    if let response = store.askResponse {
-                        ScrollView(showsIndicators: false) {
-                            Text(response)
-                                .font(AstaraTypography.bodyMedium)
-                                .foregroundStyle(AstaraColors.textPrimary)
-                                .multilineTextAlignment(.center)
-                                .padding(AstaraSpacing.lg)
-                                .astaraCard()
-                        }
-                        .frame(maxHeight: 200)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    if store.isAskingAstara {
+                        askThinkingLabel
+                            .transition(.opacity)
+                    } else if let response = store.askResponse {
+                        askAnswerCard(response)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
                     } else {
-                        Spacer()
+                        askSuggestions
+                            .transition(.opacity)
                     }
-                    Spacer()
-
-                    VStack(spacing: AstaraSpacing.sm) {
-                        TextField(String(localized: "ask_placeholder"),
-                                  text: $store.askQuestionText.sending(\.setAskQuestionText))
-                            .textFieldStyle(.plain)
-                            .font(AstaraTypography.bodyMedium)
-                            .foregroundStyle(AstaraColors.textPrimary)
-                            .padding(AstaraSpacing.md)
-                            .background(AstaraColors.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
-                            .overlay(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
-                                .stroke(AstaraColors.cardBorder, lineWidth: 1))
-                            .disabled(store.isAskingAstara)
-                        AstaraButton(
-                            title: String(localized: "ask_button"),
-                            style: .primary,
-                            isDisabled: store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                     || store.isAskingAstara
-                        ) { store.send(.submitAskQuestion) }
-                    }
-                    .padding(.horizontal, AstaraSpacing.lg)
-                    .padding(.bottom, AstaraSpacing.lg)
                 }
+                .padding(.horizontal, AstaraSpacing.lg)
+                .padding(.bottom, AstaraSpacing.md)
+                .frame(maxWidth: .infinity)
+                .animation(.easeInOut(duration: 0.25), value: store.isAskingAstara)
+                .animation(.easeInOut(duration: 0.25), value: store.askResponse)
+            }
+            .frame(maxHeight: .infinity)
+
+            askInputBar
+                .padding(.horizontal, AstaraSpacing.lg)
+                .padding(.top, AstaraSpacing.sm)
+                .padding(.bottom, AstaraSpacing.md)
+                .background(
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            Rectangle()
+                                .fill(AstaraColors.cardBorder)
+                                .frame(height: 1),
+                            alignment: .top
+                        )
+                )
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var askThinkingLabel: some View {
+        HStack(spacing: AstaraSpacing.xs) {
+            Text(String(localized: "ask_thinking"))
+                .font(AstaraTypography.bodyMedium)
+                .foregroundStyle(AstaraColors.textSecondary)
+            ThinkingDotsView()
+        }
+    }
+
+    private func askAnswerCard(_ response: String) -> some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+            HStack(spacing: AstaraSpacing.xxs) {
+                Image(systemName: "quote.opening")
+                    .font(.system(size: 11, weight: .semibold))
+                Text(String(localized: "ask_answer_label"))
+                    .font(AstaraTypography.sectionMark)
+                    .tracking(2)
+                    .textCase(.uppercase)
+            }
+            .foregroundStyle(AstaraColors.gold)
+
+            Text(response)
+                .font(AstaraTypography.bodyLarge)
+                .foregroundStyle(AstaraColors.textPrimary)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(AstaraSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .astaraCard()
+    }
+
+    private var askSuggestions: some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+            Text(String(localized: "ask_empty_prompt"))
+                .font(AstaraTypography.bodyMedium)
+                .foregroundStyle(AstaraColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, AstaraSpacing.xs)
+
+            Text(String(localized: "ask_suggestions_title"))
+                .font(AstaraTypography.sectionMark)
+                .tracking(2)
+                .textCase(.uppercase)
+                .foregroundStyle(AstaraColors.textTertiary)
+
+            VStack(spacing: AstaraSpacing.xs) {
+                askSuggestionChip(String(localized: "ask_suggested_love"))
+                askSuggestionChip(String(localized: "ask_suggested_work"))
+                askSuggestionChip(String(localized: "ask_suggested_today"))
             }
         }
+    }
+
+    private func askSuggestionChip(_ text: String) -> some View {
+        Button {
+            Haptics.selection()
+            store.send(.setAskQuestionText(text))
+        } label: {
+            HStack {
+                Text(text)
+                    .font(AstaraTypography.bodyMedium)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                    .multilineTextAlignment(.leading)
+                Spacer()
+                Image(systemName: "arrow.up.left")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(AstaraColors.gold.opacity(0.7))
+            }
+            .padding(.horizontal, AstaraSpacing.md)
+            .padding(.vertical, AstaraSpacing.sm)
+            .background(AstaraColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+            .overlay(
+                RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd)
+                    .stroke(AstaraColors.cardBorder, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var askInputBar: some View {
+        let trimmed = store.askQuestionText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let canSubmit = !trimmed.isEmpty && !store.isAskingAstara
+        return HStack(alignment: .bottom, spacing: AstaraSpacing.sm) {
+            TextField(
+                String(localized: "ask_placeholder"),
+                text: $store.askQuestionText.sending(\.setAskQuestionText),
+                axis: .vertical
+            )
+            .lineLimit(1...4)
+            .textFieldStyle(.plain)
+            .font(AstaraTypography.bodyMedium)
+            .foregroundStyle(AstaraColors.textPrimary)
+            .tint(AstaraColors.gold)
+            .padding(.horizontal, AstaraSpacing.md)
+            .padding(.vertical, AstaraSpacing.sm)
+            .background(AstaraColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                    .stroke(AstaraColors.cardBorder, lineWidth: 1)
+            )
+            .disabled(store.isAskingAstara)
+            .submitLabel(.send)
+            .onSubmit {
+                if canSubmit { store.send(.submitAskQuestion) }
+            }
+
+            Button {
+                Haptics.medium()
+                store.send(.submitAskQuestion)
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(canSubmit ? AstaraColors.gold : AstaraColors.gold.opacity(0.2))
+                        .frame(width: 44, height: 44)
+                    if store.isAskingAstara {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(AstaraColors.backgroundDeep)
+                    } else {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(
+                                canSubmit ? AstaraColors.backgroundDeep : AstaraColors.textTertiary
+                            )
+                    }
+                }
+                .shadow(
+                    color: canSubmit ? AstaraColors.gold.opacity(0.35) : .clear,
+                    radius: 10
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(!canSubmit)
+            .accessibilityLabel(String(localized: "ask_button"))
+        }
+    }
+
+    private var askQuotaExhaustedView: some View {
+        VStack(spacing: 0) {
+            askSheetHeader
+                .padding(.horizontal, AstaraSpacing.lg)
+                .padding(.top, AstaraSpacing.md)
+
+            Spacer()
+
+            VStack(spacing: AstaraSpacing.lg) {
+                OracleSphereView(isThinking: false)
+                    .frame(height: 160)
+                    .opacity(0.55)
+                    .grayscale(0.7)
+                Text(String(localized: "ask_quota_exhausted_title"))
+                    .font(AstaraTypography.titleLarge)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                    .multilineTextAlignment(.center)
+                Text(String(localized: "ask_quota_exhausted_body"))
+                    .font(AstaraTypography.bodyMedium)
+                    .foregroundStyle(AstaraColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, AstaraSpacing.lg)
+                AstaraButton(title: String(localized: "go_premium"), style: .primary) {
+                    store.send(.openAskAstara(false))
+                    store.send(.profile(.setSubscriptionPresented(true)))
+                }
+                .frame(maxWidth: 280)
+            }
+            .padding(.horizontal, AstaraSpacing.lg)
+
+            Spacer()
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Time Travel Sheet
@@ -947,46 +1163,161 @@ struct HomeView: View {
         let minDate = Calendar.current.date(byAdding: .day, value: -30, to: now) ?? now
         let maxDate = Calendar.current.date(byAdding: .day, value: 30, to: now) ?? now
 
-        return VStack(alignment: .leading, spacing: AstaraSpacing.md) {
-            Text(String(localized: "time_travel_btn"))
-                .font(AstaraTypography.titleLarge)
-                .foregroundStyle(AstaraColors.textPrimary)
-            DatePicker(
-                String(localized: "time_travel_btn"),
-                selection: $store.timeTravelDate.sending(\.setTimeTravelDate),
-                in: minDate...maxDate,
-                displayedComponents: .date
-            )
-            .datePickerStyle(.graphical)
-            .tint(AstaraColors.gold)
-            .colorScheme(.dark)
-            .padding(AstaraSpacing.sm)
-            .background(AstaraColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
-            .overlay(
-                RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
-                    .stroke(AstaraColors.cardBorder, lineWidth: 1)
-            )
-            if let insight = store.timeTravelInsight {
-                VStack(alignment: .leading, spacing: AstaraSpacing.xs) {
-                    Text(insight.title)
-                        .font(AstaraTypography.labelLarge)
-                        .foregroundStyle(AstaraColors.gold)
-                    Text(insight.summary)
-                        .font(AstaraTypography.bodySmall)
-                        .foregroundStyle(AstaraColors.textSecondary)
-                    Text("Aksiyon: \(insight.action)")
-                        .font(AstaraTypography.caption)
-                        .foregroundStyle(AstaraColors.textTertiary)
+        return ZStack {
+            GradientBackground(ambient: .home)
+            StarfieldView(starCount: 30).opacity(0.2)
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: AstaraSpacing.lg) {
+                    timeTravelHeader
+                    timeTravelDatePill
+
+                    DatePicker(
+                        String(localized: "time_travel_btn"),
+                        selection: $store.timeTravelDate.sending(\.setTimeTravelDate),
+                        in: minDate...maxDate,
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.graphical)
+                    .labelsHidden()
+                    .tint(AstaraColors.gold)
+                    .colorScheme(.dark)
+                    .padding(AstaraSpacing.sm)
+                    .background(AstaraColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusLg)
+                            .stroke(AstaraColors.cardBorder, lineWidth: 1)
+                    )
+
+                    if let insight = store.timeTravelInsight {
+                        timeTravelInsightCard(insight)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
                 }
-                .padding(AstaraSpacing.sm)
-                .background(AstaraColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: AstaraSpacing.cornerRadiusMd))
+                .padding(AstaraSpacing.lg)
+                .animation(.easeInOut(duration: 0.25), value: store.timeTravelInsight)
+            }
+        }
+    }
+
+    private var timeTravelHeader: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: AstaraSpacing.xxs) {
+                Text(String(localized: "time_travel_btn"))
+                    .font(AstaraTypography.displayMedium)
+                    .foregroundStyle(AstaraColors.textPrimary)
+                Text(String(localized: "time_travel_subtitle"))
+                    .font(AstaraTypography.caption)
+                    .foregroundStyle(AstaraColors.textTertiary)
             }
             Spacer()
+            Button {
+                store.send(.openTimeTravel(false))
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(AstaraColors.textSecondary)
+                    .frame(width: 32, height: 32)
+                    .background(Color.white.opacity(0.06))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(String(localized: "close_button"))
+        }
+    }
+
+    private var timeTravelDatePill: some View {
+        HStack(spacing: AstaraSpacing.xs) {
+            Image(systemName: "sparkle")
+                .font(.system(size: 10, weight: .medium))
+            Text(AstaraDateFormatters.displayDate.string(from: store.timeTravelDate))
+                .font(AstaraTypography.labelMedium)
+            Text("·")
+                .foregroundStyle(AstaraColors.textTertiary)
+            Text(relativeDayString(for: store.timeTravelDate))
+                .font(AstaraTypography.caption)
+                .foregroundStyle(AstaraColors.textTertiary)
+        }
+        .foregroundStyle(AstaraColors.gold)
+        .padding(.horizontal, AstaraSpacing.md)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(AstaraColors.gold.opacity(0.08)))
+        .overlay(Capsule().stroke(AstaraColors.gold.opacity(0.35), lineWidth: 1))
+    }
+
+    private func timeTravelInsightCard(_ insight: TimeTravelInsight) -> some View {
+        VStack(alignment: .leading, spacing: AstaraSpacing.sm) {
+            Text(insight.title)
+                .font(AstaraTypography.titleMedium)
+                .foregroundStyle(AstaraColors.gold)
+
+            Text(insight.summary)
+                .font(AstaraTypography.bodyMedium)
+                .foregroundStyle(AstaraColors.textPrimary)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider().overlay(AstaraColors.cardBorder)
+
+            HStack(alignment: .top, spacing: AstaraSpacing.xs) {
+                Image(systemName: "arrow.forward.circle.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(AstaraColors.gold)
+                    .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(localized: "time_travel_action_label"))
+                        .font(AstaraTypography.sectionMark)
+                        .tracking(2)
+                        .textCase(.uppercase)
+                        .foregroundStyle(AstaraColors.textTertiary)
+                    Text(insight.action)
+                        .font(AstaraTypography.bodyMedium)
+                        .foregroundStyle(AstaraColors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
         .padding(AstaraSpacing.lg)
-        .astaraBackground(ambient: .home)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .astaraCard()
+    }
+
+    private func relativeDayString(for date: Date) -> String {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfTarget = calendar.startOfDay(for: date)
+        let days = calendar.dateComponents([.day], from: startOfToday, to: startOfTarget).day ?? 0
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        if days == 0 {
+            return formatter.localizedString(from: DateComponents(day: 0))
+        }
+        return formatter.localizedString(from: DateComponents(day: days))
+    }
+}
+
+// MARK: - Thinking Dots
+
+private struct ThinkingDotsView: View {
+    @State private var animate = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .fill(AstaraColors.gold)
+                    .frame(width: 5, height: 5)
+                    .opacity(animate ? 1.0 : 0.25)
+                    .animation(
+                        .easeInOut(duration: 0.6)
+                            .repeatForever()
+                            .delay(Double(index) * 0.15),
+                        value: animate
+                    )
+            }
+        }
+        .onAppear { animate = true }
     }
 }
 
